@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 	"errors"
-	"github.com/tend/wechatServer/core/global"
+	"github.com/boshangad/go-api/core/global"
 	"time"
 )
 

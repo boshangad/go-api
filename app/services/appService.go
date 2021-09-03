@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/ent"
-	entApp "github.com/tend/wechatServer/ent/app"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/ent"
+	entApp "github.com/boshangad/go-api/ent/app"
 )
 
 // GetAppModelByAlias 获取应用实体通过应用别名

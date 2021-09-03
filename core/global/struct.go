@@ -1,6 +1,6 @@
 package global
 
-import "github.com/tend/wechatServer/ent"
+import "github.com/boshangad/go-api/ent"
 
 // JsonResponse 输出json格式对象
 type JsonResponse struct {

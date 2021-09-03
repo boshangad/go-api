@@ -2,8 +2,8 @@ package userService
 
 import (
 	"context"
-	"github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/ent/user"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/ent/user"
 	"log"
 )
 

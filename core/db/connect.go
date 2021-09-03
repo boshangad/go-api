@@ -7,9 +7,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/tend/wechatServer/core/config"
-	"github.com/tend/wechatServer/ent"
-	"github.com/tend/wechatServer/utils"
+	"github.com/boshangad/go-api/core/config"
+	"github.com/boshangad/go-api/ent"
+	"github.com/boshangad/go-api/utils"
 	"log"
 	"strings"
 )

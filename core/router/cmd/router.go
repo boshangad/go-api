@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/tend/wechatServer/utils"
-	"github.com/tend/wechatServer/utils/str"
+	"github.com/boshangad/go-api/utils"
+	"github.com/boshangad/go-api/utils/str"
 	"go/ast"
 	"go/parser"
 	"go/token"

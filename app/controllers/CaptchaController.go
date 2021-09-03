@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/dchest/captcha"
-	"github.com/tend/wechatServer/core/global"
+	"github.com/boshangad/go-api/core/global"
 	"strconv"
 )
 

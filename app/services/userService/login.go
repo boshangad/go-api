@@ -3,12 +3,12 @@ package userService
 import (
 	"context"
 	"errors"
-	"github.com/tend/wechatServer/app/services/smsService"
-	"github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/core/global"
-	"github.com/tend/wechatServer/ent"
-	"github.com/tend/wechatServer/ent/user"
-	"github.com/tend/wechatServer/utils"
+	"github.com/boshangad/go-api/app/services/smsService"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/ent"
+	"github.com/boshangad/go-api/ent/user"
+	"github.com/boshangad/go-api/utils"
 )
 
 // LoginByUsername 用户登录使用用户名登录

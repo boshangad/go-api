@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/dchest/captcha"
 	"github.com/o1egl/paseto"
-	"github.com/tend/wechatServer/core/config"
+	"github.com/boshangad/go-api/core/config"
 	"golang.org/x/crypto/ed25519"
 	"log"
 	"time"

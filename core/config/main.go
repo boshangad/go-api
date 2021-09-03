@@ -3,8 +3,8 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"github.com/tend/wechatServer/core/global"
-	"github.com/tend/wechatServer/utils"
+	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/utils"
 	"io/ioutil"
 	"os"
 	"strings"

@@ -3,8 +3,8 @@ package controllers
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"github.com/tend/wechatServer/app/services"
-	"github.com/tend/wechatServer/core/global"
+	"github.com/boshangad/go-api/app/services"
+	"github.com/boshangad/go-api/core/global"
 	"strconv"
 )
 

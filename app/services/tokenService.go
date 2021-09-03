@@ -4,9 +4,9 @@ import (
 	"context"
 	"crypto/md5"
 	"github.com/o1egl/paseto"
-	"github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/ent"
-	"github.com/tend/wechatServer/ent/appusertoken"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/ent"
+	"github.com/boshangad/go-api/ent/appusertoken"
 	"log"
 )
 

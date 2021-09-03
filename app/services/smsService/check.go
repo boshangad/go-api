@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/ent"
-	"github.com/tend/wechatServer/ent/smslog"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/ent"
+	"github.com/boshangad/go-api/ent/smslog"
 	"log"
 )
 

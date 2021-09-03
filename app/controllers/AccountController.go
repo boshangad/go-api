@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"github.com/tend/wechatServer/app/services"
-	"github.com/tend/wechatServer/app/services/appUserTokenService"
-	"github.com/tend/wechatServer/app/services/userService"
-	"github.com/tend/wechatServer/core/global"
-	"github.com/tend/wechatServer/ent"
-	"github.com/tend/wechatServer/utils"
+	"github.com/boshangad/go-api/app/services"
+	"github.com/boshangad/go-api/app/services/appUserTokenService"
+	"github.com/boshangad/go-api/app/services/userService"
+	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/ent"
+	"github.com/boshangad/go-api/utils"
 )
 
 type AccountController struct {

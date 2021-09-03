@@ -16,7 +16,7 @@ func getTemplateStr() string {
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tend/wechatServer/{{$.ControllerPath}}"
+	"github.com/boshangad/go-api/{{$.ControllerPath}}"
 )
 
 type {{$.QuoteName}}Controller struct {

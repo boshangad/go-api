@@ -2,10 +2,10 @@ package core
 
 import (
 	"context"
-	"github.com/tend/wechatServer/core/config"
-	_ "github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/core/gin"
-	_ "github.com/tend/wechatServer/core/router"
+	"github.com/boshangad/go-api/core/config"
+	_ "github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/core/gin"
+	_ "github.com/boshangad/go-api/core/router"
 	"log"
 	"net/http"
 	"os"

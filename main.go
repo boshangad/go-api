@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tend/wechatServer/core"
+	"github.com/boshangad/go-api/core"
 )
 
 func main() {

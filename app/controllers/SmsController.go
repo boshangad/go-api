@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"github.com/tend/wechatServer/app/services/smsService"
-	"github.com/tend/wechatServer/app/services/userService"
-	"github.com/tend/wechatServer/core/global"
-	"github.com/tend/wechatServer/utils"
+	"github.com/boshangad/go-api/app/services/smsService"
+	"github.com/boshangad/go-api/app/services/userService"
+	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/utils"
 )
 
 type smsController struct {

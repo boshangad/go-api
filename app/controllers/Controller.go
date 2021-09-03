@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tend/wechatServer/core/global"
-	"github.com/tend/wechatServer/ent"
+	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/ent"
 	"net/http"
 	"strings"
 )

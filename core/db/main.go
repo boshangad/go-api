@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"github.com/pkg/errors"
-	"github.com/tend/wechatServer/core/config"
-	"github.com/tend/wechatServer/ent"
-	_ "github.com/tend/wechatServer/ent/runtime"
+	"github.com/boshangad/go-api/core/config"
+	"github.com/boshangad/go-api/ent"
+	_ "github.com/boshangad/go-api/ent/runtime"
 )
 
 type dbContainer struct {

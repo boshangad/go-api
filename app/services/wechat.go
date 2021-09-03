@@ -6,9 +6,9 @@ import (
 	mpConfig "github.com/silenceper/wechat/v2/miniprogram/config"
 	"github.com/silenceper/wechat/v2/openplatform"
 	opConfig "github.com/silenceper/wechat/v2/openplatform/config"
-	"github.com/tend/wechatServer/app/services/cache"
-	"github.com/tend/wechatServer/core/db"
-	"github.com/tend/wechatServer/ent"
+	"github.com/boshangad/go-api/app/services/cache"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/ent"
 )
 
 type wc struct {

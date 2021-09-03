@@ -1,7 +1,7 @@
 package business
 
 import (
-	"github.com/tend/wechatServer/app/controllers"
+	"github.com/boshangad/go-api/app/controllers"
 )
 
 type bc struct {

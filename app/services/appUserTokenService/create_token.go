@@ -1,7 +1,7 @@
 package appUserTokenService
 
 import (
-	"github.com/tend/wechatServer/ent"
+	"github.com/boshangad/go-api/ent"
 )
 
 // CreateTokenWithModel 通过用户登录model创建token

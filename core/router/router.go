@@ -1,10 +1,10 @@
 package router
 
 import (
-	"github.com/tend/wechatServer/app/middlewares"
-	"github.com/tend/wechatServer/app/routers"
-	"github.com/tend/wechatServer/core/gin"
-	"github.com/tend/wechatServer/core/global"
+	"github.com/boshangad/go-api/app/middlewares"
+	"github.com/boshangad/go-api/app/routers"
+	"github.com/boshangad/go-api/core/gin"
+	"github.com/boshangad/go-api/core/global"
 )
 
 // 初始化加载路由

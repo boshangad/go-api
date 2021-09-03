@@ -5,9 +5,9 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/gin-gonic/gin"
-	"github.com/tend/wechatServer/core/config"
-	"github.com/tend/wechatServer/core/global"
-	"github.com/tend/wechatServer/ent"
+	"github.com/boshangad/go-api/core/config"
+	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/ent"
 	"log"
 	"net/http"
 )

@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tend/wechatServer/app/controllers"
+	"github.com/boshangad/go-api/app/controllers"
 )
 
 type mainController struct {
