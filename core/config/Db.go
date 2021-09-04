@@ -1,5 +1,7 @@
 package config
 
+import "entgo.io/ent/dialect"
+
 // dbConnection 数据库连接器
 type dbConnection struct {
 	// 连接的服务
@@ -25,12 +27,22 @@ type dbConnection struct {
 // Db连接配置
 type dbConfig struct {
 	Default string `json:"default,omitempty"`
-	Connections map[string]dbConnection `json:"connections,omitempty"`
+	Connections map[string]dbConnection `json:"connections"`
 }
 
 // 初始化数据
 func (dc *dbConfig) initDefaultData() {
 	if dc.Default == "" {
 		dc.Default = "db"
+	}
+	if dc.Connections == nil {
+		dc.Connections = map[string]dbConnection{
+			dc.Default: {
+				Driver: dialect.MySQL,
+				Host: "127.0.0.1",
+				Username: "root",
+				Password: "123456",
+			},
+		}
 	}
 }

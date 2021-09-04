@@ -6,5 +6,5 @@ import (
 
 // CreateTokenWithModel 通过用户登录model创建token
 func CreateTokenWithModel(appUserTokenModel *ent.AppUserToken) string {
-	return EnTokenByPaseto(appUserTokenModel.UUID)
+	return EnTokenByPaseto(appUserTokenModel.UUID.String())
 }

@@ -1,4 +1,4 @@
-module github.com/tend/wechatServer
+module github.com/boshangad/go-api
 
 go 1.16
 
@@ -9,6 +9,7 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1240
 	github.com/casbin/casbin/v2 v2.36.1
 	github.com/dchest/captcha v0.0.0-20200903113550-03f5f0333e1f
+	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
@@ -21,12 +22,12 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/o1egl/paseto v1.0.0
-	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/silenceper/wechat/v2 v2.0.6
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/ugorji/go v1.2.6 // indirect; indirectgo
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
+	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )

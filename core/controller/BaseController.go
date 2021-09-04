@@ -1,20 +1,21 @@
-package controllers
+package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
 
+// ControllerInterface 接口
 type ControllerInterface interface {
 	// Init 前置执行初始化
 	Init(ctx *gin.Context) *ControllerInterface
-	// 通过键 获取字符串入参
-	getParamWithString(string) string
-	// 输出json字符串
-	jsonOut(int, string, interface{})
+	// GetParamWithString 通过键 获取字符串入参
+	GetParamWithString(string) string
+	// JsonOut 输出json字符串
+	JsonOut(int, string, interface{})
 }
 
 type Controller struct {
@@ -25,8 +26,6 @@ type Controller struct {
 	AppUserToken *ent.AppUserToken
 }
 
-// Init 初始化
-//@ROUTE -
 func (gh *Controller) Init(c *gin.Context) *Controller {
 	gh.Context = c
 	keyData, ok := c.Get("App")
@@ -44,8 +43,7 @@ func (gh *Controller) Init(c *gin.Context) *Controller {
 	return gh
 }
 
-// 获取字符串变量
-func (gh Controller) getParamWithString(key string) string {
+func (gh Controller) GetParamWithString(key string) string {
 	method := strings.ToUpper(gh.Context.Request.Method)
 	if method == http.MethodGet {
 		return gh.Context.DefaultQuery(key, "")
@@ -61,7 +59,7 @@ func (gh Controller) getParamWithString(key string) string {
 }
 
 // JsonOut 输出json数据
-func (gh *Controller) jsonOut(error int64, msg string, data interface{})  {
+func (gh Controller) JsonOut(error int64, msg string, data interface{})  {
 	var response global.JsonResponse
 	response.Error = error
 	if msg == "" {
@@ -72,6 +70,6 @@ func (gh *Controller) jsonOut(error int64, msg string, data interface{})  {
 	gh.Context.AbortWithStatusJSON(http.StatusOK, response)
 }
 
-func (gh *Controller) jsonOutByError(error int64, msg error, data interface{})  {
-	gh.jsonOut(error, msg.Error(), data)
+func (gh Controller) JsonOutByError(error int64, msg error, data interface{})  {
+	gh.JsonOut(error, msg.Error(), data)
 }

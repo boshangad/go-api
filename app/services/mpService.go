@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	uuid2 "github.com/google/uuid"
-	"github.com/silenceper/wechat/v2/miniprogram/encryptor"
-	"github.com/silenceper/wechat/v2/miniprogram/qrcode"
 	"github.com/boshangad/go-api/core/db"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/appuser"
 	"github.com/boshangad/go-api/ent/appusertoken"
 	"github.com/boshangad/go-api/utils"
+	"github.com/google/uuid"
+	"github.com/silenceper/wechat/v2/miniprogram/encryptor"
+	"github.com/silenceper/wechat/v2/miniprogram/qrcode"
 	"io/ioutil"
 	"log"
 	"time"
@@ -62,7 +62,7 @@ func (_this *mpService) LoginByCode(code string) (string, error) {
 	appUserModel, err = appUserModel.Update().
 		SetSessionKey(codeSession.SessionKey).
 		SetUnionid(codeSession.UnionID).
-		SetLastLoginTime(time.Now().Unix()).
+		SetLastLoginTime(uint64(time.Now().Unix())).
 		Save(ctx)
 	if err != nil {
 		log.Println("更新appUser表失败：", err)
@@ -92,7 +92,7 @@ func (_this *mpService) BuildTokenWithSave() (string, error) {
 	}
 	tokenModel, err := clientAUT.Create().
 		SetAppID(_this.App.ID).
-		SetUUID(uuid2.New().String()).
+		SetUUID(uuid.New()).
 		SetExpireTime(uint64(time.Now().Unix() + 3600 * 2)).
 		SetAppUserID(_this.AppUser.ID).
 		Save(ctx)
@@ -102,7 +102,7 @@ func (_this *mpService) BuildTokenWithSave() (string, error) {
 	_this.AppUserToken = tokenModel
 	// 生成token
 	ts := tokenService{}
-	encrypt := ts.EncryptString(tokenModel.UUID)
+	encrypt := ts.EncryptString(tokenModel.UUID.String())
 	return encrypt, nil
 }
 
@@ -122,7 +122,7 @@ func (_this mpService) SetUserProfile(encryptedData string, iv string) *encrypto
 	appUser, err := _this.AppUser.Update().
 		SetAvatar(avatarUrl).
 		SetAvatarURL(data.AvatarURL).
-		SetGender(data.Gender).
+		SetGender(uint(data.Gender)).
 		SetLanguage(data.Language).
 		SetCounty(data.Country).
 		SetCountryCode(data.CountryCode).

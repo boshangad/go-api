@@ -1,4 +1,4 @@
-package controllers
+package app
 
 // 定义返回登录成功的数据结构
 type Login struct {

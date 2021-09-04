@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/boshangad/go-api/app/services/appUserLoginService"
 	"github.com/boshangad/go-api/core/db"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/appuser"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"log"
 	"time"
 )
@@ -47,7 +47,7 @@ func EventByLoginWithUser(userModel *ent.User, c *gin.Context) error {
 			}
 		}
 		appUserModel, err = appUserModel.Update().
-			SetLastLoginTime(time.Now().Unix()).
+			SetLastLoginTime(uint64(time.Now().Unix())).
 			Save(ctx)
 		if err != nil {
 			log.Println("保存appUser最后登录时间失败", err)
@@ -88,7 +88,7 @@ func EventByLoginWithUser(userModel *ent.User, c *gin.Context) error {
 			SetUserID(userModel.ID).
 			SetClientVersion(c.Request.UserAgent()).
 			SetIP(c.ClientIP()).
-			SetUUID(uuid.New().String()).
+			SetUUID(uuid.New()).
 			SetExpireTime(uint64(time.Now().Unix() + 3600)).
 			Save(ctx)
 		if err != nil {

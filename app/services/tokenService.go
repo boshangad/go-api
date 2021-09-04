@@ -3,10 +3,11 @@ package services
 import (
 	"context"
 	"crypto/md5"
-	"github.com/o1egl/paseto"
 	"github.com/boshangad/go-api/core/db"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/appusertoken"
+	uuid2 "github.com/google/uuid"
+	"github.com/o1egl/paseto"
 	"log"
 )
 
@@ -47,7 +48,7 @@ func (t tokenService) GetModelByToken(token string) *ent.AppUserToken {
 	}
 	ctx := context.Background()
 	tokenModel, err := db.DefaultClient().AppUserToken.Query().
-		Where(appusertoken.UUIDEQ(uuid)).
+		Where(appusertoken.UUIDEQ(uuid2.Must(uuid2.Parse(uuid)))).
 		Order(ent.Desc(appusertoken.FieldID)).
 		First(ctx)
 	if err != nil {

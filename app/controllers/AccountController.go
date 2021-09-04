@@ -4,31 +4,32 @@ import (
 	"github.com/boshangad/go-api/app/services"
 	"github.com/boshangad/go-api/app/services/appUserTokenService"
 	"github.com/boshangad/go-api/app/services/userService"
+	"github.com/boshangad/go-api/core/controller"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/utils"
 )
 
 type AccountController struct {
-	Controller
+	controller.Controller
 }
 
 // Login 账号密码登录
 // @route login [POST]
-func (c *AccountController) Login()  {
-	username := c.getParamWithString("username")
-	dailCode := c.getParamWithString("dail_code")
-	mobile := c.getParamWithString("mobile")
-	email := c.getParamWithString("email")
-	password := c.getParamWithString("password")
-	code := c.getParamWithString("code")
-	captcha := c.getParamWithString("captcha")
+func (that *AccountController) Login()  {
+	username := that.GetParamWithString("username")
+	dailCode := that.GetParamWithString("dail_code")
+	mobile := that.GetParamWithString("mobile")
+	email := that.GetParamWithString("email")
+	password := that.GetParamWithString("password")
+	code := that.GetParamWithString("code")
+	captcha := that.GetParamWithString("captcha")
 	if password == "" && code == "" {
-		c.jsonOut(global.ErrNotice, "Password cannot be empty.", nil)
+		that.JsonOut(global.ErrNotice, "Password cannot be empty.", nil)
 		return
 	}
 	if captcha == "" {
-		c.jsonOut(global.ErrNotice, "Captcha cannot be empty.", nil)
+		that.JsonOut(global.ErrNotice, "Captcha cannot be empty.", nil)
 		return
 	}
 	var err error
@@ -38,7 +39,7 @@ func (c *AccountController) Login()  {
 			dailCode = "86"
 		}
 		if dailCode == "86" && !utils.ValidateMobile(mobile) {
-			c.jsonOut(global.ErrNotice, "Inaccurate mobile phone number format.", nil)
+			that.JsonOut(global.ErrNotice, "Inaccurate mobile phone number format.", nil)
 			return
 		}
 		if password != "" && code != "" {
@@ -50,7 +51,7 @@ func (c *AccountController) Login()  {
 		}
 	} else if email != "" {
 		if !utils.ValidateEmail(email) {
-			c.jsonOut(global.ErrNotice, "Inaccurate email format.", nil)
+			that.JsonOut(global.ErrNotice, "Inaccurate email format.", nil)
 			return
 		}
 		if password != "" && code != "" {
@@ -63,44 +64,45 @@ func (c *AccountController) Login()  {
 	} else if username != "" {
 		userModel, err = userService.LoginByUsername(username, password)
 	} else {
-		c.jsonOut(global.ErrMissLoginParams, "Login params miss.", nil)
+		that.JsonOut(global.ErrMissLoginParams, "Login params miss.", nil)
 		return
 	}
 	// 登录失败报错
 	if err != nil {
-		c.jsonOutByError(global.ErrSuccess, err, nil)
+		that.JsonOutByError(global.ErrSuccess, err, nil)
 		return
 	}
 	// 登录成功，创建token等信息
-	err = userService.EventByLoginWithUser(userModel, c.Context)
+	err = userService.EventByLoginWithUser(userModel, that.Context)
 	if err != nil {
-		c.jsonOutByError(global.ErrNotice, err, nil)
+		that.JsonOutByError(global.ErrNotice, err, nil)
 		return
 	}
-	AppUserToken, ok := c.Context.Get("AppUserToken")
+	AppUserToken, ok := that.Context.Get("AppUserToken")
 	if !ok {
-		c.jsonOut(global.ErrNotice, "service exception, please try again", nil)
+		that.JsonOut(global.ErrNotice, "service exception, please try again", nil)
 		return
 	}
 	AppUserTokenModel, ok := AppUserToken.(*ent.AppUserToken)
 	if !ok {
-		c.jsonOut(global.ErrNotice, "service exception, please try again", nil)
+		that.JsonOut(global.ErrNotice, "service exception, please try again", nil)
 		return
 	}
 	token := appUserTokenService.CreateTokenWithModel(AppUserTokenModel)
-	c.jsonOut(global.ErrSuccess, "success", services.StructLoginSuccess{
+	that.JsonOut(global.ErrSuccess, "success", services.StructLoginSuccess{
 		AccessToken: token,
 		ExpiredTime: AppUserTokenModel.ExpireTime,
 		IsBindUser: true,
-		UserAlias: userModel.UUID,
+		UserAlias: userModel.UUID.String(),
 	})
 }
 
 // Register 账号注册
 // @route register [POST]
-func (c *AccountController) Register() {
-	//username := c.getParamWithString("username")
-	//mobile := c.getParamWithString("mobile")
-	//email := c.getParamWithString("email")
+func (that *AccountController) Register() {
+	//username := that.GetParamWithString("username")
+	//mobile := that.GetParamWithString("mobile")
+	//email := that.GetParamWithString("email")
+	//password := that.GetParamWithString("password")
 
 }

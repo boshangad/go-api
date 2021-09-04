@@ -1,15 +1,16 @@
 package middlewares
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"github.com/boshangad/go-api/app/services"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 // LoadApp 加载应用模型
-func LoadApp(c *gin.Context)  {
+func LoadApp(c *gin.Context) {
 	appAlias := ""
 	if c.Request.Method == http.MethodPost {
 		appAlias = c.DefaultPostForm("app_alias", "")
@@ -60,7 +61,7 @@ func LoadApp(c *gin.Context)  {
 	if appModel == nil {
 		c.AbortWithStatusJSON(http.StatusNotAcceptable, global.JsonResponse{
 			Error: http.StatusNotAcceptable,
-			Msg: "Access failed, application not found",
+			Msg: fmt.Sprintf("Access failed, #%s application not found.", appAlias),
 		})
 		return
 	}

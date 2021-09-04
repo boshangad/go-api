@@ -1,4 +1,6 @@
-# Binaries for programs and plugins
 *
+!generate.go
 !.gitignore
+!entc.go
 !schema
+!schema/.gitignore

@@ -1,7 +1,9 @@
 package controllers
 
+import "github.com/boshangad/go-api/core/controller"
+
 type UploadController struct {
-	Controller
+	controller.Controller
 }
 
 func (that UploadController) List()  {
