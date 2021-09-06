@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"github.com/boshangad/go-api/core/controller"
 	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/core/mvvc"
 	"github.com/dchest/captcha"
 	"strconv"
 )
 
 type CaptchaController struct {
-	controller.Controller
+	mvvc.Controller
 }
 
 func (that CaptchaController) Image() {

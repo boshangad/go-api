@@ -4,14 +4,14 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"github.com/boshangad/go-api/app/services"
-	"github.com/boshangad/go-api/core/controller"
 	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/core/mvvc"
 	"github.com/boshangad/go-api/ent"
 	"strconv"
 )
 
 type MpController struct {
-	controller.Controller
+	mvvc.Controller
 }
 
 // Login 微信code登录

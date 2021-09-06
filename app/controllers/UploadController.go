@@ -1,9 +1,11 @@
 package controllers
 
-import "github.com/boshangad/go-api/core/controller"
+import (
+	"github.com/boshangad/go-api/core/mvvc"
+)
 
 type UploadController struct {
-	controller.Controller
+	mvvc.Controller
 }
 
 func (that UploadController) List()  {

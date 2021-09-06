@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/boshangad/go-api/app/controllers"
+	"github.com/gin-gonic/gin"
 )
 
 type mainController struct {

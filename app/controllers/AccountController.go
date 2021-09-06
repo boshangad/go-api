@@ -4,14 +4,14 @@ import (
 	"github.com/boshangad/go-api/app/services"
 	"github.com/boshangad/go-api/app/services/appUserTokenService"
 	"github.com/boshangad/go-api/app/services/userService"
-	"github.com/boshangad/go-api/core/controller"
 	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/core/mvvc"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/utils"
 )
 
 type AccountController struct {
-	controller.Controller
+	mvvc.Controller
 }
 
 // Login 账号密码登录
@@ -32,8 +32,10 @@ func (that *AccountController) Login()  {
 		that.JsonOut(global.ErrNotice, "Captcha cannot be empty.", nil)
 		return
 	}
-	var err error
-	var userModel *ent.User
+	var (
+		err error
+		userModel *ent.User
+	)
 	if mobile != "" {
 		if dailCode == "" {
 			dailCode = "86"
@@ -99,10 +101,22 @@ func (that *AccountController) Login()  {
 
 // Register 账号注册
 // @route register [POST]
-func (that *AccountController) Register() {
-	//username := that.GetParamWithString("username")
-	//mobile := that.GetParamWithString("mobile")
-	//email := that.GetParamWithString("email")
-	//password := that.GetParamWithString("password")
-
+func (that AccountController) Register() {
+	var serviceWithUser = userService.NewUserRegister()
+	err := that.Context.ShouldBind(&serviceWithUser)
+	if err != nil {
+		that.JsonOutByError(global.ErrNotice, err, nil)
+		return
+	}
+	serviceWithUser.Filter()
+	if serviceWithUser.Username == "" && serviceWithUser.Mobile == "" && serviceWithUser.Email == "" {
+		that.JsonOut(global.ErrNotice, "用户名不能为空", nil)
+		return
+	}
+	userModel, err := serviceWithUser.Register(that.Controller)
+	if err != nil {
+		that.JsonOutByError(global.ErrNotice, err, nil)
+		return
+	}
+	that.JsonOut(global.ErrSuccess, "success", userModel)
 }

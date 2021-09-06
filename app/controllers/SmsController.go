@@ -3,13 +3,13 @@ package controllers
 import (
 	"github.com/boshangad/go-api/app/services/smsService"
 	"github.com/boshangad/go-api/app/services/userService"
-	"github.com/boshangad/go-api/core/controller"
 	"github.com/boshangad/go-api/core/global"
+	"github.com/boshangad/go-api/core/mvvc"
 	"github.com/boshangad/go-api/utils"
 )
 
 type SmsController struct {
-	controller.Controller
+	mvvc.Controller
 }
 
 // Send 发出短信

@@ -1,10 +1,10 @@
 package gin
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/boshangad/go-api/core/config"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -14,6 +14,7 @@ var engine *gin.Engine
 func New() *gin.Engine {
 	gin.SetMode(config.Get().Mode)
 	engine = gin.New()
+	// 初始化验证器
 	engine.NoRoute(func(c *gin.Context) {
 		c.Abort()
 		c.SecureJSON(http.StatusNotFound, global.JsonResponse{

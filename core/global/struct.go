@@ -6,7 +6,7 @@ import "github.com/boshangad/go-api/ent"
 type JsonResponse struct {
 	Error int64 `json:"error"`
 	Msg string `json:"msg"`
-	Data interface{} `json:"data,omitempty"`
+	Data *interface{} `json:"data,omitempty"`
 }
 
 // AuthData 鉴权数据结构
