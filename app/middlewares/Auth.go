@@ -10,14 +10,10 @@ import (
 	"net/http"
 )
 
-func init() {
-	global.CasbinAuthRequiredLogin.LoadNoAccess(config.Get().NoAccess)
-}
-
 // CheckAuth 检查用户权限
 func CheckAuth(gh *gin.Context) {
 	appUserInterface, ok := gh.Get("AppUser")
-	casbinEnforcer := global.CasbinAuthRequiredLogin.Enforcer
+	casbinEnforcer := config.Get().AsAccess.CasbinEnforcer
 	if !ok {
 		enforce, err := casbinEnforcer.Enforce("guest", gh.Request.URL.Path, gh.Request.Method)
 		if err != nil {

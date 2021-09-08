@@ -1,7 +1,6 @@
 package config
 
 import (
-	"entgo.io/ent/dialect"
 	"github.com/boshangad/go-api/core/db/connection"
 )
 
@@ -17,16 +16,13 @@ func (that *dbConfig) initDefaultData() {
 		that.Default = "db"
 	}
 	if that.Connections == nil {
-		that.Connections = map[string]connection.Params{
-			that.Default: {
-				Driver: dialect.MySQL,
-				Host: "127.0.0.1",
-				Username: "root",
-				Password: "123456",
-			},
-		}
+		that.Connections = make(map[string]connection.Params)
 	}
-	// 初始化连接器
+	that.ConnectionAllClient()
+}
+
+// ConnectionAllClient 关闭全部的db客户端
+func (that *dbConfig) ConnectionAllClient() {
 	if len(that.Connections) > 0 {
 		for _, params := range that.Connections {
 			params.Client = connection.Connect(params).Open()
@@ -34,3 +30,12 @@ func (that *dbConfig) initDefaultData() {
 	}
 }
 
+// CloseAllClient 关闭全部的db客户端
+func (that *dbConfig) CloseAllClient() {
+	if len(that.Connections) > 0 {
+		for _, params := range that.Connections {
+			_ = params.Client.Close()
+			params.Client = nil
+		}
+	}
+}

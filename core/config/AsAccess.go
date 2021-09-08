@@ -1,4 +1,4 @@
-package global
+package config
 
 import (
 	"github.com/boshangad/go-api/utils"
@@ -10,16 +10,12 @@ import (
 	"strings"
 )
 
-type casbinEnforcerWithLogin struct {
-	Enforcer *casbin.Enforcer
+type asAccess struct {
+	CasbinEnforcer *casbin.Enforcer `json:"-"`
+	AllowActions map[string]interface{} `json:"allow_actions,omitempty"`
 }
 
-var (
-	// CasbinAuthRequiredLogin 检查用户是否需要登录
-	CasbinAuthRequiredLogin casbinEnforcerWithLogin
-)
-
-func init() {
+func (that *asAccess) InitEnforcer() *asAccess {
 	// 检查是否需要用户登录
 	m, err := model.NewModelFromString(`
 [request_definition]
@@ -35,19 +31,17 @@ e = some(where (p.eft == allow))
 m = r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)
 `)
 	if err != nil {
-		log.Fatalf("error: model: %s", err)
+		log.Panicf("error: model: %s\n", err)
 	}
 	e, err := casbin.NewEnforcer(m)
 	if err != nil {
-		log.Fatalf("error: casbin call newEnforcer: %s", err)
+		log.Panicf("error: casbin call newEnforcer: %s\n", err)
 	}
-	CasbinAuthRequiredLogin = casbinEnforcerWithLogin{
-		Enforcer: e,
-	}
+	that.CasbinEnforcer = e
+	return that
 }
 
-// LoadNoAccess 加载检查器
-func (that *casbinEnforcerWithLogin) LoadNoAccess(noAccessItems map[string]interface{})  {
+func (that *asAccess) Load() {
 	var (
 		err error
 		validMethods = []string{
@@ -57,9 +51,8 @@ func (that *casbinEnforcerWithLogin) LoadNoAccess(noAccessItems map[string]inter
 		}
 		accessItems [][]string
 		appendMethod func(access, method string)
-		casbinEnforcer = that.Enforcer
 	)
-	noAccess := noAccessItems
+	noAccess := that.AllowActions
 	if noAccess == nil || len(noAccess) < 1 {
 		noAccess = map[string]interface{} {}
 	}
@@ -97,8 +90,8 @@ func (that *casbinEnforcerWithLogin) LoadNoAccess(noAccessItems map[string]inter
 			}
 		}
 	}
-	casbinEnforcer.ClearPolicy()
-	_, err = casbinEnforcer.AddPolicies(accessItems)
+	that.CasbinEnforcer.ClearPolicy()
+	_, err = that.CasbinEnforcer.AddPolicies(accessItems)
 	if err != nil {
 		log.Println("重新载入失败", err)
 	}

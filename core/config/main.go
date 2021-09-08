@@ -26,92 +26,18 @@ type Config struct {
 	// 配置文件路径
 	FilePath string `json:"-"`
 	// 应用模式
-	Mode string `json:"mode"`
-	App appConfig `json:"app"`
+	Mode string `json:"mode,omitempty"`
+	App *appConfig `json:"app,omitempty"`
 	// 数据库配置
-	Db dbConfig `json:"db,omitempty"`
+	Db *dbConfig `json:"db,omitempty"`
 	// 短信网关
 	Sms *sms `json:"sms,omitempty"`
 	// 邮件推送
 	EmailPush *emailPush `json:"email_push,omitempty"`
 	// PASETO加密格式
-	Paseto PasetoConfig `json:"paseto,omitempty"`
-	// 无需登录的接口地址
-	NoAccess map[string]interface{} `json:"no access"`
-}
-
-// LoadConfig 加载配置文件
-func loadConfig(configFile string) Config {
-	if watcherFile != "" {
-		_ = watcher.Remove(watcherFile)
-	}
-	var requiredCreateFile bool = false
-	if configFile == "" {
-		configFile = global.GetPathWithExec() + "/config.json"
-		if !utils.IsFile(configFile) {
-			requiredCreateFile = true
-		}
-	} else if !utils.IsFile(configFile) {
-		fp := global.GetPathWithExec() + "/" + configFile
-		if !utils.IsFile(fp) {
-			panic(errors.New("config file not found"))
-		}
-		configFile = fp
-	}
-	watcherFile = configFile
-	err := watcher.Add(configFile)
-	if err != nil {
-		log.Println("watcher add file fail", err)
-	}
-	loadConfig := Config{
-		FilePath: configFile,
-		Mode: "release",
-	}
-	// 如果配置文件存在,则加载配置文件
-	if utils.IsFile(configFile) {
-		//requiredCreateFile = false
-		f, err := os.Open(configFile)
-		if err != nil {
-			panic(err)
-		}
-		defer func(oFile *os.File) { _ = oFile.Close() }(f)
-		// 读取配置文件
-		byteValue, _ := ioutil.ReadAll(f)
-		err = json.Unmarshal(byteValue, &loadConfig)
-		if err != nil {
-			panic(err)
-		}
-	}
-	if strings.ToLower(loadConfig.Mode) != "debug" {
-		loadConfig.Mode = "release"
-	}
-	loadConfig.App.initDefaultData()
-	loadConfig.Db.initDefaultData()
-	loadConfig.Paseto.initDefaultData()
-	if loadConfig.NoAccess == nil {
-		loadConfig.NoAccess = make(map[string]interface{})
-	}
-	// 新增文件
-	if requiredCreateFile {
-		var d1, _ = json.MarshalIndent(loadConfig, "", "\t")
-		if d1 != nil {
-			// 写入文件(字节数组)
-			_ = ioutil.WriteFile(configFile, d1, 0664)
-		}
-	}
-	return loadConfig
-}
-
-// ReloadConfig 重新载入配置数据
-func ReloadConfig(f string) {
-	if f == "" {}
-	globalConfig = loadConfig(f)
-	global.CasbinAuthRequiredLogin.LoadNoAccess(Get().NoAccess)
-}
-
-// Get 返回配置数据
-func Get() Config {
-	return globalConfig
+	Paseto *PasetoConfig `json:"paseto,omitempty"`
+	// 关于登录
+	AsAccess *asAccess `json:"as access"`
 }
 
 // 初始化数据
@@ -123,7 +49,10 @@ func init() {
 	}
 	// 加载文件
 	globalConfig = loadConfig("")
-	// 执行监听的任务
+}
+
+// 初始化文件路径监听器
+func initWatcher()  {
 	go func() {
 		for {
 			select {
@@ -143,4 +72,114 @@ func init() {
 			}
 		}
 	}()
+}
+
+// 获取配置文件路径
+func getConfigPath(filename string) (filepath string) {
+	if filename == "" {
+		filepath = global.GetPathWithExec() + "/config.json"
+	} else {
+		filepath = filename
+		if !utils.IsFile(filepath) {
+			filepath = global.GetPathWithExec() + "/" + strings.TrimLeft(filename, "/\\")
+			if !utils.IsFile(filepath) {
+				panic(errors.New("config file not found"))
+			}
+		}
+	}
+	return
+}
+
+func readConfigByFile(filepath string) (data []byte) {
+	f, err := os.Open(filepath)
+	if err != nil {
+		panic(err)
+	}
+	defer func(oFile *os.File) { _ = oFile.Close() }(f)
+	// 读取配置文件
+	data, err = ioutil.ReadAll(f)
+	if err != nil {
+
+	}
+	return
+}
+
+// LoadConfig 加载配置文件
+func loadConfig(filename string) (config Config) {
+	var (
+		err error
+		filepath string
+	)
+	if watcherFile != "" {
+		_ = watcher.Remove(watcherFile)
+	}
+	filepath = getConfigPath(filename)
+	watcherFile = filepath
+	err = watcher.Add(filepath)
+	if err != nil {
+		log.Println("watcher add file fail", err)
+	}
+	config = Config{
+		FilePath: filepath,
+		Mode: "release",
+		App: &appConfig{},
+		Db: &dbConfig{},
+		Paseto: &PasetoConfig{},
+		Sms: &sms{},
+		EmailPush: &emailPush{},
+		AsAccess: &asAccess{},
+	}
+	// 如果配置文件存在,则加载配置文件
+	if utils.IsFile(filepath) {
+		data := readConfigByFile(filepath)
+		err = json.Unmarshal(data, &config)
+		if err != nil {
+			log.Panicln("json unmarshal fail", err)
+		}
+	}
+	if strings.ToLower(config.Mode) != "debug" {
+		config.Mode = "release"
+	}
+
+	config.App.initDefaultData()
+	if config.Db != nil {
+		config.Db.initDefaultData()
+	}
+	if config.Paseto != nil {
+		config.Paseto.initDefaultData()
+	}
+	if config.AsAccess != nil {
+		config.AsAccess.InitEnforcer().Load()
+	}
+	return
+}
+
+// ReloadConfig 重新载入配置数据
+func ReloadConfig(f string) {
+	ch := make(chan bool)
+	go func() {
+		oldConfig := globalConfig
+		globalConfig = loadConfig(f)
+		// 关闭相关的数据库连接
+		oldConfig.Db.CloseAllClient()
+		ch <- true
+	}()
+	_ = <-ch
+}
+
+// SaveToDisk 保存配置到问卷
+func SaveToDisk(filename string, config Config) {
+	var d1, _ = json.MarshalIndent(config, "", "\t")
+	if d1 != nil {
+		// 写入文件(字节数组)
+		err := ioutil.WriteFile(filename, d1, 0664)
+		if err != nil {
+			log.Println("write file fail", err)
+		}
+	}
+}
+
+// Get 返回配置数据
+func Get() Config {
+	return globalConfig
 }

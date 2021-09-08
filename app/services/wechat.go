@@ -1,14 +1,14 @@
 package services
 
 import (
+	"github.com/boshangad/go-api/app/services/cache"
+	"github.com/boshangad/go-api/core/db"
+	"github.com/boshangad/go-api/ent"
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/miniprogram"
 	mpConfig "github.com/silenceper/wechat/v2/miniprogram/config"
 	"github.com/silenceper/wechat/v2/openplatform"
 	opConfig "github.com/silenceper/wechat/v2/openplatform/config"
-	"github.com/boshangad/go-api/app/services/cache"
-	"github.com/boshangad/go-api/core/db"
-	"github.com/boshangad/go-api/ent"
 )
 
 type wc struct {
@@ -18,7 +18,7 @@ type wc struct {
 var weData *wc
 
 // 初始化wechat
-func init() {
+func init1() {
 	w := wechat.NewWechat()
 	memory := cache.NewAppTokenCache(
 		3,
