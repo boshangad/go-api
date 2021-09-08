@@ -3,6 +3,8 @@ package userService
 import (
 	"context"
 	"errors"
+	"github.com/boshangad/go-api/app/services/emailService"
+	"github.com/boshangad/go-api/app/services/smsService"
 	"github.com/boshangad/go-api/core/db"
 	"github.com/boshangad/go-api/core/mvvc"
 	"github.com/boshangad/go-api/ent"
@@ -74,9 +76,16 @@ func (that *structUserRegister) Register(controller mvvc.Controller) (userModel 
 		}
 	} else {
 		if that.Mobile != "" {
-
+			err = smsService.CheckCodeIsValid(that.DialCode, that.Mobile, that.Code, smsService.SmsTypeRegister)
+			if err != nil {
+				return
+			}
 		} else if that.Email != "" {
-
+			err = emailService.NewDefaultGateWay("").
+				CheckCode(that.Email, that.Code, emailService.TypeRegister, controller.App.ID)
+			if err != nil {
+				return
+			}
 		}
 	}
 	client := db.DefaultClient()

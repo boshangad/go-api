@@ -29,9 +29,13 @@ type Config struct {
 	Mode string `json:"mode"`
 	App appConfig `json:"app"`
 	// 数据库配置
-	Db dbConfig `json:"db"`
+	Db dbConfig `json:"db,omitempty"`
+	// 短信网关
+	Sms *sms `json:"sms,omitempty"`
+	// 邮件推送
+	EmailPush *emailPush `json:"email_push,omitempty"`
 	// PASETO加密格式
-	Paseto PasetoConfig `json:"paseto"`
+	Paseto PasetoConfig `json:"paseto,omitempty"`
 	// 无需登录的接口地址
 	NoAccess map[string]interface{} `json:"no access"`
 }
