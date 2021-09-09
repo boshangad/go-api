@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"fmt"
 	"github.com/boshangad/go-api/core/config"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
@@ -23,6 +24,13 @@ func New() *gin.Engine {
 		})
 	})
 	engine.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
+		if config.Get().Mode == "debug" {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, global.JsonResponse{
+				Error: http.StatusInternalServerError,
+				Msg: fmt.Sprintf("%s", err),
+			})
+			return
+		}
 		c.AbortWithStatusJSON(http.StatusInternalServerError, global.JsonResponse{
 			Error: http.StatusInternalServerError,
 			Msg: "Service exception, please try again",

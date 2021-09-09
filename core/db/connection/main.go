@@ -6,6 +6,7 @@ import (
 	"github.com/boshangad/go-api/ent"
 	_ "github.com/boshangad/go-api/ent/runtime"
 	"github.com/pkg/errors"
+	"log"
 )
 
 type ConnectionInterface interface {
@@ -32,10 +33,9 @@ func Connect(data Params) ConnectionInterface {
 	case dialect.Postgres:
 	case dialect.Gremlin:
 	case dialect.MySQL:
-		fallthrough
-	default:
 		return NewMysqlConnect(data)
 	}
+	log.Panicln("Unsupported data connection method " + data.Driver)
 	return nil
 }
 

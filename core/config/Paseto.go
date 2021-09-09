@@ -9,58 +9,58 @@ import (
 )
 
 type PasetoConfig struct {
-	Version string `json:"version"`
-	Used string `json:"used"`
-	PrivateKey string `json:"private_key"`
-	PublicKey string `json:"public_key"`
+	Version string `json:"version,omitempty"`
+	Used string `json:"used,omitempty"`
+	PrivateKey string `json:"private_key,omitempty"`
+	PublicKey string `json:"public_key,omitempty"`
 }
 
-func (c *PasetoConfig) initDefaultData() {
+func (that *PasetoConfig) Init() *PasetoConfig {
 	var (
 		defaultVersion = "v2"
 		defaultUsed = "public"
 	)
-	c.Version = strings.ToLower(c.Version)
-	c.Used = strings.ToLower(c.Used)
-	if c.Version == "" {
-		c.Version = defaultVersion
-	} else if c.Version != "v1" && c.Version != "v2" {
-		c.Version = defaultVersion
+	that.Version = strings.ToLower(that.Version)
+	that.Used = strings.ToLower(that.Used)
+	if that.Version == "" {
+		that.Version = defaultVersion
+	} else if that.Version != "v1" && that.Version != "v2" {
+		that.Version = defaultVersion
 	}
-	if c.Used == "" {
-		c.Used = defaultUsed
-	} else if c.Used != "local" && c.Used != "public" {
-		c.Used = defaultUsed
+	if that.Used == "" {
+		that.Used = defaultUsed
+	} else if that.Used != "local" && that.Used != "public" {
+		that.Used = defaultUsed
 	}
-	if c.Used == "local" {
-		if c.PrivateKey == "" {
-			c.PrivateKey = strings.Replace(uuid.New().String(), "-", "", 4)
-		} else if len(c.PrivateKey) < 32 {
+	if that.Used == "local" {
+		if that.PrivateKey == "" {
+			that.PrivateKey = strings.Replace(uuid.New().String(), "-", "", 4)
+		} else if len(that.PrivateKey) < 32 {
 			panic("The length of the paseto private key must be 32.")
 		} else {
-			c.PrivateKey = c.PrivateKey[:32]
+			that.PrivateKey = that.PrivateKey[:32]
 		}
-		c.PublicKey = ""
-	} else if c.Used == "public" {
-		if c.PrivateKey == "" && c.PublicKey == "" {
+		that.PublicKey = ""
+	} else if that.Used == "public" {
+		if that.PrivateKey == "" && that.PublicKey == "" {
 			publicKey, privateKey, err := ed25519.GenerateKey(nil)
 			if err != nil {
 				log.Fatalln("create paseto public key fatal", err)
 			}
-			c.PrivateKey = hex.EncodeToString(privateKey)
-			c.PublicKey = hex.EncodeToString(publicKey)
-		} else if c.PrivateKey != "" && c.PublicKey != "" {
-			c.PrivateKey = strings.TrimSpace(c.PrivateKey)
-			c.PublicKey = strings.TrimSpace(c.PublicKey)
-		} else if c.PrivateKey != "" {
-			b, _ := hex.DecodeString(c.PrivateKey)
+			that.PrivateKey = hex.EncodeToString(privateKey)
+			that.PublicKey = hex.EncodeToString(publicKey)
+		} else if that.PrivateKey != "" && that.PublicKey != "" {
+			that.PrivateKey = strings.TrimSpace(that.PrivateKey)
+			that.PublicKey = strings.TrimSpace(that.PublicKey)
+		} else if that.PrivateKey != "" {
+			b, _ := hex.DecodeString(that.PrivateKey)
 			privateKey := ed25519.PrivateKey(b)
 			public := privateKey.Public()
 			publicKey, _ := public.([]byte)
-			c.PublicKey = hex.EncodeToString(publicKey)
+			that.PublicKey = hex.EncodeToString(publicKey)
 		} else {
 			panic("paseto public key must")
 		}
 	}
-
+	return that
 }

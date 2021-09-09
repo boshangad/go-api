@@ -137,20 +137,14 @@ func loadConfig(filename string) (config Config) {
 			log.Panicln("json unmarshal fail", err)
 		}
 	}
-	if strings.ToLower(config.Mode) != "debug" {
-		config.Mode = "release"
+	if strings.ToLower(config.Mode) != "release" {
+		config.Mode = "debug"
 	}
 
-	config.App.initDefaultData()
-	if config.Db != nil {
-		config.Db.initDefaultData()
-	}
-	if config.Paseto != nil {
-		config.Paseto.initDefaultData()
-	}
-	if config.AsAccess != nil {
-		config.AsAccess.InitEnforcer().Load()
-	}
+	config.App.Init()
+	config.Db.Init()
+	config.Paseto.Init()
+	config.AsAccess.Init().Load()
 	return
 }
 

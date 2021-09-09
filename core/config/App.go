@@ -17,8 +17,8 @@ type appConfig struct {
 	APIUrl string `json:"api_url,omitempty"`
 }
 
-// 初始化应用配置的默认数据
-func (c *appConfig) initDefaultData() *appConfig {
+// Init 初始化应用配置的默认数据
+func (c *appConfig) Init() *appConfig {
 	// 检查文件是否存在
 	if c.Host == "" {
 		c.Host = "127.0.0.1"

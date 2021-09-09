@@ -7,16 +7,16 @@ import (
 // Db连接配置
 type dbConfig struct {
 	Default string `json:"default,omitempty"`
-	Connections map[string]connection.Params `json:"connections"`
+	Connections map[string]*connection.Params `json:"connections"`
 }
 
-// 初始化数据
-func (that *dbConfig) initDefaultData() {
+// Init 初始化数据
+func (that *dbConfig) Init() {
 	if that.Default == "" {
 		that.Default = "db"
 	}
 	if that.Connections == nil {
-		that.Connections = make(map[string]connection.Params)
+		that.Connections = make(map[string]*connection.Params)
 	}
 	that.ConnectionAllClient()
 }
@@ -25,7 +25,8 @@ func (that *dbConfig) initDefaultData() {
 func (that *dbConfig) ConnectionAllClient() {
 	if len(that.Connections) > 0 {
 		for _, params := range that.Connections {
-			params.Client = connection.Connect(params).Open()
+			client := connection.Connect(*params).Open()
+			params.Client = client
 		}
 	}
 }

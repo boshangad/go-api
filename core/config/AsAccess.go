@@ -1,21 +1,19 @@
 package config
 
 import (
-	"github.com/boshangad/go-api/utils"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"log"
-	"net/http"
 	"sort"
 	"strings"
 )
 
 type asAccess struct {
-	CasbinEnforcer *casbin.Enforcer `json:"-"`
+	enforcer *casbin.Enforcer
 	AllowActions map[string]interface{} `json:"allow_actions,omitempty"`
 }
 
-func (that *asAccess) InitEnforcer() *asAccess {
+func (that *asAccess) Init() *asAccess {
 	// 检查是否需要用户登录
 	m, err := model.NewModelFromString(`
 [request_definition]
@@ -28,27 +26,32 @@ p = sub, obj, act
 e = some(where (p.eft == allow))
 
 [matchers]
-m = r.sub == p.sub && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)
+m = r.sub == p.sub && keyMatch(r.obj, p.obj) && methodMatch(r.act, p.act)
 `)
 	if err != nil {
 		log.Panicf("error: model: %s\n", err)
 	}
 	e, err := casbin.NewEnforcer(m)
 	if err != nil {
-		log.Panicf("error: casbin call newEnforcer: %s\n", err)
+		log.Panicf("casbin new enforcer fail: %s\n", err)
 	}
-	that.CasbinEnforcer = e
+	e.AddFunction("methodMatch", func(args ...interface{}) (interface{}, error) {
+		ract := args[0].(string)
+		pact := args[1].(string)
+		if pact == "" || pact == "*" || pact == "ANY" {
+			return true, nil
+		} else if ract == pact {
+			return true, nil
+		}
+		return false, nil
+	})
+	that.enforcer = e
 	return that
 }
 
 func (that *asAccess) Load() {
 	var (
 		err error
-		validMethods = []string{
-			http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut,
-			http.MethodPatch, http.MethodDelete, http.MethodConnect, http.MethodOptions,
-			http.MethodTrace,
-		}
 		accessItems [][]string
 		appendMethod func(access, method string)
 	)
@@ -58,20 +61,8 @@ func (that *asAccess) Load() {
 	}
 	appendMethod = func (access, method string) {
 		method = strings.ToUpper(strings.TrimSpace(method))
-		if method == "ANY" || method == "*" {
-			method = ""
-		}
 		if access[:1] != "/" {
 			access = "/" + access
-		}
-		if method == "" {
-			for _, m := range validMethods {
-				appendMethod(access, m)
-			}
-			return
-		}
-		if !utils.InArrayWithString(method, validMethods) {
-			return
 		}
 		accessItems = append(accessItems, []string{
 			"guest",
@@ -87,12 +78,20 @@ func (that *asAccess) Load() {
 			sort.Strings(methodItems)
 			for _, method := range methodItems {
 				appendMethod(access, method)
+				if method == "" || method == "ANY" || method == "*" {
+					break
+				}
 			}
 		}
 	}
-	that.CasbinEnforcer.ClearPolicy()
-	_, err = that.CasbinEnforcer.AddPolicies(accessItems)
+	that.enforcer.ClearPolicy()
+	_, err = that.enforcer.AddPolicies(accessItems)
 	if err != nil {
 		log.Println("重新载入失败", err)
 	}
+}
+
+// Enforcer 获取执法人
+func (that asAccess) Enforcer() *casbin.Enforcer {
+	return that.enforcer
 }

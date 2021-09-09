@@ -13,9 +13,9 @@ import (
 // CheckAuth 检查用户权限
 func CheckAuth(gh *gin.Context) {
 	appUserInterface, ok := gh.Get("AppUser")
-	casbinEnforcer := config.Get().AsAccess.CasbinEnforcer
+	enforcer := config.Get().AsAccess.Enforcer()
 	if !ok {
-		enforce, err := casbinEnforcer.Enforce("guest", gh.Request.URL.Path, gh.Request.Method)
+		enforce, err := enforcer.Enforce("guest", gh.Request.URL.Path, gh.Request.Method)
 		if err != nil {
 			log.Println("casbin 检查不通过请稍后再试", err)
 		}
@@ -37,7 +37,7 @@ func CheckAuth(gh *gin.Context) {
 		return
 	}
 	// 检查用户是否拥有权限访问
-	enforce, err := casbinEnforcer.Enforce(
+	enforce, err := enforcer.Enforce(
 		fmt.Sprintf("user%d", appUserModel.ID),
 		gh.Request.URL.Path,
 		gh.Request.Method,

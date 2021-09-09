@@ -5,14 +5,19 @@ import (
 	"github.com/boshangad/go-api/core/config"
 	"github.com/boshangad/go-api/ent"
 	"github.com/pkg/errors"
+	"log"
 )
 
 // Client db客户端
 func Client(key string) *ent.Client {
 	if params, ok := config.Get().Db.Connections[key]; ok {
+		if params.Client == nil {
+			log.Panicln("db [" + key + "] connection fail, please try again")
+		}
 		return params.Client
 	}
-	panic("Related db client not found with" + key)
+	log.Panicln("the connected database "+key+" was not found")
+	return nil
 }
 
 func DefaultClient() *ent.Client {
