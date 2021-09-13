@@ -1,10 +1,11 @@
 package smsService
 
 type AliyunGateway struct {
-	SmsService
+	GatewayInterface
+	Data
 }
 
-//func (that AliyunGateway) Send() (err error) {
+//func (that *AliyunGateway) Send() (err error) {
 //	var (
 //		client = db.DefaultClient()
 //		ctx = context.Background()
@@ -13,11 +14,7 @@ type AliyunGateway struct {
 //		ok bool
 //		dataStr []byte
 //	)
-//	if typeId, ok = TypeCorrespondId[""]; !ok {
-//		err = errors.New("sending failed, undeclared type")
-//		return
-//	}
-//	dataStr, err = json.Marshal(data)
+//	dataStr, err = json.Marshal(that.Content)
 //	if err != nil {
 //		return
 //	}
@@ -39,7 +36,7 @@ type AliyunGateway struct {
 //
 //	return
 //}
-
-func (that AliyunGateway) CheckCode(dialCode, mobile, code string, typeId uint64, appId uint64) (err error)  {
-	return
-}
+//
+//func (that AliyunGateway) Check(code string) (err error)  {
+//	return
+//}

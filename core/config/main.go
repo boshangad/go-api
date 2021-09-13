@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/boshangad/go-api/core/config/email"
+	"github.com/boshangad/go-api/core/config/sms"
 	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/utils"
 	"github.com/fsnotify/fsnotify"
@@ -31,9 +33,9 @@ type Config struct {
 	// 数据库配置
 	Db *dbConfig `json:"db,omitempty"`
 	// 短信网关
-	Sms *sms `json:"sms,omitempty"`
+	Sms *sms.Config `json:"sms,omitempty"`
 	// 邮件推送
-	EmailPush *emailPush `json:"email_push,omitempty"`
+	EmailPush *email.Push `json:"email_push,omitempty"`
 	// PASETO加密格式
 	Paseto *PasetoConfig `json:"paseto,omitempty"`
 	// 关于登录
@@ -125,8 +127,8 @@ func loadConfig(filename string) (config Config) {
 		App: &appConfig{},
 		Db: &dbConfig{},
 		Paseto: &PasetoConfig{},
-		Sms: &sms{},
-		EmailPush: &emailPush{},
+		Sms: &sms.Config{},
+		EmailPush: &email.Push{},
 		AsAccess: &asAccess{},
 	}
 	// 如果配置文件存在,则加载配置文件
@@ -145,6 +147,7 @@ func loadConfig(filename string) (config Config) {
 	config.Db.Init()
 	config.Paseto.Init()
 	config.AsAccess.Init().Load()
+	config.Sms.Init()
 	return
 }
 
