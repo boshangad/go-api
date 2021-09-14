@@ -148,6 +148,7 @@ func loadConfig(filename string) (config Config) {
 	config.Paseto.Init()
 	config.AsAccess.Init().Load()
 	config.Sms.Init()
+	config.EmailPush.Init()
 	return
 }
 

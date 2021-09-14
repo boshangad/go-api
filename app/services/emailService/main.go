@@ -2,54 +2,28 @@ package emailService
 
 import (
 	"github.com/boshangad/go-api/core/config"
+	"github.com/boshangad/go-api/core/config/email/gateways"
+	"log"
 )
 
-var defaultContainerFuncs = map[string]func(string) EmailInterface {
-	"aliyun": func(s string) EmailInterface {return NewAliyun(s)},
-}
-
-type EmailInterface interface {
-	// Send 发送邮件
-	Send(emailStruct EmailStruct) (isSuccess bool, err error)
-	// CheckCode 检查发出的代码
-	CheckCode(email, code string, typeId uint64, appId uint64) (err error)
-}
-
-type EmailStruct struct {
-	AppId       uint64 `json:"app_id,omitempty"`
-	Email       string `json:"email,omitempty"`
-	Scope       string `json:"scope,omitempty"`
-	TypeId      uint64 `json:"type_id,omitempty"`
-	GateWay     string `json:"gate_way,omitempty"`
-	Ip          string `json:"ip,omitempty"`
-	FromName    string `json:"from_name,omitempty"`
-	FromAddress string `json:"from_address,omitempty"`
-	Title       string `json:"title,omitempty"`
-	Content     string `json:"content,omitempty"`
-	// 核销码
-	Data        map[string]string `json:"data,omitempty"`
-	ReturnMsg   string `json:"return_msg,omitempty"`
-}
-
-// NewDefaultGateWay 初始化默认推送网关
-func NewDefaultGateWay(key string) EmailInterface {
+// DefaultPushClient 默认推送客户端
+func DefaultPushClient() gateways.ConfigInterface {
 	emailPush := config.Get().EmailPush
 	if emailPush == nil {
-		panic("No mail service configuration was found#1")
+		log.Println("the default push mail gateway is not configured")
+		return nil
 	}
-	if emailPush.Gateways == nil || len(emailPush.Gateways) < 1 {
-		panic("No mail service configuration was found#2")
+	return PushClient(emailPush.Default)
+}
+
+// PushClient 推送客户端
+func PushClient(key string) gateways.ConfigInterface {
+	emailPush := config.Get().EmailPush
+	if emailPush != nil {
+		if data, ok := emailPush.Gateways[key]; ok {
+			return *data
+		}
 	}
-	if key == "" {
-		key = emailPush.Default
-	}
-	pushConfig, ok := emailPush.Gateways[key]
-	if !ok {
-		panic("")
-	}
-	f, ok := defaultContainerFuncs[pushConfig.Gateway]
-	if !ok {
-		panic("")
-	}
-	return f(key)
+	log.Panicln("email push client was not found", "gateway is", key)
+	return nil
 }

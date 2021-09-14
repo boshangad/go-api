@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/boshangad/go-api/app/services/emailService"
 	"github.com/boshangad/go-api/app/services/smsService"
+	"github.com/boshangad/go-api/core/config/email/gateways"
 	"github.com/boshangad/go-api/core/db"
 	"github.com/boshangad/go-api/core/mvvc"
 	"github.com/boshangad/go-api/ent"
@@ -81,8 +82,7 @@ func (that *structUserRegister) Register(controller mvvc.Controller) (userModel 
 				return
 			}
 		} else if that.Email != "" {
-			err = emailService.NewDefaultGateWay("").
-				CheckCode(that.Email, that.Code, emailService.TypeRegister, controller.App.ID)
+			_, _ = emailService.DefaultPushClient().Send(gateways.Data{})
 			if err != nil {
 				return
 			}

@@ -7,10 +7,8 @@ import (
 	"strconv"
 )
 
-type aliyunConfig struct {
+type AliyunConfig struct {
 	client *sdk.Client
-	IsAliyun bool `json:"is_aliyun,omitempty"`
-	Gateway string `json:"gateway,omitempty"`
 	RegionId string `json:"region_id,omitempty"`
 	AccessKey string `json:"access_key,omitempty"`
 	AccessSecret string `json:"access_secret,omitempty"`
@@ -33,8 +31,12 @@ type aliyunConfig struct {
 	ReturnMsg string `json:"return_msg,omitempty"`
 }
 
+func (AliyunConfig) Name() string {
+	return "aliyun"
+}
+
 // Send 发送短信
-func (that *aliyunConfig) Send(data Data) (isSuccess bool, err error) {
+func (that *AliyunConfig) Send(data Data) (isSuccess bool, err error) {
 	request := requests.NewCommonRequest()
 	request.Method = "POST"
 	request.Scheme = "https" // https | http
@@ -73,12 +75,11 @@ func (that *aliyunConfig) Send(data Data) (isSuccess bool, err error) {
 }
 
 // NewAliyunGateway 实例化邮件推送服务网关
-func NewAliyunGateway(config aliyunConfig) *aliyunConfig {
+func NewAliyunGateway(config AliyunConfig) *AliyunConfig {
 	client, err := sdk.NewClientWithAccessKey(config.RegionId, config.AccessKey, config.AccessSecret)
 	if err != nil {
 		panic(err)
 	}
-	config.Gateway = "aliyun"
 	config.client = client
 	return &config
 }
