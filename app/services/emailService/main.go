@@ -20,8 +20,8 @@ func DefaultPushClient() gateways.ConfigInterface {
 func PushClient(key string) gateways.ConfigInterface {
 	emailPush := config.Get().EmailPush
 	if emailPush != nil {
-		if data, ok := emailPush.Gateways[key]; ok {
-			return *data
+		if data, ok := emailPush.Clients[key]; ok {
+			return data
 		}
 	}
 	log.Panicln("email push client was not found", "gateway is", key)

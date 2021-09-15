@@ -3,32 +3,37 @@ package gateways
 import (
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
+	"github.com/mitchellh/mapstructure"
 	"log"
 	"strconv"
 )
 
+type aliyunParams struct {
+	RegionId     string `json:"region_id,omitempty" mapstructure:"region_id"`
+	AccessKey    string `json:"access_key,omitempty" mapstructure:"access_key"`
+	AccessSecret string `json:"access_secret,omitempty" mapstructure:"access_secret"`
+	// 发信人
+	FromName string `json:"from_name,omitempty" mapstructure:"from_name"`
+	// 发信人昵称
+	FromAddress string `json:"from_address,omitempty" mapstructure:"from_address"`
+	// 阿里云邮件的参数
+	TagName string `json:"tag_name,omitempty" mapstructure:"tag_name"`
+	// 使用管理控制台中配置的回信地址（状态必须是验证通过）。
+	ReplyToAddress bool `json:"reply_to_address,omitempty" mapstructure:"reply_to_address"`
+	// 地址类型 0随机类型，1发信地址
+	AddressType int `json:"address_type,omitempty" mapstructure:"address_type"`
+	// 回信地址
+	ReplyAddress string `json:"reply_address,omitempty" mapstructure:"reply_address"`
+	// 回信地址别称
+	ReplyAddressAlias string `json:"reply_address_alias,omitempty" mapstructure:"reply_address_alias"`
+	// 打卡数据追踪功能
+	ClickTrace int64  `json:"click_trace,omitempty" mapstructure:"click_trace"`
+	ReturnMsg  string `json:"return_msg,omitempty" mapstructure:"return_msg"`
+}
+
 type AliyunConfig struct {
 	client *sdk.Client
-	RegionId string `json:"region_id,omitempty"`
-	AccessKey string `json:"access_key,omitempty"`
-	AccessSecret string `json:"access_secret,omitempty"`
-	// 发信人
-	FromName string `json:"from_name,omitempty"`
-	// 发信人昵称
-	FromAddress string `json:"from_address,omitempty"`
-	// 阿里云邮件的参数
-	TagName string `json:"tag_name,omitempty"`
-	// 使用管理控制台中配置的回信地址（状态必须是验证通过）。
-	ReplyToAddress bool `json:"reply_to_address,omitempty"`
-	// 地址类型 0随机类型，1发信地址
-	AddressType int `json:"address_type,omitempty"`
-	// 回信地址
-	ReplyAddress string `json:"reply_address,omitempty"`
-	// 回信地址别称
-	ReplyAddressAlias string `json:"reply_address_alias,omitempty"`
-	// 打卡数据追踪功能
-	ClickTrace int64 `json:"click_trace,omitempty"`
-	ReturnMsg string `json:"return_msg,omitempty"`
+	aliyunParams
 }
 
 func (AliyunConfig) Name() string {
@@ -53,17 +58,17 @@ func (that *AliyunConfig) Send(data Data) (isSuccess bool, err error) {
 		request.QueryParams["FromAlias"] = that.FromName
 	}
 	if data.FromAddress != "" {
-		request.QueryParams["FromAlias"] = data.FromAddress
+		request.QueryParams["AccountName"] = data.FromAddress
 	} else {
-		request.QueryParams["FromAlias"] = that.FromAddress
+		request.QueryParams["AccountName"] = that.FromAddress
 	}
-	request.QueryParams["AccountName"] = data.FromAddress
-	request.QueryParams["AddressType"] = string(rune(that.AddressType))
+	request.QueryParams["AddressType"] = strconv.Itoa(that.AddressType)
 	request.QueryParams["ReplyToAddress"] = strconv.FormatBool(that.ReplyToAddress)
 	request.QueryParams["TagName"] = that.TagName
 	request.QueryParams["ReplyAddress"] = that.ReplyAddress
 	request.QueryParams["ReplyAddressAlias"] = that.ReplyAddressAlias
 	request.QueryParams["ClickTrace"] = strconv.FormatInt(that.ClickTrace, 10)
+	log.Println(request.QueryParams)
 	response, err := that.client.ProcessCommonRequest(request)
 	if err != nil {
 		log.Println("aliyun email push fail", err)
@@ -75,11 +80,19 @@ func (that *AliyunConfig) Send(data Data) (isSuccess bool, err error) {
 }
 
 // NewAliyunGateway 实例化邮件推送服务网关
-func NewAliyunGateway(config AliyunConfig) *AliyunConfig {
+func NewAliyunGateway(params map[string]interface{}) *AliyunConfig {
+	var config aliyunParams
+	err := mapstructure.Decode(params, &config)
+	if err != nil {
+		log.Panicln(err)
+	}
 	client, err := sdk.NewClientWithAccessKey(config.RegionId, config.AccessKey, config.AccessSecret)
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
-	config.client = client
-	return &config
+	aliyunConfig := AliyunConfig{
+		aliyunParams: config,
+		client: client,
+	}
+	return &aliyunConfig
 }

@@ -14,6 +14,8 @@ func (c *mainController) Init(e *gin.Engine, g *gin.RouterGroup) *mainController
 	c.Account()
 	c.Mp()
 	c.Captcha()
+	c.Email()
+	c.Sms()
 	return c
 }
 
@@ -68,6 +70,30 @@ func (c mainController) Captcha() {
 		groups.GET("/audit", func(c *gin.Context) {
 			g.Init(c)
 			g.Audit()
+		})
+	}
+	return
+}
+
+func (c mainController) Sms() {
+	g := controllers.SmsController{}
+	groups := c.Group.Group("/sms")
+	{
+		groups.POST("/send", func(c *gin.Context) {
+			g.Init(c)
+			g.Send()
+		})
+	}
+	return
+}
+
+func (c mainController) Email() {
+	g := controllers.EmailController{}
+	groups := c.Group.Group("/email")
+	{
+		groups.POST("/send", func(c *gin.Context) {
+			g.Init(c)
+			g.Send()
 		})
 	}
 	return

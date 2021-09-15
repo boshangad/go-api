@@ -23,8 +23,9 @@ func New() *gin.Engine {
 			Msg: "Page not found.",
 		})
 	})
+	// 自定义
 	engine.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
-		if config.Get().Mode == "debug" {
+		if gin.Mode() == gin.DebugMode {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, global.JsonResponse{
 				Error: http.StatusInternalServerError,
 				Msg: fmt.Sprintf("%s", err),
@@ -36,8 +37,12 @@ func New() *gin.Engine {
 			Msg: "Service exception, please try again",
 		})
 	}))
+	// 默认的组
 	engine.Group("/")
-	engine.GET("/entviz", gin.WrapH(ent.ServeEntviz()))
+	// 测试环境下定义模型
+	if gin.Mode() == gin.DebugMode {
+		engine.GET("/entviz", gin.WrapH(ent.ServeEntviz()))
+	}
 	return engine
 }
 

@@ -38,19 +38,14 @@ func (LocalConfig) Send(data Data) (isSuccess bool, err error) {
 }
 
 // NewGateWay 初始化默认推送网关
-func NewGateWay(config ConfigInterface) ConfigInterface {
-	if data, ok := (config).(LocalConfig); ok {
-		switch strings.ToLower(data.Gateway) {
-		case data.Name():
-			return data
-		case (AliyunConfig{}).Name():
-			if d, ok := (config).(*AliyunConfig); ok {
-				return NewAliyunGateway(*d)
-			}
-		default:
-			log.Panicln("invalid configuration parameter, no corresponding gateway found")
-		}
+func NewGateWay(config map[string]interface{}) ConfigInterface {
+	switch strings.ToLower(config["gateway"].(string)) {
+	case (LocalConfig{}).Name():
+		return LocalConfig{}
+	case (AliyunConfig{}).Name():
+		return NewAliyunGateway(config)
+	default:
+		log.Panicln("invalid configuration parameter, no corresponding gateway found")
 	}
-	log.Panicln("invalid configuration parameter, gateway required")
 	return nil
 }
