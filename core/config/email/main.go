@@ -51,3 +51,29 @@ func (that *Push) Init() {
 		that.Clients[key] = c
 	}
 }
+
+// GetTypeIdWithScope 获取类型通过来源
+func GetTypeIdWithScope(scope string) uint64 {
+	l := map[string]uint64{
+		"system": TypeSystem,
+		"notify": TypeNotify,
+		"register": TypeRegister,
+		"login": TypeLogin,
+		"forget": TypeForget,
+		"safe": TypeSafe,
+	}
+	if typeId, ok := l[scope]; ok {
+		return typeId
+	}
+	return 0
+}
+
+// StatusList 状态列表
+func StatusList() map[int64]string {
+	return map[int64]string{
+		StatusDraft: "To be sent",
+		StatusUsed: "Used",
+		StatusPublished: "Has been sent",
+		StatusExpire: "Expired",
+	}
+}

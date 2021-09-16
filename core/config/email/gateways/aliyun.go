@@ -1,11 +1,14 @@
 package gateways
 
 import (
+	"errors"
+	"fmt"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	"github.com/mitchellh/mapstructure"
 	"log"
 	"strconv"
+	"strings"
 )
 
 type aliyunParams struct {
@@ -28,7 +31,6 @@ type aliyunParams struct {
 	ReplyAddressAlias string `json:"reply_address_alias,omitempty" mapstructure:"reply_address_alias"`
 	// 打卡数据追踪功能
 	ClickTrace int64  `json:"click_trace,omitempty" mapstructure:"click_trace"`
-	ReturnMsg  string `json:"return_msg,omitempty" mapstructure:"return_msg"`
 }
 
 type AliyunConfig struct {
@@ -41,7 +43,7 @@ func (AliyunConfig) Name() string {
 }
 
 // Send 发送短信
-func (that *AliyunConfig) Send(data Data) (isSuccess bool, err error) {
+func (that *AliyunConfig) Send(data Data) (returnMsg string, err error) {
 	request := requests.NewCommonRequest()
 	request.Method = "POST"
 	request.Scheme = "https" // https | http
@@ -50,7 +52,18 @@ func (that *AliyunConfig) Send(data Data) (isSuccess bool, err error) {
 	request.ApiName = "SingleSendMail"
 	request.QueryParams["ToAddress"] = data.Email
 	request.QueryParams["Subject"] = data.Title
-	request.QueryParams["HtmlBody"] = data.Content
+	content := data.Content
+	if data.Data != nil {
+		for key, value := range data.Data {
+			switch value.(type) {
+			case string:
+				content = strings.ReplaceAll(content, "{" + key + "}", value.(string))
+			default:
+				content = strings.ReplaceAll(content, "{" + key + "}", fmt.Sprintf("%s", value))
+			}
+		}
+	}
+	request.QueryParams["HtmlBody"] = content
 	request.QueryParams["TextBody"] = ""
 	if data.FromName != "" {
 		request.QueryParams["FromAlias"] = data.FromName
@@ -68,14 +81,16 @@ func (that *AliyunConfig) Send(data Data) (isSuccess bool, err error) {
 	request.QueryParams["ReplyAddress"] = that.ReplyAddress
 	request.QueryParams["ReplyAddressAlias"] = that.ReplyAddressAlias
 	request.QueryParams["ClickTrace"] = strconv.FormatInt(that.ClickTrace, 10)
-	log.Println(request.QueryParams)
 	response, err := that.client.ProcessCommonRequest(request)
 	if err != nil {
 		log.Println("aliyun email push fail", err)
 		return
 	}
-	that.ReturnMsg = response.GetHttpContentString()
-	isSuccess = true
+	if !response.IsSuccess() {
+		err = errors.New(response.String())
+		return
+	}
+	returnMsg = response.GetHttpContentString()
 	return
 }
 
