@@ -54,6 +54,16 @@ func (that *Controller) Init(c *gin.Context) *Controller {
 	return that
 }
 
+func (that *Controller) ShouldBind(data interface{}) (err error) {
+	err = that.Context.ShouldBind(&data)
+	if err != nil {
+		return
+	}
+	// 对字符串进行格式化处理，移除空格
+
+	return
+}
+
 // GetParamWithString 获取用户入参
 func (that Controller) GetParamWithString(key string) string {
 	var (

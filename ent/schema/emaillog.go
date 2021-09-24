@@ -48,7 +48,7 @@ func (EmailLog) Fields() []ent.Field {
 			Annotations(
 				schema.Annotation(entsql.Annotation{Collation: "utf8mb4_general_ci"}),
 			),
-		field.String("content").Default("").Comment("短信内容").MaxLen(1024).
+		field.String("content").Default("").Comment("短信内容").
 			Annotations(
 				schema.Annotation(entsql.Annotation{Collation: "utf8mb4_general_ci"}),
 			),
