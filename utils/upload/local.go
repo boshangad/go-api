@@ -34,13 +34,13 @@ func (*Local) UploadFile(file *multipart.FileHeader) (string, string, error) {
 	// 拼接新文件名
 	filename := name + "_" + time.Now().Format("20060102150405") + ext
 	// 尝试创建此路径
-	mkdirErr := os.MkdirAll(global.GVA_CONFIG.Local.Path, os.ModePerm)
+	mkdirErr := os.MkdirAll(global.G_CONFIG.Local.Path, os.ModePerm)
 	if mkdirErr != nil {
-		global.GVA_LOG.Error("function os.MkdirAll() Filed", zap.Any("err", mkdirErr.Error()))
+		global.G_LOG.Error("function os.MkdirAll() Filed", zap.Any("err", mkdirErr.Error()))
 		return "", "", errors.New("function os.MkdirAll() Filed, err:" + mkdirErr.Error())
 	}
 	// 拼接路径和文件名
-	p := global.GVA_CONFIG.Local.Path + "/" + filename
+	p := global.G_CONFIG.Local.Path + "/" + filename
 
 	f, openError := file.Open() // 读取文件
 	if openError != nil {

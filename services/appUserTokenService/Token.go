@@ -4,9 +4,9 @@ import (
 	"context"
 	"crypto/md5"
 	"errors"
-	"github.com/boshangad/go-api/cccc/db"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/appusertoken"
+	"github.com/boshangad/go-api/global/db"
 	uuid2 "github.com/google/uuid"
 	"github.com/o1egl/paseto"
 	"log"
@@ -27,7 +27,6 @@ type tokenServiceInterface interface {
 }
 
 type tokenService struct {
-	tokenServiceInterface
 	EncryptionKey []byte
 }
 
@@ -57,6 +56,7 @@ func (t tokenService) GetModelByToken(token string) *ent.AppUserToken {
 	}
 	ctx := context.Background()
 	tokenModel, err := db.DefaultClient().AppUserToken.Query().
+		WithApp().WithAppUser().WithUser().
 		Where(appusertoken.UUIDEQ(uuid2.Must(uuid2.Parse(uuid)))).
 		Order(ent.Desc(appusertoken.FieldID)).
 		First(ctx)

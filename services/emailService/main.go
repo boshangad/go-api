@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/utils"
-	"github.com/boshangad/go-api/cccc/config"
-	emailConfig "github.com/boshangad/go-api/cccc/config/email"
-	"github.com/boshangad/go-api/cccc/config/email/gateways"
-	"github.com/boshangad/go-api/cccc/db"
+	//"github.com/boshangad/go-api/cccc/config"
+	//emailConfig "github.com/boshangad/go-api/cccc/config/email"
+	//"github.com/boshangad/go-api/cccc/config/email/gateways"
+	"github.com/boshangad/go-api/global/db"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/emaillog"
 	"log"
 )
+
 
 // DefaultPushClient 默认推送客户端
 func DefaultPushClient() gateways.ConfigInterface {

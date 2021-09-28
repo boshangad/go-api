@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"github.com/boshangad/go-api/services/appUserTokenService"
+	"github.com/boshangad/go-api/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -20,7 +21,8 @@ func LoadAppUser(c *gin.Context) {
 	if authorization == "" {
 		return
 	}
-	authData, err := appUserTokenService.CheckTokenValid(authorization)
+	model := appUserTokenService.NewModel()
+	err := model.LoginByAccessToken(authorization)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 			"error": http.StatusForbidden,
@@ -28,7 +30,7 @@ func LoadAppUser(c *gin.Context) {
 		})
 		return
 	}
-	c.Set("App", authData.App)
-	c.Set("AppUser", authData.AppUser)
-	c.Set("AppUserToken", authData.AppUserToken)
+	utils.SetGinAppUserToken(c, model.AppUserToken)
+	utils.SetGinApp(c, model.AppUserToken.Edges.App)
+	utils.SetGinAppUser(c, model.AppUserToken.Edges.AppUser)
 }

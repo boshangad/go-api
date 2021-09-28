@@ -9,4 +9,8 @@ type App struct {
 	StaticUrl string
 	// 文件上传路径
 	UploadPath string
+	// 用户token参数名称
+	TokenParamName string
+	// 应用参数名称
+	AppParamName string
 }

@@ -3,11 +3,11 @@ package userService
 import (
 	"context"
 	"errors"
-	"github.com/boshangad/go-api/app/services/smsService"
-	"github.com/boshangad/go-api/cccc/db"
-	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/user"
+	"github.com/boshangad/go-api/global"
+	"github.com/boshangad/go-api/global/db"
+	"github.com/boshangad/go-api/services/smsService"
 	"github.com/boshangad/go-api/utils"
 )
 

@@ -1,11 +1,10 @@
 package mvvc
 
 import (
-	"github.com/boshangad/go-api/core/global"
 	"github.com/boshangad/go-api/ent"
+	"github.com/boshangad/go-api/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strings"
 )
 
 // ControllerInterface 接口
@@ -16,7 +15,6 @@ type Controller struct {
 	ControllerInterface
 	// 请求对象
 	Context *gin.Context
-	RequestData map[string]interface{}
 	// 应用用户
 	App *ent.App
 	// 应用用户
@@ -28,70 +26,35 @@ type Controller struct {
 }
 
 // Init 初始化控制器数据
-func (that *Controller) Init(c *gin.Context) *Controller {
+func (that *Controller) Init(c *gin.Context) {
 	that.Context = c
-	var (
-		value interface{}
-		ok bool
-		requestData = make(map[string]interface{})
-	)
-	if value, ok = c.Get("App"); ok {
-		that.App, ok = value.(*ent.App)
-	}
-	if value, ok = c.Get("AppUserToken"); ok {
-		that.AppUserToken, ok = value.(*ent.AppUserToken)
-	}
-	if that.AppUserToken != nil {
-		if value, ok = c.Get("AppUser"); ok {
-			that.AppUser, ok = value.(*ent.AppUser)
-		}
-		if value, ok = c.Get("User"); ok {
-			that.User, ok = value.(*ent.User)
-		}
-	}
-	// 初始化用户入参
-	that.RequestData = requestData
-	return that
+	that.App = utils.GetGinApp(that.Context)
+	that.AppUserToken = utils.GetGinAppUserToken(that.Context)
+	that.AppUser = utils.GetGinAppUser(that.Context)
+	that.User = utils.GetGinUser(that.Context)
 }
 
-func (that *Controller) ShouldBind(data interface{}) (err error) {
+// ShouldBind 关联数据
+func (that Controller) ShouldBind(data interface{}) (err error) {
 	err = that.Context.ShouldBind(&data)
 	if err != nil {
 		return
 	}
 	// 对字符串进行格式化处理，移除空格
-
+	utils.TrimSpace(&data)
 	return
-}
-
-// GetParamWithString 获取用户入参
-func (that Controller) GetParamWithString(key string) string {
-	var (
-		str string = ""
-		method string = ""
-	)
-	method = strings.ToUpper(that.Context.Request.Method)
-	if method == http.MethodGet {
-		str = that.Context.DefaultQuery(key, "")
-	} else if method != http.MethodOptions {
-		str = that.Context.PostForm(key)
-	}
-	if str == "" {
-		return that.Context.DefaultQuery(key, "")
-	}
-	return str
 }
 
 // JsonOut 输出json数据
 func (that Controller) JsonOut(error int64, msg string, data interface{})  {
-	var response global.JsonResponse
-	response.Error = error
+	response := gin.H{}
+	response["error"] = error
 	if msg == "" {
 		msg = "success"
 	}
-	response.Msg = msg
+	response["msg"] = msg
 	if data != nil {
-		response.Data = &data
+		response["data"] = data
 	}
 	that.Context.AbortWithStatusJSON(http.StatusOK, response)
 	return

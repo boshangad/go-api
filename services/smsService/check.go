@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/boshangad/go-api/cccc/db"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/smslog"
+	"github.com/boshangad/go-api/global/db"
 	"log"
 )
 

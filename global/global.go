@@ -5,8 +5,10 @@ import (
 	"github.com/boshangad/go-api/ent"
 	"github.com/casbin/casbin/v2"
 	"github.com/go-redis/redis/v8"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"golang.org/x/sync/singleflight"
 )
 
 var (
@@ -22,5 +24,8 @@ var (
 	G_LOG *zap.Logger
 	// G_CONFIG 配置服务器
 	G_CONFIG config.Server
-	// G_LOG GVA_LOG    *oplogging.Logger
+	// G_I18N 国际化
+	G_I18N *i18n.Bundle
+	// G_Concurrency_Control 防止缓存击穿，并发控制
+	G_Concurrency_Control = &singleflight.Group{}
 )

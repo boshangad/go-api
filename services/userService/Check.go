@@ -2,8 +2,8 @@ package userService
 
 import (
 	"context"
-	"github.com/boshangad/go-api/cccc/db"
 	"github.com/boshangad/go-api/ent/user"
+	"github.com/boshangad/go-api/global/db"
 	"log"
 )
 
