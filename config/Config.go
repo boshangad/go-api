@@ -15,7 +15,7 @@ type Server struct {
 	// 短信服务
 	Sms Sms
 	// 邮件推送服务
-	Email map[string]Email
+	Email Email
 	// 允许访问方式
 	AsAccess AsAccess
 	// 加密

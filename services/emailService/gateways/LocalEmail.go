@@ -1,4 +1,4 @@
-package emailService
+package gateways
 
 import (
 	"crypto/tls"

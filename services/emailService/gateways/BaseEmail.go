@@ -1,4 +1,4 @@
-package emailService
+package gateways
 
 type EmailSend interface {
 	Send(to, subject, body string) (string, error)
