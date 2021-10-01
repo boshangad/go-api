@@ -50,10 +50,12 @@ func (that MpController) SetUserProfile(c *gin.Context) {
 	var data = mpService.Profile{}
 	err := that.ShouldBind(&data)
 	if err != nil {
+		that.JsonOut(global.ErrNotice, err.Error(), nil)
 		return
 	}
 	err = data.SetAppUser(that.AppUser).Save()
 	if err != nil {
+		that.JsonOut(global.ErrNotice, err.Error(), nil)
 		return
 	}
 	that.JsonOut(global.ErrSuccess, "success", data)
