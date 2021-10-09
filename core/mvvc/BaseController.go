@@ -36,12 +36,19 @@ func (that *Controller) Init(c *gin.Context) {
 
 // ShouldBind 关联数据
 func (that Controller) ShouldBind(data interface{}) (err error) {
-	err = that.Context.ShouldBind(&data)
+	if that.Context.Request.Method == http.MethodGet {
+		err = that.Context.ShouldBindQuery(data)
+		if err != nil {
+			err = that.Context.ShouldBind(data)
+		}
+	} else {
+		err = that.Context.ShouldBind(data)
+	}
 	if err != nil {
 		return
 	}
 	// 对字符串进行格式化处理，移除空格
-	utils.TrimSpace(&data)
+	utils.TrimSpace(data)
 	return
 }
 

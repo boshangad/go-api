@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/boshangad/go-api/services/appUserLoginService"
-	"github.com/boshangad/go-api/GLOBAL/db"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/appuser"
+	"github.com/boshangad/go-api/global/db"
+	"github.com/boshangad/go-api/services/appUserLoginService"
+	"github.com/boshangad/go-api/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"log"
@@ -99,9 +100,9 @@ func EventByLoginWithUser(userModel *ent.User, c *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	c.Set("AppUser", appUserModel)
-	c.Set("AppUserLogin", appUserLogin)
-	c.Set("AppUserToken", appUserToken)
-	c.Set("User", userModel)
+	utils.SetGinApp(c, appModel)
+	utils.SetGinAppUser(c, appUserModel)
+	utils.SetGinAppUserToken(c, appUserToken)
+	utils.SetGinUser(c, userModel)
 	return nil
 }

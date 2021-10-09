@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/user"
-	"github.com/boshangad/go-api/global"
 	"github.com/boshangad/go-api/global/db"
 	"github.com/boshangad/go-api/services/smsService"
 	"github.com/boshangad/go-api/utils"
@@ -18,7 +17,7 @@ func LoginByUsername(username, password string) (*ent.User, error) {
 	}
 	ctx := context.Background()
 	userModel, err := db.DefaultClient().User.Query().
-		Where(user.And(user.UsernameEQ(username), user.StatusEQ(global.USER_ACTIVE))).
+		Where(user.And(user.UsernameEQ(username), user.StatusEQ(StatusEnable))).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -29,7 +28,7 @@ func LoginByUsername(username, password string) (*ent.User, error) {
 	if !utils.PasswordVerify(password, userModel.Password) {
 		return nil, errors.New("username or password is invalid")
 	}
-	if userModel.Status != global.USER_ACTIVE {
+	if userModel.Status != StatusEnable {
 		return nil, errors.New("the user is not activated, please activate and try again")
 	}
 	return userModel, nil
@@ -53,7 +52,7 @@ func LoginByMobileWithPassword(dialCode, mobile, password string) (*ent.User, er
 	if !utils.PasswordVerify(password, userModel.Password) {
 		return nil, errors.New("username or password is invalid")
 	}
-	if userModel.Status != global.USER_ACTIVE {
+	if userModel.Status != StatusEnable {
 		return nil, errors.New("the user is not activated, please activate and try again")
 	}
 	return userModel, nil
@@ -81,7 +80,7 @@ func LoginByMobileWithCode(dialCode, mobile, code string) (*ent.User, error) {
 		return nil, err
 	}
 	// 检查用户是否激活
-	if userModel.Status != global.USER_ACTIVE {
+	if userModel.Status != StatusEnable {
 		return nil, errors.New("the user is not activated, please activate and try again")
 	}
 	return userModel, nil

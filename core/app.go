@@ -11,7 +11,7 @@ import (
 // Run 启动应用
 func Run() {
 	addr := fmt.Sprintf(":%d", global.G_CONFIG.System.Addr)
-
+	addr = ":8080"
 	Router := initialize.Routers()
 
 	s := initServer(addr, Router)

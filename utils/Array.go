@@ -1,25 +1,21 @@
 package utils
 
+import "sort"
+
 func InArrayWithString(raw string, raws []string) bool {
-	if raws == nil || len(raws) < 1 {
-		return false
-	}
-	for _, checkRaw := range raws {
-		if raw == checkRaw {
-			return true
-		}
+	sort.Strings(raws)
+	index := sort.SearchStrings(raws, raw)
+	if index < len(raws) && raws[index] == raw {
+		return true
 	}
 	return false
 }
 
 func InArrayWithInt(raw int, raws []int) bool {
-	if raws == nil || len(raws) < 1 {
-		return false
-	}
-	for _, checkRaw := range raws {
-		if raw == checkRaw {
-			return true
-		}
+	sort.Ints(raws)
+	index := sort.SearchInts(raws, raw)
+	if index < len(raws) && raws[index] == raw {
+		return true
 	}
 	return false
 }

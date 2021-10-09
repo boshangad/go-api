@@ -11,6 +11,6 @@ func (MpRouter) Init(Group *gin.RouterGroup) {
 		apiRouter.POST("/login")
 		apiRouter.POST("/bind-mobile")
 		apiRouter.POST("/bind-email")
-		apiRouter.POST("/user-info")
+		apiRouter.GET("/user-info")
 	}
 }

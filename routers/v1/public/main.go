@@ -1,5 +1,9 @@
 package public
 
 type RouterApi struct {
-	MpRouter
+	Mp MpRouter
+	Account AccountRouter
+	Captcha CaptchaRouter
+	Sms SmsRouter
+	Email EmailRouter
 }

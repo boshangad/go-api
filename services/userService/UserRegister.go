@@ -7,7 +7,6 @@ import (
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/user"
 	"github.com/boshangad/go-api/global/db"
-	"github.com/boshangad/go-api/services/emailService"
 	"github.com/boshangad/go-api/services/smsService"
 	"github.com/boshangad/go-api/utils"
 	"log"
@@ -87,10 +86,10 @@ func (that *UserRegisterParams) Register(controller mvvc.Controller) (userModel 
 				return
 			}
 		} else if that.Email != "" {
-			_ = emailService.DefaultPushClient()
-			if err != nil {
-				return
-			}
+			//_ = emailService.DefaultPushClient()
+			//if err != nil {
+			//	return
+			//}
 		}
 	}
 	client := db.DefaultClient()

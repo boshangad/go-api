@@ -11,8 +11,15 @@ import (
 	"github.com/boshangad/go-api/global/db"
 	"github.com/boshangad/go-api/services/emailService/gateways"
 	"github.com/mitchellh/mapstructure"
+	"github.com/mojocn/base64Captcha"
 	"html/template"
 )
+
+type SendData struct {
+	Email   string `json:"email,omitempty" form:"email"`
+	Scope   string `json:"scope,omitempty" form:"scope"`
+	Captcha string `json:"captcha,omitempty" form:"captcha"`
+}
 
 type Data struct {
 	AppId uint64
@@ -158,7 +165,9 @@ func Send(gateway, email string, data Data) (err error) {
 	return
 }
 
-func SendCode(gateway, email, code, ip, scope string, appId uint64) error {
+// SendCode 发送短信验证码
+func SendCode(gateway, email, ip, scope string, appId uint64) error {
+	var code = base64Captcha.RandText(6, base64Captcha.TxtNumbers)
 	return Send(gateway, email, Data{
 		AppId: appId,
 		Scope: scope,
