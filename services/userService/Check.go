@@ -2,9 +2,12 @@ package userService
 
 import (
 	"context"
-	"github.com/boshangad/go-api/ent/user"
-	"github.com/boshangad/go-api/global/db"
+	"fmt"
 	"log"
+
+	"github.com/boshangad/go-api/ent/user"
+	"github.com/boshangad/go-api/global"
+	"github.com/boshangad/go-api/global/db"
 )
 
 func CheckIsExistByMobile(dialCode, mobile string) (exist bool) {
@@ -33,7 +36,17 @@ func CheckAllowMobileLogin(dialCode, mobile string) bool {
 }
 
 // CheckAllowEmailLogin 检查用户是否允许使用邮箱登录
-func CheckAllowEmailLogin() bool {
+func CheckAllowEmailLogin(email string) bool {
+	ctx := context.Background()
+	userModel, err := db.DefaultClient().User.Query().Where(user.EmailEQ(email)).First(ctx)
+	if err != nil {
+		global.G_LOG.Info(fmt.Sprintf("email %s not found in user table", email))
+		return false
+	}
+	if userModel.Status != StatusEnable {
+		return false
+	}
+	// 检测是否允许触发
 	return true
 }
 

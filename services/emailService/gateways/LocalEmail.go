@@ -3,60 +3,102 @@ package gateways
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/jordan-wright/email"
 	"net/smtp"
 	"strings"
+
+	"github.com/jordan-wright/email"
+	"github.com/mitchellh/mapstructure"
 )
 
-type LocalEmail struct {
-	BaseEmail
-	// 端口
-	Port     int    `mapstructure:"port" json:"port" yaml:"port"`
+// 本地邮件网关
+type LocalGateway struct {
+	// 发信地址
+	FromAddress string `mapstructure:"from-address" json:"from_address" yaml:"from-address"`
+	// 发信人昵称
+	FromAlias string `mapstructure:"from-alias" json:"from_alias" yaml:"from-alias"`
 	// 服务器地址
-	Host     string `mapstructure:"host" json:"host" yaml:"host"`
+	Host string `mapstructure:"host" json:"host" yaml:"host"`
+	// 端口
+	Port int `mapstructure:"port" json:"port" yaml:"port"`
 	// 是否SSL
-	IsSSL    bool   `mapstructure:"is-ssl" json:"isSSL" yaml:"is-ssl"`
-	// 密钥
-	Secret   string `mapstructure:"secret" json:"secret" yaml:"secret"`
+	IsSSL bool `mapstructure:"is-ssl" json:"is_ssl" yaml:"is-ssl"`
+	// 用户名
+	Username string `mapstructure:"username" json:"username" yaml:"username"`
+	// 密码
+	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }
 
-func (that *LocalEmail) SetPort(port int) *LocalEmail {
-	that.Port = port
-	return that
-}
-
-func (that *LocalEmail) SetHost(host string) *LocalEmail {
-	that.Host = host
-	return that
-}
-
-func (that *LocalEmail) SetIsSSL(isSSL bool) *LocalEmail {
-	that.IsSSL = isSSL
-	return that
-}
-
-func (that *LocalEmail) SetSecret(secret string) *LocalEmail {
-	that.Secret = secret
-	return that
-}
-
-func (that LocalEmail) Send(to, subject, body string) (string, error) {
-	auth := smtp.PlainAuth("", to, that.Secret, that.Host)
-	e := email.NewEmail()
+// SMTP 邮件服务
+func (that LocalGateway) sendSmtp(emails []string, subject, content string, cc, bcc []string) (err error) {
+	var (
+		hostAddr    = ""
+		smtpAuth    smtp.Auth
+		emailClient *email.Email
+	)
+	smtpAuth = smtp.PlainAuth("", that.Username, that.Password, that.Host)
+	emailClient = email.NewEmail()
 	if that.FromAlias != "" {
-		e.From = fmt.Sprintf("%s <%s>", that.FromAlias, that.FromAddress)
+		emailClient.From = fmt.Sprintf("%s <%s>", that.FromAlias, that.FromAddress)
 	} else {
-		e.From = that.FromAddress
+		emailClient.From = that.FromAddress
 	}
-	e.To = strings.Split(to, ",")
-	e.Subject = subject
-	e.HTML = []byte(body)
-	var err error
-	hostAddr := fmt.Sprintf("%s:%d", that.Host, that.Port)
+	emailClient.To = emails
+	emailClient.Subject = subject
+	emailClient.HTML = []byte(content)
+	if cc != nil {
+		emailClient.Cc = cc
+	}
+	if bcc != nil {
+		emailClient.Bcc = bcc
+	}
+	if that.Port > 0 {
+		hostAddr = fmt.Sprintf("%s:%d", that.Host, that.Port)
+	} else {
+		hostAddr = fmt.Sprintf("%s:%d", that.Host, 587)
+	}
 	if that.IsSSL {
-		err = e.SendWithTLS(hostAddr, auth, &tls.Config{ServerName: that.Host})
+		err = emailClient.SendWithTLS(hostAddr, smtpAuth, &tls.Config{ServerName: that.Host})
 	} else {
-		err = e.Send(hostAddr, auth)
+		err = emailClient.Send(hostAddr, smtpAuth)
 	}
-	return "", err
+	return
+}
+
+// 单邮件服务
+func (that LocalGateway) Send(emailAddress, subject, content string, cc, bcc []string) (err error) {
+	err = that.sendSmtp([]string{emailAddress}, subject, content, cc, bcc)
+	return
+}
+
+// 多邮件服务
+func (that LocalGateway) MultiSend(emails []string, subject, content string, cc, bcc []string) (isSuccess bool, errors map[string]error) {
+	err := that.sendSmtp(emails, subject, content, cc, bcc)
+	if err != nil {
+		errors = make(map[string]error)
+		for _, e := range emails {
+			errors[e] = err
+		}
+		return
+	}
+	return true, nil
+}
+
+// 实例化本地邮件服务
+func NewLocalGateway(gatewayConfig map[string]interface{}) (gateway *LocalGateway) {
+	err := mapstructure.Decode(gatewayConfig, gateway)
+	if err == nil {
+		panic("Email gateway configuration is abnormal")
+	}
+	gateway.Host = strings.TrimSpace(gateway.Host)
+	if gateway.Host == "" {
+		gateway.Host = "localhost"
+	}
+	gateway.FromAddress = strings.TrimSpace(gateway.FromAddress)
+	if gateway.FromAddress == "" {
+		panic("Email sender cannot be empty")
+	}
+	gateway.Username = strings.TrimSpace(gateway.Username)
+	gateway.Password = strings.TrimSpace(gateway.Password)
+	
+	return
 }

@@ -12,7 +12,8 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "cmd": "${workspaceFolder}",
-            "args": ["-o tmp/main.exe"]
+            "args": [],
+            "output": "tmp/main.exe"
         }
     ]
 }

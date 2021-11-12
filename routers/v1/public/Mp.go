@@ -8,9 +8,17 @@ type MpRouter struct {
 func (MpRouter) Init(Group *gin.RouterGroup) {
 	apiRouter := Group.Group("/mp")
 	{
-		apiRouter.POST("/login")
-		apiRouter.POST("/bind-mobile")
-		apiRouter.POST("/bind-email")
-		apiRouter.GET("/user-info")
+		apiRouter.POST("/login", func(c *gin.Context) {
+
+		})
+		apiRouter.POST("/bind-mobile", func(c *gin.Context) {
+
+		})
+		apiRouter.POST("/bind-email", func(c *gin.Context) {
+
+		})
+		apiRouter.GET("/user-info", func(c *gin.Context) {
+
+		})
 	}
 }

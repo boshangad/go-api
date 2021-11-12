@@ -38,14 +38,14 @@ func (that EmailController) Send(c *gin.Context) {
 	}
 	// send mobile
 	if utils.InArrayWithString(sendData.Scope, []string{"login", "forget"}) {
-		exist := userService.CheckAllowEmailLogin()
+		exist := userService.CheckAllowEmailLogin(sendData.Email)
 		if !exist {
 			that.JsonOut(global.ErrNotice, "Sending failed, please try again later", nil)
 			return
 		}
 	}
 	err = emailService.SendCode(
-		global.G_CONFIG.Email.Default,
+		global.G_CONFIG.Email.Defaults[0],
 		sendData.Email,
 		that.Context.ClientIP(),
 		sendData.Scope,

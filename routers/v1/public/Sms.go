@@ -8,6 +8,8 @@ type SmsRouter struct {
 func (SmsRouter) Init(Group *gin.RouterGroup) {
 	apiRouter := Group.Group("/sms")
 	{
-		apiRouter.POST("/send")
+		apiRouter.POST("/send", func(c *gin.Context) {
+
+		})
 	}
 }

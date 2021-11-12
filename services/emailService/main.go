@@ -5,15 +5,25 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"html/template"
+	"strings"
+
 	"github.com/boshangad/go-api/ent"
 	"github.com/boshangad/go-api/ent/emaillog"
 	"github.com/boshangad/go-api/global"
 	"github.com/boshangad/go-api/global/db"
 	"github.com/boshangad/go-api/services/emailService/gateways"
-	"github.com/mitchellh/mapstructure"
 	"github.com/mojocn/base64Captcha"
-	"html/template"
 )
+
+// 网关客户端
+var GatewayClients = make(map[string]Email)
+
+type Email interface {
+	// 推送
+	Send(email, subject, content string, cc, bcc []string) (err error)
+	MultiSend(email []string, subject, content string, cc, bcc []string) (isSuccess bool, errors map[string]error)
+}
 
 type SendData struct {
 	Email   string `json:"email,omitempty" form:"email"`
@@ -22,16 +32,67 @@ type SendData struct {
 }
 
 type Data struct {
-	AppId uint64
-	Scope string
-	Ip string
+	AppId      uint64
+	Scope      string
+	Ip         string
 	TemplateId string
-	Subject string
-	Data map[string]interface{}
-	Content string
+	Subject    string
+	Data       map[string]interface{}
+	Content    string
 }
 
-var GatewayClients = make(map[string]gateways.EmailSend)
+// 实例化相关邮件推送服务
+func NewGateWay(name string) Email {
+	var (
+		emailGateways map[string]map[string]interface{}
+		typeStr       string
+	)
+	emailGateways = global.G_CONFIG.Email.Gateways
+	if emailGateway, ok := emailGateways[name]; ok {
+		typeStr = strings.ToLower(strings.TrimSpace(emailGateway["type"].(string)))
+		if typeStr != "" {
+			switch typeStr {
+			case "aliyun":
+			case "tencent":
+			case "local":
+				fallthrough
+			default:
+				return gateways.NewLocalGateway(emailGateway)
+			}
+		}
+		panic("Mail configuration type " + typeStr + " is not supported, currently only supports local, aliyun")
+	}
+	panic("Undefined mail configuration: " + name)
+}
+
+// 线程安全的实例网关
+func NewGatewayWithConcurrencyControl(name string) Email {
+	mailClient, err, _ := global.G_Concurrency_Control.Do("emailGateway:"+name, func() (interface{}, error) {
+		var (
+			err error = nil
+			ok  bool  = false
+		)
+		defer func() {
+			if e := recover(); e != nil {
+				err, ok = e.(error)
+				if !ok {
+					err = errors.New("new gateway is failed")
+				}
+			}
+		}()
+		return NewGateWay(name), err
+	})
+	if err != nil {
+		global.G_LOG.Error(err.Error())
+		return nil
+	}
+	g, ok := mailClient.(Email)
+	if !ok {
+		global.G_LOG.Error("Unknown error, email gateway fail")
+		return nil
+	}
+	return g
+}
 
 // Send 发送消息
 func Send(gateway, email string, data Data) (err error) {
@@ -43,49 +104,17 @@ func Send(gateway, email string, data Data) (err error) {
 	}
 	// 防止并发多次执行
 	if _, ok := GatewayClients[gateway]; !ok {
-		_, err, _ = global.G_Concurrency_Control.Do("emailGateway:" + gateway, func() (interface{}, error) {
-			v, ok1 := global.G_CONFIG.Email.Gateways[gateway]
-			if !ok1 {
-				return nil, errors.New("configuration `" + gateway + "` not found")
-			}
-			if _, ok2 := v["gateway"]; !ok2 {
-				return nil, errors.New("the configuration `" + gateway + "` did not find the `gateway` field")
-			}
-			// 检查网关
-			switch v["gateway"].(string) {
-			case "local":
-				d := gateways.LocalEmail{}
-				err = mapstructure.Decode(v, d)
-				if err != nil {
-					return nil, err
-				}
-				GatewayClients[gateway] = d
-			case "aliyun":
-				d := gateways.AliyunEmail{}
-				err = mapstructure.Decode(v, &d)
-				if err != nil {
-					return nil, err
-				}
-				d.NewClient()
-				GatewayClients[gateway] = d
-			default:
-				return nil, errors.New("configure `" + gateway + "` can not find the owning gateway")
-			}
-			return gateway, nil
-		})
-		if err != nil {
-			return err
-		}
+		GatewayClients[gateway] = NewGatewayWithConcurrencyControl(gateway)
 	}
 	// 开始执行发送邮件
 	var (
-		pushClient = GatewayClients[gateway]
-		ctx = context.Background()
-		dbClient = db.DefaultClient()
-		typeId = ScopeTypeList[data.Scope]
-		subject = data.Subject
-		content = data.Content
-		dataBytes []byte
+		pushClient   = GatewayClients[gateway]
+		ctx          = context.Background()
+		dbClient     = db.DefaultClient()
+		typeId       = ScopeTypeList[data.Scope]
+		subject      = data.Subject
+		content      = data.Content
+		dataBytes    []byte
 		subjectBytes bytes.Buffer
 		contentBytes bytes.Buffer
 	)
@@ -99,14 +128,14 @@ func Send(gateway, email string, data Data) (err error) {
 	if data.TemplateId != "" {
 		// 获取相关的数据
 	}
-	err = template.Must(template.New("emailSubjectSend:" + data.Scope).Parse(subject)).
+	err = template.Must(template.New("emailSubjectSend:"+data.Scope).Parse(subject)).
 		Execute(&subjectBytes, data)
 	if err != nil {
 		global.G_LOG.Error(err.Error())
 		return err
 	}
 	subject = subjectBytes.String()
-	err = template.Must(template.New("emailContentSend:" + data.Scope).Parse(content)).
+	err = template.Must(template.New("emailContentSend:"+data.Scope).Parse(content)).
 		Execute(&contentBytes, data)
 	if err != nil {
 		global.G_LOG.Error(err.Error())
@@ -146,7 +175,7 @@ func Send(gateway, email string, data Data) (err error) {
 	}
 
 	// 发送信息
-	returnMsg, err := pushClient.Send(email, subject, content)
+	err = pushClient.Send(email, subject, content, []string{}, []string{})
 	if err != nil {
 		global.G_LOG.Warn("push email fail:" + err.Error())
 		return
@@ -156,7 +185,7 @@ func Send(gateway, email string, data Data) (err error) {
 		SetContent(content).
 		SetData(string(dataBytes)).
 		SetStatus(StatusSendSuccess).
-		SetReturnMsg(returnMsg).
+		SetReturnMsg("").
 		Save(ctx)
 	if err != nil {
 		global.G_LOG.Error("update emailLog fail:" + err.Error())
@@ -169,11 +198,11 @@ func Send(gateway, email string, data Data) (err error) {
 func SendCode(gateway, email, ip, scope string, appId uint64) error {
 	var code = base64Captcha.RandText(6, base64Captcha.TxtNumbers)
 	return Send(gateway, email, Data{
-		AppId: appId,
-		Scope: scope,
-		Ip: ip,
+		AppId:   appId,
+		Scope:   scope,
+		Ip:      ip,
 		Subject: "",
 		Content: "",
-		Data: map[string]interface{}{"code": code},
+		Data:    map[string]interface{}{"code": code},
 	})
 }

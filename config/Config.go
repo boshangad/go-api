@@ -16,9 +16,11 @@ type Server struct {
 	Sms Sms
 	// 邮件推送服务
 	Email Email
+	// 验证码
+	Captcha map[string]Captcha
 	// 允许访问方式
 	AsAccess AsAccess
 	// 加密
 	Paseto Paseto
-	Jwt Jwt
+	Jwt    Jwt
 }
