@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
-	"github.com/boshangad/go-api/ent/schema/mixins"
+	"github.com/boshangad/v1/app/model/mixins"
 	"github.com/google/uuid"
 )
 
@@ -47,7 +47,7 @@ func (User) Fields() []ent.Field {
 		field.String("email_hash").Default("").Comment("邮箱hash").MaxLen(32),
 		field.String("avatar").Default("").Comment("头像").MaxLen(255),
 		field.String("name").Default("").Comment("下面").MaxLen(64),
-		field.Uint("sex").Default(0).Comment("性别").Range(0,2),
+		field.Uint("sex").Default(0).Comment("性别").Range(0, 2),
 		field.Uint64("birthday").Default(0).Comment("生日"),
 		field.Uint("age").Default(0).Comment("年龄"),
 		field.String("last_login_ip").Default("127.0.0.1").Comment("最后登录IP").MaxLen(16),

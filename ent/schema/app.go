@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/boshangad/go-api/ent/schema/mixins"
+	"github.com/boshangad/v1/app/model/mixins"
 	"github.com/google/uuid"
 )
 
@@ -17,6 +17,7 @@ type App struct {
 	ent.Schema
 }
 
+// 注释
 func (App) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{
@@ -25,6 +26,7 @@ func (App) Annotations() []schema.Annotation {
 	}
 }
 
+// 混入
 func (App) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.Primary{},

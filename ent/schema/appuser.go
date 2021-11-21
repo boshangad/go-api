@@ -7,7 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/boshangad/go-api/ent/schema/mixins"
+	"github.com/boshangad/v1/app/model/mixins"
 )
 
 // AppUser holds the schema definition for the AppUser entity.

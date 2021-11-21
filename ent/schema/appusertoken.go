@@ -7,7 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/boshangad/go-api/ent/schema/mixins"
+	"github.com/boshangad/v1/app/model/mixins"
 	"github.com/google/uuid"
 )
 
@@ -52,7 +52,6 @@ func (AppUserToken) Edges() []ent.Edge {
 		edge.To("user", User.Type).Field("user_id").Required().Unique(),
 	}
 }
-
 
 func (AppUserToken) Indexes() []ent.Index {
 	return []ent.Index{

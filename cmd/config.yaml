@@ -1,0 +1,17 @@
+app:
+  baseurl: http://localhost:8080
+  listen: :8080
+  name: test
+  rootpath: ""
+db:
+  db:
+    driver: mysql
+    host: 127.0.0.1
+    port: 3306
+    username: root
+    password: 'xingyun'
+    dbname: ad_boshang    
+captcha:
+  image:
+    type: image
+    length: 0

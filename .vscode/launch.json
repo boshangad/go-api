@@ -5,15 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "apiVersion": 1,
             "name": "Launch Package",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}",
-            "cmd": "${workspaceFolder}",
-            "args": [],
-            "output": "tmp/main.exe"
+            "program": "${workspaceFolder}/cmd",
+            "cmd": "${workspaceFolder}/cmd",
+            "output": "cmd/main.exe"
         }
     ]
 }
