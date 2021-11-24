@@ -32,7 +32,7 @@ type Zap struct {
 	EncodeLevel string `json:"encodeLevel,omitempty" yaml:"encodeLevel,omitempty"`
 	// 是否将日志输出到控制台
 	LogInConsole bool `json:"logInConsole,omitempty" yaml:"logInConsole,omitempty"`
-	// 日志前缀
+	// 日志内容前缀
 	Prefix string `json:"prefix,omitempty" yaml:"prefix,omitempty"`
 	// 内容格式化
 	// json 表示格式为json
@@ -98,40 +98,58 @@ func (that Zap) getEncoder() zapcore.Encoder {
 	}
 }
 
+// 将文本等级转为数值型等级
+func (that Zap) GetZapLevel(level string) (zapLevel zapcore.Level) {
+	switch strings.ToLower(level) {
+	case "debug":
+		zapLevel = zap.DebugLevel
+	case "info":
+		zapLevel = zap.InfoLevel
+	case "warn":
+		zapLevel = zap.WarnLevel
+	case "error":
+		zapLevel = zap.ErrorLevel
+	case "dpanic":
+		zapLevel = zap.DPanicLevel
+	case "panic":
+		zapLevel = zap.PanicLevel
+	case "fatal":
+		zapLevel = zap.FatalLevel
+	default:
+		zapLevel = zap.InfoLevel
+	}
+	return
+}
+
 // 获取Encoder的zapcore.Core
 func (that Zap) getEncoderCore() (core zapcore.Core) {
 	var writer zapcore.WriteSyncer
-	if that.LogInConsole {
-		writer = zapcore.NewMultiWriteSyncer(
-			zapcore.AddSync(that),
-			zapcore.AddSync(os.Stdout),
-		)
-	} else {
-		writer = zapcore.AddSync(that)
-	}
-	return zapcore.NewCore(that.getEncoder(), writer, that.level)
-}
-
-// 实现 zapcore.WriteSyncer 接口功能
-func (that Zap) Write(p []byte) (n int, err error) {
-	fileWriter := lumberjack.Logger{
-		Filename:   path.Join(that.Director, "log", "log."+time.Now().Format("20060102")+".log"),
+	writerSyncer := lumberjack.Logger{
+		Filename:   path.Join(that.Director, "log."+time.Now().Format("2006010215")+".log"),
 		MaxSize:    that.MaxSize,
 		MaxBackups: that.MaxBackups,
 		MaxAge:     that.MaxAge,
 		Compress:   that.Compress,
 	}
-	return fileWriter.Write(p)
-}
-
-// 实现 zapcore.WriteSyncer 接口功能
-func (that Zap) Sync() error {
-	return nil
+	if that.LogInConsole {
+		writer = zapcore.NewMultiWriteSyncer(
+			zapcore.AddSync(&writerSyncer),
+			zapcore.AddSync(os.Stdout),
+		)
+	} else {
+		writer = zapcore.AddSync(&writerSyncer)
+	}
+	// 文件拆分
+	// core := zapcore.NewTee(
+	// 	zapcore.NewCore(that.getEncoder(), writer, that.level),
+	// 	zapcore.NewCore(that.getEncoder(), writer, that.level),
+	// )
+	return zapcore.NewCore(that.getEncoder(), writer, that.level)
 }
 
 // 默认zap配置
-func DefaultZapConfig() Zap {
-	return Zap{
+func DefaultZapConfig() *Zap {
+	return &Zap{
 		Director:      path.Join(helpers.GetCurrentDirectory(), "log"),
 		Level:         "debug",
 		ShowLine:      true,
@@ -139,16 +157,16 @@ func DefaultZapConfig() Zap {
 		EncodeLevel:   "LowercaseLevelEncoder",
 		LogInConsole:  true,
 		Prefix:        "",
-		Format:        "",
-		MaxSize:       5,
-		MaxBackups:    1,
+		Format:        "row",
+		MaxSize:       15,
+		MaxBackups:    0,
 		MaxAge:        0,
 		Compress:      true,
 	}
 }
 
 // 实例化配置
-func NewLogger(zapConfig Zap) (logger *zap.Logger) {
+func NewLogger(zapConfig *Zap) (logger *zap.Logger) {
 	// 判断是否有Director文件夹
 	if !helpers.IsDir(zapConfig.Director) {
 		err := os.Mkdir(zapConfig.Director, os.ModePerm)
@@ -157,26 +175,9 @@ func NewLogger(zapConfig Zap) (logger *zap.Logger) {
 		}
 	}
 	// 初始化配置文件的Level
-	switch strings.ToLower(zapConfig.Level) {
-	case "debug":
-		zapConfig.level = zap.DebugLevel
-	case "info":
-		zapConfig.level = zap.InfoLevel
-	case "warn":
-		zapConfig.level = zap.WarnLevel
-	case "error":
-		zapConfig.level = zap.ErrorLevel
-	case "dpanic":
-		zapConfig.level = zap.DPanicLevel
-	case "panic":
-		zapConfig.level = zap.PanicLevel
-	case "fatal":
-		zapConfig.level = zap.FatalLevel
-	default:
-		zapConfig.level = zap.InfoLevel
-	}
-	if zapConfig.level == zap.DebugLevel || zapConfig.level == zap.ErrorLevel {
-		logger = zap.New(zapConfig.getEncoderCore(), zap.AddStacktrace(zapConfig.level))
+	level := zapConfig.GetZapLevel(zapConfig.Level)
+	if level == zap.DebugLevel || level == zap.ErrorLevel {
+		logger = zap.New(zapConfig.getEncoderCore(), zap.AddStacktrace(level))
 	} else {
 		logger = zap.New(zapConfig.getEncoderCore())
 	}

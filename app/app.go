@@ -12,7 +12,7 @@ import (
 )
 
 func Run() {
-	global.Log.Info("Server start.")
+	global.Log.Info("Server start."+global.Config.App.Listen)
 	// Create context that listens for the interrupt signal from the OS.
 	reloadCtx, serverStop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer serverStop()

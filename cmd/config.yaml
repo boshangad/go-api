@@ -14,4 +14,4 @@ db:
 captcha:
   image:
     type: image
-    length: 0
+    length: 6

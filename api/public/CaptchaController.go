@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/app/global"
 	"github.com/mojocn/base64Captcha"
@@ -15,17 +16,22 @@ import (
 type CaptchaController struct {
 }
 
+var captchaStore = base64Captcha.NewMemoryStore(10, 10000000000)
+
 // 验证码详情
 func (CaptchaController) View(c *controller.Context) {
 	var (
-		name      = strings.ToLower(strings.TrimSpace(c.Param("name")))
-		width, _  = strconv.ParseInt(c.Query("w"), 0, 64)
-		height, _ = strconv.ParseInt(c.Query("h"), 0, 64)
-		t         = c.DefaultQuery("type", "image")
-		scope     = c.DefaultQuery("scope", "login")
+		name          = strings.ToLower(strings.TrimSpace(c.Param("name")))
+		width, _      = strconv.ParseInt(c.Query("width"), 0, 64)
+		height, _     = strconv.ParseInt(c.Query("height"), 0, 64)
+		t             = c.DefaultQuery("type", "image")
+		scope         = c.DefaultQuery("scope", "login")
+		captchaStruct *base64Captcha.Captcha
+		captcha       config.Captcha
+		ok            = false
 	)
 	// 获取验证码配置
-	captcha, ok := global.Config.Captcha[name]
+	captcha, ok = global.Config.Captcha[name]
 	if !ok {
 		global.Log.Info("captcha is not configured.", zap.String("name", name))
 		c.JsonOut(global.ErrNotice, "captcha parameter configuration is abnormal, please contact the developer for processing.", nil)
@@ -41,7 +47,7 @@ func (CaptchaController) View(c *controller.Context) {
 		captcha.Height = int(height)
 	}
 	driver := captcha.Driver()
-	var captchaStruct = base64Captcha.NewCaptcha(driver, base64Captcha.DefaultMemStore)
+	captchaStruct = base64Captcha.NewCaptcha(driver, captchaStore)
 	id, b64s, err := captchaStruct.Generate()
 	if err != nil {
 		global.Log.Warn("captcha generation failed", zap.Error(err), zap.String("name", name))

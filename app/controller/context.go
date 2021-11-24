@@ -76,7 +76,7 @@ func (that *Context) SetAppUserToken(appUserToken *ent.AppUserToken) {
 }
 
 // 输出json格式数据
-func (that Context) JsonOut(error int64, msg string, data interface{}) (err error) {
+func (that Context) JsonOut(error int64, msg string, data interface{}) {
 	response := gin.H{}
 	response["error"] = error
 	if msg == "" {
@@ -87,5 +87,4 @@ func (that Context) JsonOut(error int64, msg string, data interface{}) (err erro
 		response["data"] = data
 	}
 	that.Context.AbortWithStatusJSON(http.StatusOK, response)
-	return
 }

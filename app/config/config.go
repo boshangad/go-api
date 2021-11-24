@@ -27,7 +27,7 @@ type Config struct {
 	// 应用配置
 	App App `json:"app,omitempty" yaml:"app,omitempty"`
 	// 日志
-	Log zapLog.Zap `json:"log,omitempty" yaml:"log"`
+	Log *zapLog.Zap `json:"log,omitempty" yaml:"log"`
 	// 数据库连接配置
 	Db map[string]map[string]interface{} `json:"db,omitempty" yaml:"db"`
 	// 磁盘功能

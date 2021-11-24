@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"strings"
 
+	"github.com/boshangad/v1/app/helpers"
 	"github.com/mojocn/base64Captcha"
 )
 
@@ -63,6 +64,33 @@ func (that *Captcha) Driver() (driver base64Captcha.Driver) {
 			A: A,
 		}
 	}
+	// 宽度锁定
+	if that.Width < 1 {
+		if that.MaxWidth < 1 {
+			that.Width = 120
+		} else {
+			that.Width = helpers.RandomRangeInt(1, that.MaxWidth)
+		}
+	}
+	// 高度锁定
+	if that.Height < 1 {
+		if that.MaxHeight < 1 {
+			that.Height = 60
+		} else {
+			that.Height = helpers.RandomRangeInt(1, that.MaxHeight)
+		}
+	}
+	// 噪点数
+	if that.NoiseCount < 1 {
+		if that.MinNoiseCount > 0 && that.MaxNoiseCount > 0 {
+			that.NoiseCount = helpers.RandomRangeInt(that.MaxNoiseCount, that.MaxNoiseCount)
+		} else if that.MinNoiseCount > 0 {
+			that.NoiseCount = that.MinNoiseCount
+		} else if that.MaxNoiseCount > 0 {
+			that.NoiseCount = helpers.RandomRangeInt(0, that.MaxNoiseCount)
+		}
+	}
+	// 生成验证码
 	switch strings.TrimSpace(that.Type) {
 	case "audio":
 		driver = base64Captcha.NewDriverAudio(

@@ -29,35 +29,34 @@ func Recovery(stack bool) gin.HandlerFunc {
 						}
 					}
 				}
-				httpRequest, _ := httputil.DumpRequest(c.Request, false)
+				if global.Log != nil {
+					httpRequest, _ := httputil.DumpRequest(c.Request, false)
+					if stack {
+						global.Log.Error("[Recovery from panic]",
+							zap.Time("time", time.Now()),
+							zap.Any("error", err),
+							zap.String("request", string(httpRequest)),
+							zap.String("stack", string(debug.Stack())),
+						)
+					} else {
+						global.Log.Error("[Recovery from panic]",
+							zap.Time("time", time.Now()),
+							zap.Any("error", err),
+							zap.String("request", string(httpRequest)),
+						)
+					}
+				}
 				if brokenPipe {
-					global.Log.Error(c.Request.URL.Path,
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
 					// If the connection is dead, we can't write a status to it.
 					c.Error(err.(error)) // nolint: errcheck
 					c.Abort()
-					return
-				}
-				if stack {
-					global.Log.Error("[Recovery from panic]",
-						zap.Time("time", time.Now()),
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-						zap.String("stack", string(debug.Stack())),
-					)
 				} else {
-					global.Log.Error("[Recovery from panic]",
-						zap.Time("time", time.Now()),
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"error": http.StatusInternalServerError,
+						"msg":   "the server encountered an error and could not complete this request.",
+					})
+					c.Abort()
 				}
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": http.StatusInternalServerError,
-					"msg":   "the server encountered an error and could not complete this request.",
-				})
 			}
 		}()
 		c.Next()

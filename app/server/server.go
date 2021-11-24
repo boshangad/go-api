@@ -8,6 +8,7 @@ import (
 	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/app/middlewares"
 	"github.com/boshangad/v1/routers"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -42,12 +43,8 @@ func pageNotFound() gin.HandlerFunc {
 // 实例化一个服务
 func NewServer(addr string) Server {
 	e := gin.New()
-	e.Use(
-		// 记录日志
-		Logger(),
-		// 异常恢复
-		Recovery(true),
-	)
+	// 注册pprof工具
+	pprof.Register(e)
 	// 定义未配置路由的错误
 	e.NoRoute(pageNotFound())
 	e.NoMethod(pageMethodNotAllow())
@@ -56,14 +53,26 @@ func NewServer(addr string) Server {
 	e.StaticFS(filepath.Join("static"), gin.Dir(filepath.Join(global.Config.App.RootPath, "static"), false))
 	// 打开就能玩https了
 	// e.Use(middleware.LoadTls())
-	// 跨域,如需跨域可以打开
-	e.Use(middlewares.Cors())
-	//e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	// 获取路由组实例
-	PublicGroup := e.Group("")
+
+	// 注册根组件
+	rootGroup := e.Group("")
 	{
-		routers.V1.Init(PublicGroup)
+		rootGroup.Use(
+			// 记录日志
+			Logger(),
+			// 异常恢复
+			Recovery(true),
+		)
+		// 跨域,如需跨域可以打开
+		rootGroup.Use(middlewares.Cors())
+		//e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		// 获取路由组实例
+		publicGroup := rootGroup.Group("")
+		{
+			routers.V1.Init(publicGroup)
+		}
 	}
+
 	s := InitServer(addr, e)
 	return s
 }
