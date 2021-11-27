@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authitemchild"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -24,6 +26,7 @@ type AuthItemChildQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.AuthItemChild
+	modifiers  []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -301,6 +304,11 @@ func (aicq *AuthItemChildQuery) sqlAll(ctx context.Context) ([]*AuthItemChild, e
 		node := nodes[len(nodes)-1]
 		return node.assignValues(columns, values)
 	}
+	if len(aicq.modifiers) > 0 {
+		_spec.Modifiers = aicq.modifiers
+	}
+	_spec.Node.Schema = aicq.schemaConfig.AuthItemChild
+	ctx = internal.NewSchemaConfigContext(ctx, aicq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, aicq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -312,6 +320,11 @@ func (aicq *AuthItemChildQuery) sqlAll(ctx context.Context) ([]*AuthItemChild, e
 
 func (aicq *AuthItemChildQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aicq.querySpec()
+	if len(aicq.modifiers) > 0 {
+		_spec.Modifiers = aicq.modifiers
+	}
+	_spec.Node.Schema = aicq.schemaConfig.AuthItemChild
+	ctx = internal.NewSchemaConfigContext(ctx, aicq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, aicq.driver, _spec)
 }
 
@@ -383,6 +396,12 @@ func (aicq *AuthItemChildQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aicq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range aicq.modifiers {
+		m(selector)
+	}
+	t1.Schema(aicq.schemaConfig.AuthItemChild)
+	ctx = internal.NewSchemaConfigContext(ctx, aicq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range aicq.predicates {
 		p(selector)
 	}
@@ -398,6 +417,32 @@ func (aicq *AuthItemChildQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aicq *AuthItemChildQuery) ForUpdate(opts ...sql.LockOption) *AuthItemChildQuery {
+	if aicq.driver.Dialect() == dialect.Postgres {
+		aicq.Unique(false)
+	}
+	aicq.modifiers = append(aicq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aicq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aicq *AuthItemChildQuery) ForShare(opts ...sql.LockOption) *AuthItemChildQuery {
+	if aicq.driver.Dialect() == dialect.Postgres {
+		aicq.Unique(false)
+	}
+	aicq.modifiers = append(aicq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aicq
 }
 
 // AuthItemChildGroupBy is the group-by builder for AuthItemChild entities.

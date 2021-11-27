@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
@@ -18,6 +19,7 @@ type AppOptionCreate struct {
 	config
 	mutation *AppOptionMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -147,15 +149,15 @@ func (aoc *AppOptionCreate) SetNillableValue(s *string) *AppOptionCreate {
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (aoc *AppOptionCreate) SetExpireTime(u uint64) *AppOptionCreate {
-	aoc.mutation.SetExpireTime(u)
+func (aoc *AppOptionCreate) SetExpireTime(i int64) *AppOptionCreate {
+	aoc.mutation.SetExpireTime(i)
 	return aoc
 }
 
 // SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (aoc *AppOptionCreate) SetNillableExpireTime(u *uint64) *AppOptionCreate {
-	if u != nil {
-		aoc.SetExpireTime(*u)
+func (aoc *AppOptionCreate) SetNillableExpireTime(i *int64) *AppOptionCreate {
+	if i != nil {
+		aoc.SetExpireTime(*i)
 	}
 	return aoc
 }
@@ -389,6 +391,8 @@ func (aoc *AppOptionCreate) createSpec() (*AppOption, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.Schema = aoc.schemaConfig.AppOption
+	_spec.OnConflict = aoc.conflict
 	if id, ok := aoc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -459,7 +463,7 @@ func (aoc *AppOptionCreate) createSpec() (*AppOption, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := aoc.mutation.ExpireTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appoption.FieldExpireTime,
 		})
@@ -487,6 +491,7 @@ func (aoc *AppOptionCreate) createSpec() (*AppOption, *sqlgraph.CreateSpec) {
 				},
 			},
 		}
+		edge.Schema = aoc.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -496,10 +501,431 @@ func (aoc *AppOptionCreate) createSpec() (*AppOption, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppOption.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppOptionUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (aoc *AppOptionCreate) OnConflict(opts ...sql.ConflictOption) *AppOptionUpsertOne {
+	aoc.conflict = opts
+	return &AppOptionUpsertOne{
+		create: aoc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppOption.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (aoc *AppOptionCreate) OnConflictColumns(columns ...string) *AppOptionUpsertOne {
+	aoc.conflict = append(aoc.conflict, sql.ConflictColumns(columns...))
+	return &AppOptionUpsertOne{
+		create: aoc,
+	}
+}
+
+type (
+	// AppOptionUpsertOne is the builder for "upsert"-ing
+	//  one AppOption node.
+	AppOptionUpsertOne struct {
+		create *AppOptionCreate
+	}
+
+	// AppOptionUpsert is the "OnConflict" setter.
+	AppOptionUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppOptionUpsert) SetCreateTime(v int64) *AppOptionUpsert {
+	u.Set(appoption.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateCreateTime() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldCreateTime)
+	return u
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *AppOptionUpsert) SetCreateBy(v uint64) *AppOptionUpsert {
+	u.Set(appoption.FieldCreateBy, v)
+	return u
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateCreateBy() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldCreateBy)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *AppOptionUpsert) SetUpdateTime(v int64) *AppOptionUpsert {
+	u.Set(appoption.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateUpdateTime() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldUpdateTime)
+	return u
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *AppOptionUpsert) SetUpdateBy(v uint64) *AppOptionUpsert {
+	u.Set(appoption.FieldUpdateBy, v)
+	return u
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateUpdateBy() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldUpdateBy)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppOptionUpsert) SetAppID(v uint64) *AppOptionUpsert {
+	u.Set(appoption.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateAppID() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldAppID)
+	return u
+}
+
+// SetTitle sets the "title" field.
+func (u *AppOptionUpsert) SetTitle(v string) *AppOptionUpsert {
+	u.Set(appoption.FieldTitle, v)
+	return u
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateTitle() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldTitle)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *AppOptionUpsert) SetDescription(v string) *AppOptionUpsert {
+	u.Set(appoption.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateDescription() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldDescription)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *AppOptionUpsert) SetName(v string) *AppOptionUpsert {
+	u.Set(appoption.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateName() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldName)
+	return u
+}
+
+// SetValue sets the "value" field.
+func (u *AppOptionUpsert) SetValue(v string) *AppOptionUpsert {
+	u.Set(appoption.FieldValue, v)
+	return u
+}
+
+// UpdateValue sets the "value" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateValue() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldValue)
+	return u
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *AppOptionUpsert) SetExpireTime(v int64) *AppOptionUpsert {
+	u.Set(appoption.FieldExpireTime, v)
+	return u
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateExpireTime() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldExpireTime)
+	return u
+}
+
+// SetEditType sets the "edit_type" field.
+func (u *AppOptionUpsert) SetEditType(v uint) *AppOptionUpsert {
+	u.Set(appoption.FieldEditType, v)
+	return u
+}
+
+// UpdateEditType sets the "edit_type" field to the value that was provided on create.
+func (u *AppOptionUpsert) UpdateEditType() *AppOptionUpsert {
+	u.SetExcluded(appoption.FieldEditType)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.AppOption.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appoption.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppOptionUpsertOne) UpdateNewValues() *AppOptionUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(appoption.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.AppOption.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *AppOptionUpsertOne) Ignore() *AppOptionUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppOptionUpsertOne) DoNothing() *AppOptionUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppOptionCreate.OnConflict
+// documentation for more info.
+func (u *AppOptionUpsertOne) Update(set func(*AppOptionUpsert)) *AppOptionUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppOptionUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppOptionUpsertOne) SetCreateTime(v int64) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateCreateTime() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *AppOptionUpsertOne) SetCreateBy(v uint64) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetCreateBy(v)
+	})
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateCreateBy() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateCreateBy()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *AppOptionUpsertOne) SetUpdateTime(v int64) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateUpdateTime() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *AppOptionUpsertOne) SetUpdateBy(v uint64) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetUpdateBy(v)
+	})
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateUpdateBy() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateUpdateBy()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppOptionUpsertOne) SetAppID(v uint64) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateAppID() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *AppOptionUpsertOne) SetTitle(v string) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateTitle() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *AppOptionUpsertOne) SetDescription(v string) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateDescription() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *AppOptionUpsertOne) SetName(v string) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateName() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetValue sets the "value" field.
+func (u *AppOptionUpsertOne) SetValue(v string) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetValue(v)
+	})
+}
+
+// UpdateValue sets the "value" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateValue() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateValue()
+	})
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *AppOptionUpsertOne) SetExpireTime(v int64) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetExpireTime(v)
+	})
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateExpireTime() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateExpireTime()
+	})
+}
+
+// SetEditType sets the "edit_type" field.
+func (u *AppOptionUpsertOne) SetEditType(v uint) *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetEditType(v)
+	})
+}
+
+// UpdateEditType sets the "edit_type" field to the value that was provided on create.
+func (u *AppOptionUpsertOne) UpdateEditType() *AppOptionUpsertOne {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateEditType()
+	})
+}
+
+// Exec executes the query.
+func (u *AppOptionUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppOptionCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppOptionUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *AppOptionUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *AppOptionUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // AppOptionCreateBulk is the builder for creating many AppOption entities in bulk.
 type AppOptionCreateBulk struct {
 	config
 	builders []*AppOptionCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the AppOption entities in the database.
@@ -526,6 +952,7 @@ func (aocb *AppOptionCreateBulk) Save(ctx context.Context) ([]*AppOption, error)
 					_, err = mutators[i+1].Mutate(root, aocb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = aocb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, aocb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -576,6 +1003,276 @@ func (aocb *AppOptionCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (aocb *AppOptionCreateBulk) ExecX(ctx context.Context) {
 	if err := aocb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppOption.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppOptionUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (aocb *AppOptionCreateBulk) OnConflict(opts ...sql.ConflictOption) *AppOptionUpsertBulk {
+	aocb.conflict = opts
+	return &AppOptionUpsertBulk{
+		create: aocb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppOption.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (aocb *AppOptionCreateBulk) OnConflictColumns(columns ...string) *AppOptionUpsertBulk {
+	aocb.conflict = append(aocb.conflict, sql.ConflictColumns(columns...))
+	return &AppOptionUpsertBulk{
+		create: aocb,
+	}
+}
+
+// AppOptionUpsertBulk is the builder for "upsert"-ing
+// a bulk of AppOption nodes.
+type AppOptionUpsertBulk struct {
+	create *AppOptionCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.AppOption.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appoption.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppOptionUpsertBulk) UpdateNewValues() *AppOptionUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(appoption.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.AppOption.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *AppOptionUpsertBulk) Ignore() *AppOptionUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppOptionUpsertBulk) DoNothing() *AppOptionUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppOptionCreateBulk.OnConflict
+// documentation for more info.
+func (u *AppOptionUpsertBulk) Update(set func(*AppOptionUpsert)) *AppOptionUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppOptionUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppOptionUpsertBulk) SetCreateTime(v int64) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateCreateTime() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *AppOptionUpsertBulk) SetCreateBy(v uint64) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetCreateBy(v)
+	})
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateCreateBy() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateCreateBy()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *AppOptionUpsertBulk) SetUpdateTime(v int64) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateUpdateTime() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *AppOptionUpsertBulk) SetUpdateBy(v uint64) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetUpdateBy(v)
+	})
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateUpdateBy() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateUpdateBy()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppOptionUpsertBulk) SetAppID(v uint64) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateAppID() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *AppOptionUpsertBulk) SetTitle(v string) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateTitle() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *AppOptionUpsertBulk) SetDescription(v string) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateDescription() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *AppOptionUpsertBulk) SetName(v string) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateName() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetValue sets the "value" field.
+func (u *AppOptionUpsertBulk) SetValue(v string) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetValue(v)
+	})
+}
+
+// UpdateValue sets the "value" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateValue() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateValue()
+	})
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *AppOptionUpsertBulk) SetExpireTime(v int64) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetExpireTime(v)
+	})
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateExpireTime() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateExpireTime()
+	})
+}
+
+// SetEditType sets the "edit_type" field.
+func (u *AppOptionUpsertBulk) SetEditType(v uint) *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.SetEditType(v)
+	})
+}
+
+// UpdateEditType sets the "edit_type" field to the value that was provided on create.
+func (u *AppOptionUpsertBulk) UpdateEditType() *AppOptionUpsertBulk {
+	return u.Update(func(s *AppOptionUpsert) {
+		s.UpdateEditType()
+	})
+}
+
+// Exec executes the query.
+func (u *AppOptionUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AppOptionCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppOptionCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppOptionUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authrule"
@@ -16,6 +18,7 @@ type AuthRuleCreate struct {
 	config
 	mutation *AuthRuleMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // Mutation returns the AuthRuleMutation object of the builder.
@@ -115,13 +118,136 @@ func (arc *AuthRuleCreate) createSpec() (*AuthRule, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.Schema = arc.schemaConfig.AuthRule
+	_spec.OnConflict = arc.conflict
 	return _node, _spec
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AuthRule.Create().
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (arc *AuthRuleCreate) OnConflict(opts ...sql.ConflictOption) *AuthRuleUpsertOne {
+	arc.conflict = opts
+	return &AuthRuleUpsertOne{
+		create: arc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AuthRule.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (arc *AuthRuleCreate) OnConflictColumns(columns ...string) *AuthRuleUpsertOne {
+	arc.conflict = append(arc.conflict, sql.ConflictColumns(columns...))
+	return &AuthRuleUpsertOne{
+		create: arc,
+	}
+}
+
+type (
+	// AuthRuleUpsertOne is the builder for "upsert"-ing
+	//  one AuthRule node.
+	AuthRuleUpsertOne struct {
+		create *AuthRuleCreate
+	}
+
+	// AuthRuleUpsert is the "OnConflict" setter.
+	AuthRuleUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// UpdateNewValues updates the fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.AuthRule.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (u *AuthRuleUpsertOne) UpdateNewValues() *AuthRuleUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.AuthRule.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *AuthRuleUpsertOne) Ignore() *AuthRuleUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AuthRuleUpsertOne) DoNothing() *AuthRuleUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AuthRuleCreate.OnConflict
+// documentation for more info.
+func (u *AuthRuleUpsertOne) Update(set func(*AuthRuleUpsert)) *AuthRuleUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AuthRuleUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *AuthRuleUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AuthRuleCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AuthRuleUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *AuthRuleUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *AuthRuleUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
 
 // AuthRuleCreateBulk is the builder for creating many AuthRule entities in bulk.
 type AuthRuleCreateBulk struct {
 	config
 	builders []*AuthRuleCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the AuthRule entities in the database.
@@ -147,6 +273,7 @@ func (arcb *AuthRuleCreateBulk) Save(ctx context.Context) ([]*AuthRule, error) {
 					_, err = mutators[i+1].Mutate(root, arcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = arcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, arcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -197,6 +324,106 @@ func (arcb *AuthRuleCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (arcb *AuthRuleCreateBulk) ExecX(ctx context.Context) {
 	if err := arcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AuthRule.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (arcb *AuthRuleCreateBulk) OnConflict(opts ...sql.ConflictOption) *AuthRuleUpsertBulk {
+	arcb.conflict = opts
+	return &AuthRuleUpsertBulk{
+		create: arcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AuthRule.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (arcb *AuthRuleCreateBulk) OnConflictColumns(columns ...string) *AuthRuleUpsertBulk {
+	arcb.conflict = append(arcb.conflict, sql.ConflictColumns(columns...))
+	return &AuthRuleUpsertBulk{
+		create: arcb,
+	}
+}
+
+// AuthRuleUpsertBulk is the builder for "upsert"-ing
+// a bulk of AuthRule nodes.
+type AuthRuleUpsertBulk struct {
+	create *AuthRuleCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.AuthRule.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (u *AuthRuleUpsertBulk) UpdateNewValues() *AuthRuleUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.AuthRule.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *AuthRuleUpsertBulk) Ignore() *AuthRuleUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AuthRuleUpsertBulk) DoNothing() *AuthRuleUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AuthRuleCreateBulk.OnConflict
+// documentation for more info.
+func (u *AuthRuleUpsertBulk) Update(set func(*AuthRuleUpsert)) *AuthRuleUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AuthRuleUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *AuthRuleUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AuthRuleCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AuthRuleCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AuthRuleUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

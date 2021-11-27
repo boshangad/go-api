@@ -13,6 +13,7 @@ import (
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appuserloginlog"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/user"
 )
@@ -345,6 +346,7 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 				},
 			},
 		}
+		edge.Schema = aullu.schemaConfig.AppUserLoginLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aullu.mutation.AppIDs(); len(nodes) > 0 {
@@ -361,6 +363,7 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 				},
 			},
 		}
+		edge.Schema = aullu.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -380,6 +383,7 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 				},
 			},
 		}
+		edge.Schema = aullu.schemaConfig.AppUserLoginLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aullu.mutation.AppUserIDs(); len(nodes) > 0 {
@@ -396,6 +400,7 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 				},
 			},
 		}
+		edge.Schema = aullu.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -415,6 +420,7 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 				},
 			},
 		}
+		edge.Schema = aullu.schemaConfig.AppUserLoginLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aullu.mutation.UserIDs(); len(nodes) > 0 {
@@ -431,11 +437,14 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 				},
 			},
 		}
+		edge.Schema = aullu.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = aullu.schemaConfig.AppUserLoginLog
+	ctx = internal.NewSchemaConfigContext(ctx, aullu.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, aullu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{appuserloginlog.Label}
@@ -794,6 +803,7 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 				},
 			},
 		}
+		edge.Schema = aulluo.schemaConfig.AppUserLoginLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aulluo.mutation.AppIDs(); len(nodes) > 0 {
@@ -810,6 +820,7 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 				},
 			},
 		}
+		edge.Schema = aulluo.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -829,6 +840,7 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 				},
 			},
 		}
+		edge.Schema = aulluo.schemaConfig.AppUserLoginLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aulluo.mutation.AppUserIDs(); len(nodes) > 0 {
@@ -845,6 +857,7 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 				},
 			},
 		}
+		edge.Schema = aulluo.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -864,6 +877,7 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 				},
 			},
 		}
+		edge.Schema = aulluo.schemaConfig.AppUserLoginLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aulluo.mutation.UserIDs(); len(nodes) > 0 {
@@ -880,11 +894,14 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 				},
 			},
 		}
+		edge.Schema = aulluo.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = aulluo.schemaConfig.AppUserLoginLog
+	ctx = internal.NewSchemaConfigContext(ctx, aulluo.schemaConfig)
 	_node = &AppUserLoginLog{config: aulluo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

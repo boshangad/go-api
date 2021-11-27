@@ -46,7 +46,7 @@ type AppOption struct {
 	Value string `json:"value,omitempty"`
 	// ExpireTime holds the value of the "expire_time" field.
 	// 失效时间
-	ExpireTime uint64 `json:"expire_time,omitempty"`
+	ExpireTime int64 `json:"expire_time,omitempty"`
 	// EditType holds the value of the "edit_type" field.
 	// 编辑类型
 	EditType uint `json:"edit_type,omitempty"`
@@ -166,7 +166,7 @@ func (ao *AppOption) assignValues(columns []string, values []interface{}) error 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field expire_time", values[i])
 			} else if value.Valid {
-				ao.ExpireTime = uint64(value.Int64)
+				ao.ExpireTime = value.Int64
 			}
 		case appoption.FieldEditType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {

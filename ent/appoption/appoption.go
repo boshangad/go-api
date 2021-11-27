@@ -96,7 +96,7 @@ var (
 	// ValueValidator is a validator for the "value" field. It is called by the builders before save.
 	ValueValidator func(string) error
 	// DefaultExpireTime holds the default value on creation for the "expire_time" field.
-	DefaultExpireTime uint64
+	DefaultExpireTime int64
 	// DefaultEditType holds the default value on creation for the "edit_type" field.
 	DefaultEditType uint
 )

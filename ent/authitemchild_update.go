@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authitemchild"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -103,6 +104,8 @@ func (aicu *AuthItemChildUpdate) sqlSave(ctx context.Context) (n int, err error)
 			}
 		}
 	}
+	_spec.Node.Schema = aicu.schemaConfig.AuthItemChild
+	ctx = internal.NewSchemaConfigContext(ctx, aicu.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, aicu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authitemchild.Label}
@@ -223,6 +226,8 @@ func (aicuo *AuthItemChildUpdateOne) sqlSave(ctx context.Context) (_node *AuthIt
 			}
 		}
 	}
+	_spec.Node.Schema = aicuo.schemaConfig.AuthItemChild
+	ctx = internal.NewSchemaConfigContext(ctx, aicuo.schemaConfig)
 	_node = &AuthItemChild{config: aicuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

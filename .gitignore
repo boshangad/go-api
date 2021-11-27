@@ -19,3 +19,8 @@
 .idea/*
 .vscode/*
 vendor/*
+**/ent/*
+!**/ent/generate.go
+!**/ent/schema
+!**/ent/schema/*
+

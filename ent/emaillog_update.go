@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/emaillog"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -580,6 +581,7 @@ func (elu *EmailLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = elu.schemaConfig.EmailLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := elu.mutation.AppIDs(); len(nodes) > 0 {
@@ -596,11 +598,14 @@ func (elu *EmailLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = elu.schemaConfig.EmailLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = elu.schemaConfig.EmailLog
+	ctx = internal.NewSchemaConfigContext(ctx, elu.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, elu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{emaillog.Label}
@@ -1196,6 +1201,7 @@ func (eluo *EmailLogUpdateOne) sqlSave(ctx context.Context) (_node *EmailLog, er
 				},
 			},
 		}
+		edge.Schema = eluo.schemaConfig.EmailLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := eluo.mutation.AppIDs(); len(nodes) > 0 {
@@ -1212,11 +1218,14 @@ func (eluo *EmailLogUpdateOne) sqlSave(ctx context.Context) (_node *EmailLog, er
 				},
 			},
 		}
+		edge.Schema = eluo.schemaConfig.EmailLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = eluo.schemaConfig.EmailLog
+	ctx = internal.NewSchemaConfigContext(ctx, eluo.schemaConfig)
 	_node = &EmailLog{config: eluo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

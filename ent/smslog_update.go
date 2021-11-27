@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/smslog"
 )
@@ -567,6 +568,7 @@ func (slu *SmsLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = slu.schemaConfig.SmsLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := slu.mutation.AppIDs(); len(nodes) > 0 {
@@ -583,11 +585,14 @@ func (slu *SmsLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = slu.schemaConfig.SmsLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = slu.schemaConfig.SmsLog
+	ctx = internal.NewSchemaConfigContext(ctx, slu.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, slu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{smslog.Label}
@@ -1170,6 +1175,7 @@ func (sluo *SmsLogUpdateOne) sqlSave(ctx context.Context) (_node *SmsLog, err er
 				},
 			},
 		}
+		edge.Schema = sluo.schemaConfig.SmsLog
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := sluo.mutation.AppIDs(); len(nodes) > 0 {
@@ -1186,11 +1192,14 @@ func (sluo *SmsLogUpdateOne) sqlSave(ctx context.Context) (_node *SmsLog, err er
 				},
 			},
 		}
+		edge.Schema = sluo.schemaConfig.SmsLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = sluo.schemaConfig.SmsLog
+	ctx = internal.NewSchemaConfigContext(ctx, sluo.schemaConfig)
 	_node = &SmsLog{config: sluo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

@@ -10,7 +10,7 @@ func buildingKey(key string) string {
 	if key == "" {
 		panic("key cannot be empty")
 	}
-	err := validators.DefaultValidate.Var(key, "Required")
+	err := validators.DefaultValidate.Var(key, "required")
 	if err != nil {
 		return helpers.Md5(key)
 	}

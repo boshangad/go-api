@@ -3,23 +3,22 @@ package global
 import (
 	"github.com/boshangad/v1/app/cache"
 	"github.com/boshangad/v1/app/config"
+	"github.com/boshangad/v1/app/db"
 
 	"github.com/boshangad/v1/app/log"
 	"go.uber.org/zap"
+	"golang.org/x/sync/singleflight"
 )
 
-// 初始化
-func init() {
-	Db = initDb()
-}
-
 var (
-	// 配置数据
+	// Config 配置数据
 	Config *config.Config = config.DefaultConfig().Load()
-	// 日志配置
+	// Log 日志配置
 	Log *zap.Logger = log.NewLogger(Config.Log)
-	// 数据库
-	Db *db
-	// 缓存服务
-	Cache cache.CacheInterface
+	// Db 数据库
+	Db *db.Db = db.NewDb(db.OpenDbByConfig(Config.Db), Log)
+	// Cache 缓存服务
+	Cache cache.CacheInterface = cache.NewCache(Config.Cache)
+	// ConcurrencyControl 防止缓存击穿，并发控制
+	ConcurrencyControl = &singleflight.Group{}
 )

@@ -8,11 +8,13 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/emaillog"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -26,7 +28,8 @@ type EmailLogQuery struct {
 	fields     []string
 	predicates []predicate.EmailLog
 	// eager-loading edges.
-	withApp *AppQuery
+	withApp   *AppQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,9 @@ func (elq *EmailLogQuery) QueryApp() *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, emaillog.AppTable, emaillog.AppColumn),
 		)
+		schemaConfig := elq.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.EmailLog
 		fromU = sqlgraph.SetNeighbors(elq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -366,6 +372,11 @@ func (elq *EmailLogQuery) sqlAll(ctx context.Context) ([]*EmailLog, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(elq.modifiers) > 0 {
+		_spec.Modifiers = elq.modifiers
+	}
+	_spec.Node.Schema = elq.schemaConfig.EmailLog
+	ctx = internal.NewSchemaConfigContext(ctx, elq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, elq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -404,6 +415,11 @@ func (elq *EmailLogQuery) sqlAll(ctx context.Context) ([]*EmailLog, error) {
 
 func (elq *EmailLogQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := elq.querySpec()
+	if len(elq.modifiers) > 0 {
+		_spec.Modifiers = elq.modifiers
+	}
+	_spec.Node.Schema = elq.schemaConfig.EmailLog
+	ctx = internal.NewSchemaConfigContext(ctx, elq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, elq.driver, _spec)
 }
 
@@ -475,6 +491,12 @@ func (elq *EmailLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = elq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range elq.modifiers {
+		m(selector)
+	}
+	t1.Schema(elq.schemaConfig.EmailLog)
+	ctx = internal.NewSchemaConfigContext(ctx, elq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range elq.predicates {
 		p(selector)
 	}
@@ -490,6 +512,32 @@ func (elq *EmailLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (elq *EmailLogQuery) ForUpdate(opts ...sql.LockOption) *EmailLogQuery {
+	if elq.driver.Dialect() == dialect.Postgres {
+		elq.Unique(false)
+	}
+	elq.modifiers = append(elq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return elq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (elq *EmailLogQuery) ForShare(opts ...sql.LockOption) *EmailLogQuery {
+	if elq.driver.Dialect() == dialect.Postgres {
+		elq.Unique(false)
+	}
+	elq.modifiers = append(elq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return elq
 }
 
 // EmailLogGroupBy is the group-by builder for EmailLog entities.

@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authrole"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -103,6 +104,8 @@ func (aru *AuthRoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	_spec.Node.Schema = aru.schemaConfig.AuthRole
+	ctx = internal.NewSchemaConfigContext(ctx, aru.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, aru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authrole.Label}
@@ -223,6 +226,8 @@ func (aruo *AuthRoleUpdateOne) sqlSave(ctx context.Context) (_node *AuthRole, er
 			}
 		}
 	}
+	_spec.Node.Schema = aruo.schemaConfig.AuthRole
+	ctx = internal.NewSchemaConfigContext(ctx, aruo.schemaConfig)
 	_node = &AuthRole{config: aruo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

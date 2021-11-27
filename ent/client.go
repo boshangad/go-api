@@ -301,6 +301,9 @@ func (c *AppClient) QueryAppOptions(a *App) *AppOptionQuery {
 			sqlgraph.To(appoption.Table, appoption.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, app.AppOptionsTable, app.AppOptionsColumn),
 		)
+		schemaConfig := a.schemaConfig
+		step.To.Schema = schemaConfig.AppOption
+		step.Edge.Schema = schemaConfig.AppOption
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -407,6 +410,9 @@ func (c *AppOptionClient) QueryApp(ao *AppOption) *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, appoption.AppTable, appoption.AppColumn),
 		)
+		schemaConfig := ao.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppOption
 		fromV = sqlgraph.Neighbors(ao.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -513,6 +519,9 @@ func (c *AppUserClient) QueryApp(au *AppUser) *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuser.AppTable, appuser.AppColumn),
 		)
+		schemaConfig := au.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUser
 		fromV = sqlgraph.Neighbors(au.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -529,6 +538,9 @@ func (c *AppUserClient) QueryUser(au *AppUser) *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuser.UserTable, appuser.UserColumn),
 		)
+		schemaConfig := au.schemaConfig
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUser
 		fromV = sqlgraph.Neighbors(au.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -635,6 +647,9 @@ func (c *AppUserLoginLogClient) QueryApp(aull *AppUserLoginLog) *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuserloginlog.AppTable, appuserloginlog.AppColumn),
 		)
+		schemaConfig := aull.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUserLoginLog
 		fromV = sqlgraph.Neighbors(aull.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -651,6 +666,9 @@ func (c *AppUserLoginLogClient) QueryAppUser(aull *AppUserLoginLog) *AppUserQuer
 			sqlgraph.To(appuser.Table, appuser.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuserloginlog.AppUserTable, appuserloginlog.AppUserColumn),
 		)
+		schemaConfig := aull.schemaConfig
+		step.To.Schema = schemaConfig.AppUser
+		step.Edge.Schema = schemaConfig.AppUserLoginLog
 		fromV = sqlgraph.Neighbors(aull.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -667,6 +685,9 @@ func (c *AppUserLoginLogClient) QueryUser(aull *AppUserLoginLog) *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuserloginlog.UserTable, appuserloginlog.UserColumn),
 		)
+		schemaConfig := aull.schemaConfig
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUserLoginLog
 		fromV = sqlgraph.Neighbors(aull.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -773,6 +794,9 @@ func (c *AppUserTokenClient) QueryApp(aut *AppUserToken) *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appusertoken.AppTable, appusertoken.AppColumn),
 		)
+		schemaConfig := aut.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUserToken
 		fromV = sqlgraph.Neighbors(aut.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -789,6 +813,9 @@ func (c *AppUserTokenClient) QueryAppUser(aut *AppUserToken) *AppUserQuery {
 			sqlgraph.To(appuser.Table, appuser.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appusertoken.AppUserTable, appusertoken.AppUserColumn),
 		)
+		schemaConfig := aut.schemaConfig
+		step.To.Schema = schemaConfig.AppUser
+		step.Edge.Schema = schemaConfig.AppUserToken
 		fromV = sqlgraph.Neighbors(aut.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -805,6 +832,9 @@ func (c *AppUserTokenClient) QueryUser(aut *AppUserToken) *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appusertoken.UserTable, appusertoken.UserColumn),
 		)
+		schemaConfig := aut.schemaConfig
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUserToken
 		fromV = sqlgraph.Neighbors(aut.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1361,6 +1391,9 @@ func (c *EmailLogClient) QueryApp(el *EmailLog) *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, emaillog.AppTable, emaillog.AppColumn),
 		)
+		schemaConfig := el.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.EmailLog
 		fromV = sqlgraph.Neighbors(el.driver.Dialect(), step)
 		return fromV, nil
 	}
@@ -1467,6 +1500,9 @@ func (c *SmsLogClient) QueryApp(sl *SmsLog) *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, smslog.AppTable, smslog.AppColumn),
 		)
+		schemaConfig := sl.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.SmsLog
 		fromV = sqlgraph.Neighbors(sl.driver.Dialect(), step)
 		return fromV, nil
 	}

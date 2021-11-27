@@ -162,7 +162,7 @@ func init() {
 	// appoptionDescExpireTime is the schema descriptor for expire_time field.
 	appoptionDescExpireTime := appoptionFields[5].Descriptor()
 	// appoption.DefaultExpireTime holds the default value on creation for the expire_time field.
-	appoption.DefaultExpireTime = appoptionDescExpireTime.Default.(uint64)
+	appoption.DefaultExpireTime = appoptionDescExpireTime.Default.(int64)
 	// appoptionDescEditType is the schema descriptor for edit_type field.
 	appoptionDescEditType := appoptionFields[6].Descriptor()
 	// appoption.DefaultEditType holds the default value on creation for the edit_type field.
@@ -354,10 +354,6 @@ func init() {
 	appusertoken.DefaultClientVersion = appusertokenDescClientVersion.Default.(string)
 	// appusertoken.ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.
 	appusertoken.ClientVersionValidator = appusertokenDescClientVersion.Validators[0].(func(string) error)
-	// appusertokenDescUUID is the schema descriptor for uuid field.
-	appusertokenDescUUID := appusertokenFields[4].Descriptor()
-	// appusertoken.DefaultUUID holds the default value on creation for the uuid field.
-	appusertoken.DefaultUUID = appusertokenDescUUID.Default.(func() uuid.UUID)
 	// appusertokenDescIP is the schema descriptor for ip field.
 	appusertokenDescIP := appusertokenFields[5].Descriptor()
 	// appusertoken.DefaultIP holds the default value on creation for the ip field.
@@ -367,7 +363,7 @@ func init() {
 	// appusertokenDescExpireTime is the schema descriptor for expire_time field.
 	appusertokenDescExpireTime := appusertokenFields[6].Descriptor()
 	// appusertoken.DefaultExpireTime holds the default value on creation for the expire_time field.
-	appusertoken.DefaultExpireTime = appusertokenDescExpireTime.Default.(uint64)
+	appusertoken.DefaultExpireTime = appusertokenDescExpireTime.Default.(int64)
 	emaillogMixin := schema.EmailLog{}.Mixin()
 	emaillogMixinFields1 := emaillogMixin[1].Fields()
 	_ = emaillogMixinFields1

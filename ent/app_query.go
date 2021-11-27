@@ -9,11 +9,13 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appoption"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -28,6 +30,7 @@ type AppQuery struct {
 	predicates []predicate.App
 	// eager-loading edges.
 	withAppOptions *AppOptionQuery
+	modifiers      []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +83,9 @@ func (aq *AppQuery) QueryAppOptions() *AppOptionQuery {
 			sqlgraph.To(appoption.Table, appoption.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, app.AppOptionsTable, app.AppOptionsColumn),
 		)
+		schemaConfig := aq.schemaConfig
+		step.To.Schema = schemaConfig.AppOption
+		step.Edge.Schema = schemaConfig.AppOption
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -367,6 +373,11 @@ func (aq *AppQuery) sqlAll(ctx context.Context) ([]*App, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
+	_spec.Node.Schema = aq.schemaConfig.App
+	ctx = internal.NewSchemaConfigContext(ctx, aq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, aq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -404,6 +415,11 @@ func (aq *AppQuery) sqlAll(ctx context.Context) ([]*App, error) {
 
 func (aq *AppQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
+	if len(aq.modifiers) > 0 {
+		_spec.Modifiers = aq.modifiers
+	}
+	_spec.Node.Schema = aq.schemaConfig.App
+	ctx = internal.NewSchemaConfigContext(ctx, aq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
@@ -475,6 +491,12 @@ func (aq *AppQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range aq.modifiers {
+		m(selector)
+	}
+	t1.Schema(aq.schemaConfig.App)
+	ctx = internal.NewSchemaConfigContext(ctx, aq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range aq.predicates {
 		p(selector)
 	}
@@ -490,6 +512,32 @@ func (aq *AppQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aq *AppQuery) ForUpdate(opts ...sql.LockOption) *AppQuery {
+	if aq.driver.Dialect() == dialect.Postgres {
+		aq.Unique(false)
+	}
+	aq.modifiers = append(aq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aq *AppQuery) ForShare(opts ...sql.LockOption) *AppQuery {
+	if aq.driver.Dialect() == dialect.Postgres {
+		aq.Unique(false)
+	}
+	aq.modifiers = append(aq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aq
 }
 
 // AppGroupBy is the group-by builder for App entities.

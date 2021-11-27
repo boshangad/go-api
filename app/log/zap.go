@@ -148,9 +148,9 @@ func (that Zap) getEncoderCore() (core zapcore.Core) {
 }
 
 // 默认zap配置
-func DefaultZapConfig() *Zap {
-	return &Zap{
-		Director:      path.Join(helpers.GetCurrentDirectory(), "log"),
+func DefaultZapConfig() Zap {
+	return Zap{
+		Director:      "",
 		Level:         "debug",
 		ShowLine:      true,
 		StacktraceKey: "",
@@ -158,7 +158,7 @@ func DefaultZapConfig() *Zap {
 		LogInConsole:  true,
 		Prefix:        "",
 		Format:        "row",
-		MaxSize:       15,
+		MaxSize:       0,
 		MaxBackups:    0,
 		MaxAge:        0,
 		Compress:      true,
@@ -166,8 +166,11 @@ func DefaultZapConfig() *Zap {
 }
 
 // 实例化配置
-func NewLogger(zapConfig *Zap) (logger *zap.Logger) {
+func NewLogger(zapConfig Zap) (logger *zap.Logger) {
 	// 判断是否有Director文件夹
+	if zapConfig.Director == "" {
+		zapConfig.Director = path.Join(helpers.GetCurrentDirectory(), "runtime/log")
+	}
 	if !helpers.IsDir(zapConfig.Director) {
 		err := os.Mkdir(zapConfig.Director, os.ModePerm)
 		if err != nil {

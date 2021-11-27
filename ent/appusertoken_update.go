@@ -13,6 +13,7 @@ import (
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/user"
 	"github.com/google/uuid"
@@ -88,7 +89,7 @@ func (autu *AppUserTokenUpdate) SetNillableClientVersion(s *string) *AppUserToke
 }
 
 // SetUUID sets the "uuid" field.
-func (autu *AppUserTokenUpdate) SetUUID(u uuid.UUID) *AppUserTokenUpdate {
+func (autu *AppUserTokenUpdate) SetUUID(u *uuid.UUID) *AppUserTokenUpdate {
 	autu.mutation.SetUUID(u)
 	return autu
 }
@@ -108,23 +109,23 @@ func (autu *AppUserTokenUpdate) SetNillableIP(s *string) *AppUserTokenUpdate {
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (autu *AppUserTokenUpdate) SetExpireTime(u uint64) *AppUserTokenUpdate {
+func (autu *AppUserTokenUpdate) SetExpireTime(i int64) *AppUserTokenUpdate {
 	autu.mutation.ResetExpireTime()
-	autu.mutation.SetExpireTime(u)
+	autu.mutation.SetExpireTime(i)
 	return autu
 }
 
 // SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (autu *AppUserTokenUpdate) SetNillableExpireTime(u *uint64) *AppUserTokenUpdate {
-	if u != nil {
-		autu.SetExpireTime(*u)
+func (autu *AppUserTokenUpdate) SetNillableExpireTime(i *int64) *AppUserTokenUpdate {
+	if i != nil {
+		autu.SetExpireTime(*i)
 	}
 	return autu
 }
 
-// AddExpireTime adds u to the "expire_time" field.
-func (autu *AppUserTokenUpdate) AddExpireTime(u uint64) *AppUserTokenUpdate {
-	autu.mutation.AddExpireTime(u)
+// AddExpireTime adds i to the "expire_time" field.
+func (autu *AppUserTokenUpdate) AddExpireTime(i int64) *AppUserTokenUpdate {
+	autu.mutation.AddExpireTime(i)
 	return autu
 }
 
@@ -277,7 +278,7 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if value, ok := autu.mutation.UUID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeBytes,
 			Value:  value,
 			Column: appusertoken.FieldUUID,
 		})
@@ -291,14 +292,14 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if value, ok := autu.mutation.ExpireTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appusertoken.FieldExpireTime,
 		})
 	}
 	if value, ok := autu.mutation.AddedExpireTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appusertoken.FieldExpireTime,
 		})
@@ -317,6 +318,7 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
+		edge.Schema = autu.schemaConfig.AppUserToken
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := autu.mutation.AppIDs(); len(nodes) > 0 {
@@ -333,6 +335,7 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
+		edge.Schema = autu.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -352,6 +355,7 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
+		edge.Schema = autu.schemaConfig.AppUserToken
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := autu.mutation.AppUserIDs(); len(nodes) > 0 {
@@ -368,6 +372,7 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
+		edge.Schema = autu.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -387,6 +392,7 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
+		edge.Schema = autu.schemaConfig.AppUserToken
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := autu.mutation.UserIDs(); len(nodes) > 0 {
@@ -403,11 +409,14 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
+		edge.Schema = autu.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = autu.schemaConfig.AppUserToken
+	ctx = internal.NewSchemaConfigContext(ctx, autu.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, autu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{appusertoken.Label}
@@ -484,7 +493,7 @@ func (autuo *AppUserTokenUpdateOne) SetNillableClientVersion(s *string) *AppUser
 }
 
 // SetUUID sets the "uuid" field.
-func (autuo *AppUserTokenUpdateOne) SetUUID(u uuid.UUID) *AppUserTokenUpdateOne {
+func (autuo *AppUserTokenUpdateOne) SetUUID(u *uuid.UUID) *AppUserTokenUpdateOne {
 	autuo.mutation.SetUUID(u)
 	return autuo
 }
@@ -504,23 +513,23 @@ func (autuo *AppUserTokenUpdateOne) SetNillableIP(s *string) *AppUserTokenUpdate
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (autuo *AppUserTokenUpdateOne) SetExpireTime(u uint64) *AppUserTokenUpdateOne {
+func (autuo *AppUserTokenUpdateOne) SetExpireTime(i int64) *AppUserTokenUpdateOne {
 	autuo.mutation.ResetExpireTime()
-	autuo.mutation.SetExpireTime(u)
+	autuo.mutation.SetExpireTime(i)
 	return autuo
 }
 
 // SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (autuo *AppUserTokenUpdateOne) SetNillableExpireTime(u *uint64) *AppUserTokenUpdateOne {
-	if u != nil {
-		autuo.SetExpireTime(*u)
+func (autuo *AppUserTokenUpdateOne) SetNillableExpireTime(i *int64) *AppUserTokenUpdateOne {
+	if i != nil {
+		autuo.SetExpireTime(*i)
 	}
 	return autuo
 }
 
-// AddExpireTime adds u to the "expire_time" field.
-func (autuo *AppUserTokenUpdateOne) AddExpireTime(u uint64) *AppUserTokenUpdateOne {
-	autuo.mutation.AddExpireTime(u)
+// AddExpireTime adds i to the "expire_time" field.
+func (autuo *AppUserTokenUpdateOne) AddExpireTime(i int64) *AppUserTokenUpdateOne {
+	autuo.mutation.AddExpireTime(i)
 	return autuo
 }
 
@@ -697,7 +706,7 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 	}
 	if value, ok := autuo.mutation.UUID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeBytes,
 			Value:  value,
 			Column: appusertoken.FieldUUID,
 		})
@@ -711,14 +720,14 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 	}
 	if value, ok := autuo.mutation.ExpireTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appusertoken.FieldExpireTime,
 		})
 	}
 	if value, ok := autuo.mutation.AddedExpireTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appusertoken.FieldExpireTime,
 		})
@@ -737,6 +746,7 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				},
 			},
 		}
+		edge.Schema = autuo.schemaConfig.AppUserToken
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := autuo.mutation.AppIDs(); len(nodes) > 0 {
@@ -753,6 +763,7 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				},
 			},
 		}
+		edge.Schema = autuo.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -772,6 +783,7 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				},
 			},
 		}
+		edge.Schema = autuo.schemaConfig.AppUserToken
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := autuo.mutation.AppUserIDs(); len(nodes) > 0 {
@@ -788,6 +800,7 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				},
 			},
 		}
+		edge.Schema = autuo.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -807,6 +820,7 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				},
 			},
 		}
+		edge.Schema = autuo.schemaConfig.AppUserToken
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := autuo.mutation.UserIDs(); len(nodes) > 0 {
@@ -823,11 +837,14 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				},
 			},
 		}
+		edge.Schema = autuo.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = autuo.schemaConfig.AppUserToken
+	ctx = internal.NewSchemaConfigContext(ctx, autuo.schemaConfig)
 	_node = &AppUserToken{config: autuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

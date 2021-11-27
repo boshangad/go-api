@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
@@ -19,6 +20,7 @@ type AppUserCreate struct {
 	config
 	mutation *AppUserMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -684,6 +686,8 @@ func (auc *AppUserCreate) createSpec() (*AppUser, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.Schema = auc.schemaConfig.AppUser
+	_spec.OnConflict = auc.conflict
 	if id, ok := auc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -862,6 +866,7 @@ func (auc *AppUserCreate) createSpec() (*AppUser, *sqlgraph.CreateSpec) {
 				},
 			},
 		}
+		edge.Schema = auc.schemaConfig.AppUser
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -882,6 +887,7 @@ func (auc *AppUserCreate) createSpec() (*AppUser, *sqlgraph.CreateSpec) {
 				},
 			},
 		}
+		edge.Schema = auc.schemaConfig.AppUser
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -891,10 +897,717 @@ func (auc *AppUserCreate) createSpec() (*AppUser, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppUser.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppUserUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (auc *AppUserCreate) OnConflict(opts ...sql.ConflictOption) *AppUserUpsertOne {
+	auc.conflict = opts
+	return &AppUserUpsertOne{
+		create: auc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppUser.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (auc *AppUserCreate) OnConflictColumns(columns ...string) *AppUserUpsertOne {
+	auc.conflict = append(auc.conflict, sql.ConflictColumns(columns...))
+	return &AppUserUpsertOne{
+		create: auc,
+	}
+}
+
+type (
+	// AppUserUpsertOne is the builder for "upsert"-ing
+	//  one AppUser node.
+	AppUserUpsertOne struct {
+		create *AppUserCreate
+	}
+
+	// AppUserUpsert is the "OnConflict" setter.
+	AppUserUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserUpsert) SetCreateTime(v int64) *AppUserUpsert {
+	u.Set(appuser.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateCreateTime() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *AppUserUpsert) SetUpdateTime(v int64) *AppUserUpsert {
+	u.Set(appuser.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateUpdateTime() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldUpdateTime)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserUpsert) SetAppID(v uint64) *AppUserUpsert {
+	u.Set(appuser.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateAppID() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldAppID)
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserUpsert) SetUserID(v uint64) *AppUserUpsert {
+	u.Set(appuser.FieldUserID, v)
+	return u
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateUserID() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldUserID)
+	return u
+}
+
+// SetOpenID sets the "open_id" field.
+func (u *AppUserUpsert) SetOpenID(v string) *AppUserUpsert {
+	u.Set(appuser.FieldOpenID, v)
+	return u
+}
+
+// UpdateOpenID sets the "open_id" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateOpenID() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldOpenID)
+	return u
+}
+
+// SetUnionid sets the "unionid" field.
+func (u *AppUserUpsert) SetUnionid(v string) *AppUserUpsert {
+	u.Set(appuser.FieldUnionid, v)
+	return u
+}
+
+// UpdateUnionid sets the "unionid" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateUnionid() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldUnionid)
+	return u
+}
+
+// SetSessionKey sets the "session_key" field.
+func (u *AppUserUpsert) SetSessionKey(v string) *AppUserUpsert {
+	u.Set(appuser.FieldSessionKey, v)
+	return u
+}
+
+// UpdateSessionKey sets the "session_key" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateSessionKey() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldSessionKey)
+	return u
+}
+
+// SetIsLoadUserProfile sets the "is_load_user_profile" field.
+func (u *AppUserUpsert) SetIsLoadUserProfile(v bool) *AppUserUpsert {
+	u.Set(appuser.FieldIsLoadUserProfile, v)
+	return u
+}
+
+// UpdateIsLoadUserProfile sets the "is_load_user_profile" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateIsLoadUserProfile() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldIsLoadUserProfile)
+	return u
+}
+
+// SetNickname sets the "nickname" field.
+func (u *AppUserUpsert) SetNickname(v string) *AppUserUpsert {
+	u.Set(appuser.FieldNickname, v)
+	return u
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateNickname() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldNickname)
+	return u
+}
+
+// SetAvatar sets the "avatar" field.
+func (u *AppUserUpsert) SetAvatar(v string) *AppUserUpsert {
+	u.Set(appuser.FieldAvatar, v)
+	return u
+}
+
+// UpdateAvatar sets the "avatar" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateAvatar() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldAvatar)
+	return u
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (u *AppUserUpsert) SetAvatarURL(v string) *AppUserUpsert {
+	u.Set(appuser.FieldAvatarURL, v)
+	return u
+}
+
+// UpdateAvatarURL sets the "avatar_url" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateAvatarURL() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldAvatarURL)
+	return u
+}
+
+// SetGender sets the "gender" field.
+func (u *AppUserUpsert) SetGender(v uint) *AppUserUpsert {
+	u.Set(appuser.FieldGender, v)
+	return u
+}
+
+// UpdateGender sets the "gender" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateGender() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldGender)
+	return u
+}
+
+// SetCounty sets the "county" field.
+func (u *AppUserUpsert) SetCounty(v string) *AppUserUpsert {
+	u.Set(appuser.FieldCounty, v)
+	return u
+}
+
+// UpdateCounty sets the "county" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateCounty() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldCounty)
+	return u
+}
+
+// SetCountryCode sets the "country_code" field.
+func (u *AppUserUpsert) SetCountryCode(v string) *AppUserUpsert {
+	u.Set(appuser.FieldCountryCode, v)
+	return u
+}
+
+// UpdateCountryCode sets the "country_code" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateCountryCode() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldCountryCode)
+	return u
+}
+
+// SetProvince sets the "province" field.
+func (u *AppUserUpsert) SetProvince(v string) *AppUserUpsert {
+	u.Set(appuser.FieldProvince, v)
+	return u
+}
+
+// UpdateProvince sets the "province" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateProvince() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldProvince)
+	return u
+}
+
+// SetCity sets the "city" field.
+func (u *AppUserUpsert) SetCity(v string) *AppUserUpsert {
+	u.Set(appuser.FieldCity, v)
+	return u
+}
+
+// UpdateCity sets the "city" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateCity() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldCity)
+	return u
+}
+
+// SetLanguage sets the "language" field.
+func (u *AppUserUpsert) SetLanguage(v string) *AppUserUpsert {
+	u.Set(appuser.FieldLanguage, v)
+	return u
+}
+
+// UpdateLanguage sets the "language" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateLanguage() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldLanguage)
+	return u
+}
+
+// SetPhoneNumber sets the "phone_number" field.
+func (u *AppUserUpsert) SetPhoneNumber(v string) *AppUserUpsert {
+	u.Set(appuser.FieldPhoneNumber, v)
+	return u
+}
+
+// UpdatePhoneNumber sets the "phone_number" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdatePhoneNumber() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldPhoneNumber)
+	return u
+}
+
+// SetPurePhoneNumber sets the "pure_phone_number" field.
+func (u *AppUserUpsert) SetPurePhoneNumber(v string) *AppUserUpsert {
+	u.Set(appuser.FieldPurePhoneNumber, v)
+	return u
+}
+
+// UpdatePurePhoneNumber sets the "pure_phone_number" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdatePurePhoneNumber() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldPurePhoneNumber)
+	return u
+}
+
+// SetWatermark sets the "watermark" field.
+func (u *AppUserUpsert) SetWatermark(v string) *AppUserUpsert {
+	u.Set(appuser.FieldWatermark, v)
+	return u
+}
+
+// UpdateWatermark sets the "watermark" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateWatermark() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldWatermark)
+	return u
+}
+
+// SetLoadUserProfileTime sets the "load_user_profile_time" field.
+func (u *AppUserUpsert) SetLoadUserProfileTime(v uint64) *AppUserUpsert {
+	u.Set(appuser.FieldLoadUserProfileTime, v)
+	return u
+}
+
+// UpdateLoadUserProfileTime sets the "load_user_profile_time" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateLoadUserProfileTime() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldLoadUserProfileTime)
+	return u
+}
+
+// SetLastLoginTime sets the "last_login_time" field.
+func (u *AppUserUpsert) SetLastLoginTime(v uint64) *AppUserUpsert {
+	u.Set(appuser.FieldLastLoginTime, v)
+	return u
+}
+
+// UpdateLastLoginTime sets the "last_login_time" field to the value that was provided on create.
+func (u *AppUserUpsert) UpdateLastLoginTime() *AppUserUpsert {
+	u.SetExcluded(appuser.FieldLastLoginTime)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.AppUser.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appuser.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppUserUpsertOne) UpdateNewValues() *AppUserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(appuser.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.AppUser.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *AppUserUpsertOne) Ignore() *AppUserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppUserUpsertOne) DoNothing() *AppUserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppUserCreate.OnConflict
+// documentation for more info.
+func (u *AppUserUpsertOne) Update(set func(*AppUserUpsert)) *AppUserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppUserUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserUpsertOne) SetCreateTime(v int64) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateCreateTime() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *AppUserUpsertOne) SetUpdateTime(v int64) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateUpdateTime() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserUpsertOne) SetAppID(v uint64) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateAppID() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserUpsertOne) SetUserID(v uint64) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateUserID() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetOpenID sets the "open_id" field.
+func (u *AppUserUpsertOne) SetOpenID(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetOpenID(v)
+	})
+}
+
+// UpdateOpenID sets the "open_id" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateOpenID() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateOpenID()
+	})
+}
+
+// SetUnionid sets the "unionid" field.
+func (u *AppUserUpsertOne) SetUnionid(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetUnionid(v)
+	})
+}
+
+// UpdateUnionid sets the "unionid" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateUnionid() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateUnionid()
+	})
+}
+
+// SetSessionKey sets the "session_key" field.
+func (u *AppUserUpsertOne) SetSessionKey(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetSessionKey(v)
+	})
+}
+
+// UpdateSessionKey sets the "session_key" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateSessionKey() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateSessionKey()
+	})
+}
+
+// SetIsLoadUserProfile sets the "is_load_user_profile" field.
+func (u *AppUserUpsertOne) SetIsLoadUserProfile(v bool) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetIsLoadUserProfile(v)
+	})
+}
+
+// UpdateIsLoadUserProfile sets the "is_load_user_profile" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateIsLoadUserProfile() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateIsLoadUserProfile()
+	})
+}
+
+// SetNickname sets the "nickname" field.
+func (u *AppUserUpsertOne) SetNickname(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetNickname(v)
+	})
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateNickname() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateNickname()
+	})
+}
+
+// SetAvatar sets the "avatar" field.
+func (u *AppUserUpsertOne) SetAvatar(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetAvatar(v)
+	})
+}
+
+// UpdateAvatar sets the "avatar" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateAvatar() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateAvatar()
+	})
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (u *AppUserUpsertOne) SetAvatarURL(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetAvatarURL(v)
+	})
+}
+
+// UpdateAvatarURL sets the "avatar_url" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateAvatarURL() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateAvatarURL()
+	})
+}
+
+// SetGender sets the "gender" field.
+func (u *AppUserUpsertOne) SetGender(v uint) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetGender(v)
+	})
+}
+
+// UpdateGender sets the "gender" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateGender() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateGender()
+	})
+}
+
+// SetCounty sets the "county" field.
+func (u *AppUserUpsertOne) SetCounty(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCounty(v)
+	})
+}
+
+// UpdateCounty sets the "county" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateCounty() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCounty()
+	})
+}
+
+// SetCountryCode sets the "country_code" field.
+func (u *AppUserUpsertOne) SetCountryCode(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCountryCode(v)
+	})
+}
+
+// UpdateCountryCode sets the "country_code" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateCountryCode() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCountryCode()
+	})
+}
+
+// SetProvince sets the "province" field.
+func (u *AppUserUpsertOne) SetProvince(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetProvince(v)
+	})
+}
+
+// UpdateProvince sets the "province" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateProvince() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateProvince()
+	})
+}
+
+// SetCity sets the "city" field.
+func (u *AppUserUpsertOne) SetCity(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCity(v)
+	})
+}
+
+// UpdateCity sets the "city" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateCity() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCity()
+	})
+}
+
+// SetLanguage sets the "language" field.
+func (u *AppUserUpsertOne) SetLanguage(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetLanguage(v)
+	})
+}
+
+// UpdateLanguage sets the "language" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateLanguage() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateLanguage()
+	})
+}
+
+// SetPhoneNumber sets the "phone_number" field.
+func (u *AppUserUpsertOne) SetPhoneNumber(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetPhoneNumber(v)
+	})
+}
+
+// UpdatePhoneNumber sets the "phone_number" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdatePhoneNumber() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdatePhoneNumber()
+	})
+}
+
+// SetPurePhoneNumber sets the "pure_phone_number" field.
+func (u *AppUserUpsertOne) SetPurePhoneNumber(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetPurePhoneNumber(v)
+	})
+}
+
+// UpdatePurePhoneNumber sets the "pure_phone_number" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdatePurePhoneNumber() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdatePurePhoneNumber()
+	})
+}
+
+// SetWatermark sets the "watermark" field.
+func (u *AppUserUpsertOne) SetWatermark(v string) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetWatermark(v)
+	})
+}
+
+// UpdateWatermark sets the "watermark" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateWatermark() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateWatermark()
+	})
+}
+
+// SetLoadUserProfileTime sets the "load_user_profile_time" field.
+func (u *AppUserUpsertOne) SetLoadUserProfileTime(v uint64) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetLoadUserProfileTime(v)
+	})
+}
+
+// UpdateLoadUserProfileTime sets the "load_user_profile_time" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateLoadUserProfileTime() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateLoadUserProfileTime()
+	})
+}
+
+// SetLastLoginTime sets the "last_login_time" field.
+func (u *AppUserUpsertOne) SetLastLoginTime(v uint64) *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetLastLoginTime(v)
+	})
+}
+
+// UpdateLastLoginTime sets the "last_login_time" field to the value that was provided on create.
+func (u *AppUserUpsertOne) UpdateLastLoginTime() *AppUserUpsertOne {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateLastLoginTime()
+	})
+}
+
+// Exec executes the query.
+func (u *AppUserUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppUserCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppUserUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *AppUserUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *AppUserUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // AppUserCreateBulk is the builder for creating many AppUser entities in bulk.
 type AppUserCreateBulk struct {
 	config
 	builders []*AppUserCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the AppUser entities in the database.
@@ -921,6 +1634,7 @@ func (aucb *AppUserCreateBulk) Save(ctx context.Context) ([]*AppUser, error) {
 					_, err = mutators[i+1].Mutate(root, aucb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = aucb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, aucb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -971,6 +1685,430 @@ func (aucb *AppUserCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (aucb *AppUserCreateBulk) ExecX(ctx context.Context) {
 	if err := aucb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppUser.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppUserUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (aucb *AppUserCreateBulk) OnConflict(opts ...sql.ConflictOption) *AppUserUpsertBulk {
+	aucb.conflict = opts
+	return &AppUserUpsertBulk{
+		create: aucb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppUser.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (aucb *AppUserCreateBulk) OnConflictColumns(columns ...string) *AppUserUpsertBulk {
+	aucb.conflict = append(aucb.conflict, sql.ConflictColumns(columns...))
+	return &AppUserUpsertBulk{
+		create: aucb,
+	}
+}
+
+// AppUserUpsertBulk is the builder for "upsert"-ing
+// a bulk of AppUser nodes.
+type AppUserUpsertBulk struct {
+	create *AppUserCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.AppUser.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appuser.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppUserUpsertBulk) UpdateNewValues() *AppUserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(appuser.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.AppUser.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *AppUserUpsertBulk) Ignore() *AppUserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppUserUpsertBulk) DoNothing() *AppUserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppUserCreateBulk.OnConflict
+// documentation for more info.
+func (u *AppUserUpsertBulk) Update(set func(*AppUserUpsert)) *AppUserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppUserUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserUpsertBulk) SetCreateTime(v int64) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateCreateTime() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *AppUserUpsertBulk) SetUpdateTime(v int64) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateUpdateTime() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserUpsertBulk) SetAppID(v uint64) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateAppID() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserUpsertBulk) SetUserID(v uint64) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateUserID() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetOpenID sets the "open_id" field.
+func (u *AppUserUpsertBulk) SetOpenID(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetOpenID(v)
+	})
+}
+
+// UpdateOpenID sets the "open_id" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateOpenID() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateOpenID()
+	})
+}
+
+// SetUnionid sets the "unionid" field.
+func (u *AppUserUpsertBulk) SetUnionid(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetUnionid(v)
+	})
+}
+
+// UpdateUnionid sets the "unionid" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateUnionid() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateUnionid()
+	})
+}
+
+// SetSessionKey sets the "session_key" field.
+func (u *AppUserUpsertBulk) SetSessionKey(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetSessionKey(v)
+	})
+}
+
+// UpdateSessionKey sets the "session_key" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateSessionKey() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateSessionKey()
+	})
+}
+
+// SetIsLoadUserProfile sets the "is_load_user_profile" field.
+func (u *AppUserUpsertBulk) SetIsLoadUserProfile(v bool) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetIsLoadUserProfile(v)
+	})
+}
+
+// UpdateIsLoadUserProfile sets the "is_load_user_profile" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateIsLoadUserProfile() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateIsLoadUserProfile()
+	})
+}
+
+// SetNickname sets the "nickname" field.
+func (u *AppUserUpsertBulk) SetNickname(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetNickname(v)
+	})
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateNickname() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateNickname()
+	})
+}
+
+// SetAvatar sets the "avatar" field.
+func (u *AppUserUpsertBulk) SetAvatar(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetAvatar(v)
+	})
+}
+
+// UpdateAvatar sets the "avatar" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateAvatar() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateAvatar()
+	})
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (u *AppUserUpsertBulk) SetAvatarURL(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetAvatarURL(v)
+	})
+}
+
+// UpdateAvatarURL sets the "avatar_url" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateAvatarURL() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateAvatarURL()
+	})
+}
+
+// SetGender sets the "gender" field.
+func (u *AppUserUpsertBulk) SetGender(v uint) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetGender(v)
+	})
+}
+
+// UpdateGender sets the "gender" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateGender() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateGender()
+	})
+}
+
+// SetCounty sets the "county" field.
+func (u *AppUserUpsertBulk) SetCounty(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCounty(v)
+	})
+}
+
+// UpdateCounty sets the "county" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateCounty() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCounty()
+	})
+}
+
+// SetCountryCode sets the "country_code" field.
+func (u *AppUserUpsertBulk) SetCountryCode(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCountryCode(v)
+	})
+}
+
+// UpdateCountryCode sets the "country_code" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateCountryCode() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCountryCode()
+	})
+}
+
+// SetProvince sets the "province" field.
+func (u *AppUserUpsertBulk) SetProvince(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetProvince(v)
+	})
+}
+
+// UpdateProvince sets the "province" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateProvince() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateProvince()
+	})
+}
+
+// SetCity sets the "city" field.
+func (u *AppUserUpsertBulk) SetCity(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetCity(v)
+	})
+}
+
+// UpdateCity sets the "city" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateCity() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateCity()
+	})
+}
+
+// SetLanguage sets the "language" field.
+func (u *AppUserUpsertBulk) SetLanguage(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetLanguage(v)
+	})
+}
+
+// UpdateLanguage sets the "language" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateLanguage() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateLanguage()
+	})
+}
+
+// SetPhoneNumber sets the "phone_number" field.
+func (u *AppUserUpsertBulk) SetPhoneNumber(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetPhoneNumber(v)
+	})
+}
+
+// UpdatePhoneNumber sets the "phone_number" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdatePhoneNumber() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdatePhoneNumber()
+	})
+}
+
+// SetPurePhoneNumber sets the "pure_phone_number" field.
+func (u *AppUserUpsertBulk) SetPurePhoneNumber(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetPurePhoneNumber(v)
+	})
+}
+
+// UpdatePurePhoneNumber sets the "pure_phone_number" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdatePurePhoneNumber() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdatePurePhoneNumber()
+	})
+}
+
+// SetWatermark sets the "watermark" field.
+func (u *AppUserUpsertBulk) SetWatermark(v string) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetWatermark(v)
+	})
+}
+
+// UpdateWatermark sets the "watermark" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateWatermark() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateWatermark()
+	})
+}
+
+// SetLoadUserProfileTime sets the "load_user_profile_time" field.
+func (u *AppUserUpsertBulk) SetLoadUserProfileTime(v uint64) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetLoadUserProfileTime(v)
+	})
+}
+
+// UpdateLoadUserProfileTime sets the "load_user_profile_time" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateLoadUserProfileTime() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateLoadUserProfileTime()
+	})
+}
+
+// SetLastLoginTime sets the "last_login_time" field.
+func (u *AppUserUpsertBulk) SetLastLoginTime(v uint64) *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.SetLastLoginTime(v)
+	})
+}
+
+// UpdateLastLoginTime sets the "last_login_time" field to the value that was provided on create.
+func (u *AppUserUpsertBulk) UpdateLastLoginTime() *AppUserUpsertBulk {
+	return u.Update(func(s *AppUserUpsert) {
+		s.UpdateLastLoginTime()
+	})
+}
+
+// Exec executes the query.
+func (u *AppUserUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AppUserCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppUserCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppUserUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

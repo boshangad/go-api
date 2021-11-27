@@ -1,122 +1,101 @@
 package public
-//
-//import (
-//	"github.com/boshangad/go-api/app/services"
-//	"github.com/boshangad/go-api/app/services/appUserTokenService"
-//	"github.com/boshangad/go-api/app/services/userService"
-//	"github.com/boshangad/go-api/core/mvvc"
-//	"github.com/boshangad/go-api/ent"
-//	"github.com/boshangad/go-api/global"
-//	"github.com/boshangad/go-api/utils"
-//)
-//
-//type AccountController struct {
-//	mvvc.Controller
-//}
-//
-//// Login 账号密码登录
-//// @route login [POST]
-//func (that *AccountController) Login()  {
-//	username := that.GetParamWithString("username")
-//	dailCode := that.GetParamWithString("dail_code")
-//	mobile := that.GetParamWithString("mobile")
-//	email := that.GetParamWithString("email")
-//	password := that.GetParamWithString("password")
-//	code := that.GetParamWithString("code")
-//	captcha := that.GetParamWithString("captcha")
-//	if password == "" && code == "" {
-//		that.JsonOut(global.ErrNotice, "Password cannot be empty.", nil)
-//		return
-//	}
-//	if captcha == "" {
-//		that.JsonOut(global.ErrNotice, "Captcha cannot be empty.", nil)
-//		return
-//	}
-//	var (
-//		err error
-//		userModel *ent.User
-//	)
-//	if mobile != "" {
-//		if dailCode == "" {
-//			dailCode = "86"
-//		}
-//		if dailCode == "86" && !utils.ValidateMobile(mobile) {
-//			that.JsonOut(global.ErrNotice, "Inaccurate mobile phone number format.", nil)
-//			return
-//		}
-//		if password != "" && code != "" {
-//			userService.LoginByMobileWithPasswordAndCode(dailCode, mobile, password, code)
-//		} else if code != "" {
-//			userModel, err = userService.LoginByMobileWithCode(dailCode, mobile, code)
-//		} else if password != "" {
-//			userModel, err = userService.LoginByMobileWithPassword(dailCode, mobile, password)
-//		}
-//	} else if email != "" {
-//		if !utils.ValidateEmail(email) {
-//			that.JsonOut(global.ErrNotice, "Inaccurate email format.", nil)
-//			return
-//		}
-//		if password != "" && code != "" {
-//			userService.LoginByEmailWithPasswordAndCode(email, password, code)
-//		} else if code != "" {
-//			userService.LoginByEmailWithCode(email, code)
-//		} else if password != "" {
-//			userService.LoginByEmailWithPassword(email, password)
-//		}
-//	} else if username != "" {
-//		userModel, err = userService.LoginByUsername(username, password)
-//	} else {
-//		that.JsonOut(global.ErrMissLoginParams, "Login params miss.", nil)
-//		return
-//	}
-//	// 登录失败报错
-//	if err != nil {
-//		that.JsonOutByError(global.ErrSuccess, err, nil)
-//		return
-//	}
-//	// 登录成功，创建token等信息
-//	err = userService.EventByLoginWithUser(userModel, that.Context)
-//	if err != nil {
-//		that.JsonOutByError(global.ErrNotice, err, nil)
-//		return
-//	}
-//	AppUserToken, ok := that.Context.Get("AppUserToken")
-//	if !ok {
-//		that.JsonOut(global.ErrNotice, "service exception, please try again", nil)
-//		return
-//	}
-//	AppUserTokenModel, ok := AppUserToken.(*ent.AppUserToken)
-//	if !ok {
-//		that.JsonOut(global.ErrNotice, "service exception, please try again", nil)
-//		return
-//	}
-//	token := appUserTokenService.CreateTokenWithModel(AppUserTokenModel)
-//	that.JsonOut(global.ErrSuccess, "success", services.StructLoginSuccess{
-//		AccessToken: token,
-//		ExpiredTime: AppUserTokenModel.ExpireTime,
-//		IsBindUser: true,
-//		UserAlias: userModel.UUID.String(),
-//	})
-//}
-//
-//// Register 账号注册
-//// @route register [POST]
-//func (that AccountController) Register() {
-//	var serviceWithUser = userService.UserRegisterParams{}
-//	err := that.Context.ShouldBind(&serviceWithUser)
-//	if err != nil {
-//		that.JsonOutByError(global.ErrNotice, err, nil)
-//		return
-//	}
-//	serviceWithUser.Filter()
-//	if serviceWithUser.Username == "" && serviceWithUser.Mobile == "" && serviceWithUser.Email == "" {
-//		that.JsonOut(global.ErrNotice, "用户名不能为空", nil)
-//		return
-//	}
-//	userModel, err := serviceWithUser.Register(that.Controller)
-//	if err != nil {
-//		that.JsonOutByError(global.ErrNotice, err, nil)
-//		return
-//	}
-//	that.JsonOut(global.ErrSuccess, "success", userModel)
-//}
+
+import (
+	"context"
+	"net/http/httputil"
+
+	"github.com/boshangad/v1/app/controller"
+	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/ent"
+	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/services/appUserTokenService"
+)
+
+type AccountController struct {
+}
+
+// Login 账号密码登录
+// @route login [POST]
+func (that AccountController) Login(c *controller.Context) {
+	var (
+		ctx            context.Context = context.Background()
+		appUser        *ent.AppUser
+		err            error
+		accessToken    *appUserTokenService.AccessToken
+		httpRequest, _ = httputil.DumpRequest(c.Request, false)
+	)
+	appUser, err = global.Db.AppUser.Query().First(ctx)
+	if err != nil {
+		c.JsonOut(global.ErrNotice, err.Error(), nil)
+		return
+	}
+	accessToken, err = appUserTokenService.NewAccessToken()
+	if err != nil {
+		c.JsonOut(global.ErrNotice, err.Error(), nil)
+		return
+	}
+	// 创建token记录
+	err = global.Db.WithTx(ctx, func(db *ent.Client, tx *ent.Tx) error {
+		// 创建登录令牌
+		appUserToken, err := db.AppUserToken.Create().
+			SetAppID(appUser.AppID).
+			SetAppUserID(appUser.ID).
+			SetUserID(appUser.UserID).
+			SetUUID(&accessToken.Uuid).
+			SetExpireTime(accessToken.ExpireTime).
+			SetClientVersion(c.Request.UserAgent()).
+			SetIP(c.ClientIP()).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		// 创建登录日志
+		_, err = db.AppUserLoginLog.Create().
+			SetAppID(appUser.AppID).
+			SetAppUserID(appUser.ID).
+			SetUserID(appUser.UserID).
+			SetIP(c.ClientIP()).
+			SetLoginTypeID(1).
+			SetContent(string(httpRequest)).
+			SetStatus(1).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		// 清除其它的登录令牌
+		_, err = db.AppUserToken.Delete().
+			Where(appusertoken.AppUserIDEQ(appUser.ID), appusertoken.IDNEQ(appUserToken.ID)).
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		c.JsonOut(global.ErrNotice, err.Error(), nil)
+		return
+	}
+	c.JsonOut(global.ErrSuccess, "success", accessToken)
+}
+
+// Register 账号注册
+// @route register [POST]
+func (that AccountController) Register() {
+	// var serviceWithUser = userService.UserRegisterParams{}
+	// err := that.Context.ShouldBind(&serviceWithUser)
+	// if err != nil {
+	// 	that.JsonOutByError(global.ErrNotice, err, nil)
+	// 	return
+	// }
+	// serviceWithUser.Filter()
+	// if serviceWithUser.Username == "" && serviceWithUser.Mobile == "" && serviceWithUser.Email == "" {
+	// 	that.JsonOut(global.ErrNotice, "用户名不能为空", nil)
+	// 	return
+	// }
+	// userModel, err := serviceWithUser.Register(that.Controller)
+	// if err != nil {
+	// 	that.JsonOutByError(global.ErrNotice, err, nil)
+	// 	return
+	// }
+	// that.JsonOut(global.ErrSuccess, "success", userModel)
+}

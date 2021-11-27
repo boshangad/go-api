@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
@@ -18,6 +19,7 @@ type SmsLogCreate struct {
 	config
 	mutation *SmsLogMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -540,6 +542,8 @@ func (slc *SmsLogCreate) createSpec() (*SmsLog, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.Schema = slc.schemaConfig.SmsLog
+	_spec.OnConflict = slc.conflict
 	if id, ok := slc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -686,6 +690,7 @@ func (slc *SmsLogCreate) createSpec() (*SmsLog, *sqlgraph.CreateSpec) {
 				},
 			},
 		}
+		edge.Schema = slc.schemaConfig.SmsLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -695,10 +700,587 @@ func (slc *SmsLogCreate) createSpec() (*SmsLog, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.SmsLog.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SmsLogUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (slc *SmsLogCreate) OnConflict(opts ...sql.ConflictOption) *SmsLogUpsertOne {
+	slc.conflict = opts
+	return &SmsLogUpsertOne{
+		create: slc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.SmsLog.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (slc *SmsLogCreate) OnConflictColumns(columns ...string) *SmsLogUpsertOne {
+	slc.conflict = append(slc.conflict, sql.ConflictColumns(columns...))
+	return &SmsLogUpsertOne{
+		create: slc,
+	}
+}
+
+type (
+	// SmsLogUpsertOne is the builder for "upsert"-ing
+	//  one SmsLog node.
+	SmsLogUpsertOne struct {
+		create *SmsLogCreate
+	}
+
+	// SmsLogUpsert is the "OnConflict" setter.
+	SmsLogUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *SmsLogUpsert) SetCreateTime(v int64) *SmsLogUpsert {
+	u.Set(smslog.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateCreateTime() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldCreateTime)
+	return u
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *SmsLogUpsert) SetCreateBy(v uint64) *SmsLogUpsert {
+	u.Set(smslog.FieldCreateBy, v)
+	return u
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateCreateBy() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldCreateBy)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *SmsLogUpsert) SetUpdateTime(v int64) *SmsLogUpsert {
+	u.Set(smslog.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateUpdateTime() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldUpdateTime)
+	return u
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *SmsLogUpsert) SetUpdateBy(v uint64) *SmsLogUpsert {
+	u.Set(smslog.FieldUpdateBy, v)
+	return u
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateUpdateBy() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldUpdateBy)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *SmsLogUpsert) SetAppID(v uint64) *SmsLogUpsert {
+	u.Set(smslog.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateAppID() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldAppID)
+	return u
+}
+
+// SetDialCode sets the "dial_code" field.
+func (u *SmsLogUpsert) SetDialCode(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldDialCode, v)
+	return u
+}
+
+// UpdateDialCode sets the "dial_code" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateDialCode() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldDialCode)
+	return u
+}
+
+// SetMobile sets the "mobile" field.
+func (u *SmsLogUpsert) SetMobile(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldMobile, v)
+	return u
+}
+
+// UpdateMobile sets the "mobile" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateMobile() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldMobile)
+	return u
+}
+
+// SetScope sets the "scope" field.
+func (u *SmsLogUpsert) SetScope(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldScope, v)
+	return u
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateScope() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldScope)
+	return u
+}
+
+// SetTypeID sets the "type_id" field.
+func (u *SmsLogUpsert) SetTypeID(v uint64) *SmsLogUpsert {
+	u.Set(smslog.FieldTypeID, v)
+	return u
+}
+
+// UpdateTypeID sets the "type_id" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateTypeID() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldTypeID)
+	return u
+}
+
+// SetGateway sets the "gateway" field.
+func (u *SmsLogUpsert) SetGateway(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldGateway, v)
+	return u
+}
+
+// UpdateGateway sets the "gateway" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateGateway() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldGateway)
+	return u
+}
+
+// SetIP sets the "ip" field.
+func (u *SmsLogUpsert) SetIP(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldIP, v)
+	return u
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateIP() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldIP)
+	return u
+}
+
+// SetTemplateID sets the "template_id" field.
+func (u *SmsLogUpsert) SetTemplateID(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldTemplateID, v)
+	return u
+}
+
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateTemplateID() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldTemplateID)
+	return u
+}
+
+// SetTemplateText sets the "template_text" field.
+func (u *SmsLogUpsert) SetTemplateText(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldTemplateText, v)
+	return u
+}
+
+// UpdateTemplateText sets the "template_text" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateTemplateText() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldTemplateText)
+	return u
+}
+
+// SetContent sets the "content" field.
+func (u *SmsLogUpsert) SetContent(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldContent, v)
+	return u
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateContent() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldContent)
+	return u
+}
+
+// SetCheckCount sets the "check_count" field.
+func (u *SmsLogUpsert) SetCheckCount(v uint8) *SmsLogUpsert {
+	u.Set(smslog.FieldCheckCount, v)
+	return u
+}
+
+// UpdateCheckCount sets the "check_count" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateCheckCount() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldCheckCount)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *SmsLogUpsert) SetStatus(v uint) *SmsLogUpsert {
+	u.Set(smslog.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateStatus() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldStatus)
+	return u
+}
+
+// SetReturnMsg sets the "return_msg" field.
+func (u *SmsLogUpsert) SetReturnMsg(v string) *SmsLogUpsert {
+	u.Set(smslog.FieldReturnMsg, v)
+	return u
+}
+
+// UpdateReturnMsg sets the "return_msg" field to the value that was provided on create.
+func (u *SmsLogUpsert) UpdateReturnMsg() *SmsLogUpsert {
+	u.SetExcluded(smslog.FieldReturnMsg)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.SmsLog.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(smslog.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *SmsLogUpsertOne) UpdateNewValues() *SmsLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(smslog.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.SmsLog.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *SmsLogUpsertOne) Ignore() *SmsLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *SmsLogUpsertOne) DoNothing() *SmsLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the SmsLogCreate.OnConflict
+// documentation for more info.
+func (u *SmsLogUpsertOne) Update(set func(*SmsLogUpsert)) *SmsLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&SmsLogUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *SmsLogUpsertOne) SetCreateTime(v int64) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateCreateTime() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *SmsLogUpsertOne) SetCreateBy(v uint64) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetCreateBy(v)
+	})
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateCreateBy() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateCreateBy()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *SmsLogUpsertOne) SetUpdateTime(v int64) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateUpdateTime() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *SmsLogUpsertOne) SetUpdateBy(v uint64) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetUpdateBy(v)
+	})
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateUpdateBy() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateUpdateBy()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *SmsLogUpsertOne) SetAppID(v uint64) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateAppID() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetDialCode sets the "dial_code" field.
+func (u *SmsLogUpsertOne) SetDialCode(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetDialCode(v)
+	})
+}
+
+// UpdateDialCode sets the "dial_code" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateDialCode() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateDialCode()
+	})
+}
+
+// SetMobile sets the "mobile" field.
+func (u *SmsLogUpsertOne) SetMobile(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetMobile(v)
+	})
+}
+
+// UpdateMobile sets the "mobile" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateMobile() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateMobile()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *SmsLogUpsertOne) SetScope(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateScope() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// SetTypeID sets the "type_id" field.
+func (u *SmsLogUpsertOne) SetTypeID(v uint64) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetTypeID(v)
+	})
+}
+
+// UpdateTypeID sets the "type_id" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateTypeID() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateTypeID()
+	})
+}
+
+// SetGateway sets the "gateway" field.
+func (u *SmsLogUpsertOne) SetGateway(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetGateway(v)
+	})
+}
+
+// UpdateGateway sets the "gateway" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateGateway() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateGateway()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *SmsLogUpsertOne) SetIP(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateIP() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetTemplateID sets the "template_id" field.
+func (u *SmsLogUpsertOne) SetTemplateID(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetTemplateID(v)
+	})
+}
+
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateTemplateID() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateTemplateID()
+	})
+}
+
+// SetTemplateText sets the "template_text" field.
+func (u *SmsLogUpsertOne) SetTemplateText(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetTemplateText(v)
+	})
+}
+
+// UpdateTemplateText sets the "template_text" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateTemplateText() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateTemplateText()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *SmsLogUpsertOne) SetContent(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateContent() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// SetCheckCount sets the "check_count" field.
+func (u *SmsLogUpsertOne) SetCheckCount(v uint8) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetCheckCount(v)
+	})
+}
+
+// UpdateCheckCount sets the "check_count" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateCheckCount() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateCheckCount()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *SmsLogUpsertOne) SetStatus(v uint) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateStatus() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetReturnMsg sets the "return_msg" field.
+func (u *SmsLogUpsertOne) SetReturnMsg(v string) *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetReturnMsg(v)
+	})
+}
+
+// UpdateReturnMsg sets the "return_msg" field to the value that was provided on create.
+func (u *SmsLogUpsertOne) UpdateReturnMsg() *SmsLogUpsertOne {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateReturnMsg()
+	})
+}
+
+// Exec executes the query.
+func (u *SmsLogUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for SmsLogCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *SmsLogUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *SmsLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *SmsLogUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // SmsLogCreateBulk is the builder for creating many SmsLog entities in bulk.
 type SmsLogCreateBulk struct {
 	config
 	builders []*SmsLogCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the SmsLog entities in the database.
@@ -725,6 +1307,7 @@ func (slcb *SmsLogCreateBulk) Save(ctx context.Context) ([]*SmsLog, error) {
 					_, err = mutators[i+1].Mutate(root, slcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = slcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, slcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -775,6 +1358,360 @@ func (slcb *SmsLogCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (slcb *SmsLogCreateBulk) ExecX(ctx context.Context) {
 	if err := slcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.SmsLog.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SmsLogUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (slcb *SmsLogCreateBulk) OnConflict(opts ...sql.ConflictOption) *SmsLogUpsertBulk {
+	slcb.conflict = opts
+	return &SmsLogUpsertBulk{
+		create: slcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.SmsLog.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (slcb *SmsLogCreateBulk) OnConflictColumns(columns ...string) *SmsLogUpsertBulk {
+	slcb.conflict = append(slcb.conflict, sql.ConflictColumns(columns...))
+	return &SmsLogUpsertBulk{
+		create: slcb,
+	}
+}
+
+// SmsLogUpsertBulk is the builder for "upsert"-ing
+// a bulk of SmsLog nodes.
+type SmsLogUpsertBulk struct {
+	create *SmsLogCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.SmsLog.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(smslog.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *SmsLogUpsertBulk) UpdateNewValues() *SmsLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(smslog.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.SmsLog.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *SmsLogUpsertBulk) Ignore() *SmsLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *SmsLogUpsertBulk) DoNothing() *SmsLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the SmsLogCreateBulk.OnConflict
+// documentation for more info.
+func (u *SmsLogUpsertBulk) Update(set func(*SmsLogUpsert)) *SmsLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&SmsLogUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *SmsLogUpsertBulk) SetCreateTime(v int64) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateCreateTime() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *SmsLogUpsertBulk) SetCreateBy(v uint64) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetCreateBy(v)
+	})
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateCreateBy() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateCreateBy()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *SmsLogUpsertBulk) SetUpdateTime(v int64) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateUpdateTime() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *SmsLogUpsertBulk) SetUpdateBy(v uint64) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetUpdateBy(v)
+	})
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateUpdateBy() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateUpdateBy()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *SmsLogUpsertBulk) SetAppID(v uint64) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateAppID() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetDialCode sets the "dial_code" field.
+func (u *SmsLogUpsertBulk) SetDialCode(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetDialCode(v)
+	})
+}
+
+// UpdateDialCode sets the "dial_code" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateDialCode() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateDialCode()
+	})
+}
+
+// SetMobile sets the "mobile" field.
+func (u *SmsLogUpsertBulk) SetMobile(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetMobile(v)
+	})
+}
+
+// UpdateMobile sets the "mobile" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateMobile() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateMobile()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *SmsLogUpsertBulk) SetScope(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateScope() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// SetTypeID sets the "type_id" field.
+func (u *SmsLogUpsertBulk) SetTypeID(v uint64) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetTypeID(v)
+	})
+}
+
+// UpdateTypeID sets the "type_id" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateTypeID() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateTypeID()
+	})
+}
+
+// SetGateway sets the "gateway" field.
+func (u *SmsLogUpsertBulk) SetGateway(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetGateway(v)
+	})
+}
+
+// UpdateGateway sets the "gateway" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateGateway() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateGateway()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *SmsLogUpsertBulk) SetIP(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateIP() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetTemplateID sets the "template_id" field.
+func (u *SmsLogUpsertBulk) SetTemplateID(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetTemplateID(v)
+	})
+}
+
+// UpdateTemplateID sets the "template_id" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateTemplateID() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateTemplateID()
+	})
+}
+
+// SetTemplateText sets the "template_text" field.
+func (u *SmsLogUpsertBulk) SetTemplateText(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetTemplateText(v)
+	})
+}
+
+// UpdateTemplateText sets the "template_text" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateTemplateText() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateTemplateText()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *SmsLogUpsertBulk) SetContent(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateContent() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// SetCheckCount sets the "check_count" field.
+func (u *SmsLogUpsertBulk) SetCheckCount(v uint8) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetCheckCount(v)
+	})
+}
+
+// UpdateCheckCount sets the "check_count" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateCheckCount() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateCheckCount()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *SmsLogUpsertBulk) SetStatus(v uint) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateStatus() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetReturnMsg sets the "return_msg" field.
+func (u *SmsLogUpsertBulk) SetReturnMsg(v string) *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.SetReturnMsg(v)
+	})
+}
+
+// UpdateReturnMsg sets the "return_msg" field to the value that was provided on create.
+func (u *SmsLogUpsertBulk) UpdateReturnMsg() *SmsLogUpsertBulk {
+	return u.Update(func(s *SmsLogUpsert) {
+		s.UpdateReturnMsg()
+	})
+}
+
+// Exec executes the query.
+func (u *SmsLogUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SmsLogCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for SmsLogCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *SmsLogUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

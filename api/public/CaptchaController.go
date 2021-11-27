@@ -24,7 +24,7 @@ func (CaptchaController) View(c *controller.Context) {
 		name          = strings.ToLower(strings.TrimSpace(c.Param("name")))
 		width, _      = strconv.ParseInt(c.Query("width"), 0, 64)
 		height, _     = strconv.ParseInt(c.Query("height"), 0, 64)
-		t             = c.DefaultQuery("type", "image")
+		t             = c.DefaultQuery("type", name)
 		scope         = c.DefaultQuery("scope", "login")
 		captchaStruct *base64Captcha.Captcha
 		captcha       config.Captcha
@@ -54,6 +54,7 @@ func (CaptchaController) View(c *controller.Context) {
 		c.JsonOut(global.ErrNotice, "code generation failed, please try again later.", nil)
 		return
 	}
+
 	b64s = b64s[22:]
 	// 成图片文件并把文件写入到buffer
 	contentBytes, _ := base64.StdEncoding.DecodeString(b64s)

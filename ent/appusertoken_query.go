@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/user"
 )
@@ -31,6 +33,7 @@ type AppUserTokenQuery struct {
 	withApp     *AppQuery
 	withAppUser *AppUserQuery
 	withUser    *UserQuery
+	modifiers   []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -83,6 +86,9 @@ func (autq *AppUserTokenQuery) QueryApp() *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appusertoken.AppTable, appusertoken.AppColumn),
 		)
+		schemaConfig := autq.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUserToken
 		fromU = sqlgraph.SetNeighbors(autq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -105,6 +111,9 @@ func (autq *AppUserTokenQuery) QueryAppUser() *AppUserQuery {
 			sqlgraph.To(appuser.Table, appuser.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appusertoken.AppUserTable, appusertoken.AppUserColumn),
 		)
+		schemaConfig := autq.schemaConfig
+		step.To.Schema = schemaConfig.AppUser
+		step.Edge.Schema = schemaConfig.AppUserToken
 		fromU = sqlgraph.SetNeighbors(autq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -127,6 +136,9 @@ func (autq *AppUserTokenQuery) QueryUser() *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appusertoken.UserTable, appusertoken.UserColumn),
 		)
+		schemaConfig := autq.schemaConfig
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUserToken
 		fromU = sqlgraph.SetNeighbors(autq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -440,6 +452,11 @@ func (autq *AppUserTokenQuery) sqlAll(ctx context.Context) ([]*AppUserToken, err
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(autq.modifiers) > 0 {
+		_spec.Modifiers = autq.modifiers
+	}
+	_spec.Node.Schema = autq.schemaConfig.AppUserToken
+	ctx = internal.NewSchemaConfigContext(ctx, autq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, autq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -530,6 +547,11 @@ func (autq *AppUserTokenQuery) sqlAll(ctx context.Context) ([]*AppUserToken, err
 
 func (autq *AppUserTokenQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := autq.querySpec()
+	if len(autq.modifiers) > 0 {
+		_spec.Modifiers = autq.modifiers
+	}
+	_spec.Node.Schema = autq.schemaConfig.AppUserToken
+	ctx = internal.NewSchemaConfigContext(ctx, autq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, autq.driver, _spec)
 }
 
@@ -601,6 +623,12 @@ func (autq *AppUserTokenQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = autq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range autq.modifiers {
+		m(selector)
+	}
+	t1.Schema(autq.schemaConfig.AppUserToken)
+	ctx = internal.NewSchemaConfigContext(ctx, autq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range autq.predicates {
 		p(selector)
 	}
@@ -616,6 +644,32 @@ func (autq *AppUserTokenQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (autq *AppUserTokenQuery) ForUpdate(opts ...sql.LockOption) *AppUserTokenQuery {
+	if autq.driver.Dialect() == dialect.Postgres {
+		autq.Unique(false)
+	}
+	autq.modifiers = append(autq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return autq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (autq *AppUserTokenQuery) ForShare(opts ...sql.LockOption) *AppUserTokenQuery {
+	if autq.driver.Dialect() == dialect.Postgres {
+		autq.Unique(false)
+	}
+	autq.modifiers = append(autq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return autq
 }
 
 // AppUserTokenGroupBy is the group-by builder for AppUserToken entities.

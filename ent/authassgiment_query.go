@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authassgiment"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -24,6 +26,7 @@ type AuthAssgimentQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.AuthAssgiment
+	modifiers  []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -301,6 +304,11 @@ func (aaq *AuthAssgimentQuery) sqlAll(ctx context.Context) ([]*AuthAssgiment, er
 		node := nodes[len(nodes)-1]
 		return node.assignValues(columns, values)
 	}
+	if len(aaq.modifiers) > 0 {
+		_spec.Modifiers = aaq.modifiers
+	}
+	_spec.Node.Schema = aaq.schemaConfig.AuthAssgiment
+	ctx = internal.NewSchemaConfigContext(ctx, aaq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, aaq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -312,6 +320,11 @@ func (aaq *AuthAssgimentQuery) sqlAll(ctx context.Context) ([]*AuthAssgiment, er
 
 func (aaq *AuthAssgimentQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aaq.querySpec()
+	if len(aaq.modifiers) > 0 {
+		_spec.Modifiers = aaq.modifiers
+	}
+	_spec.Node.Schema = aaq.schemaConfig.AuthAssgiment
+	ctx = internal.NewSchemaConfigContext(ctx, aaq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, aaq.driver, _spec)
 }
 
@@ -383,6 +396,12 @@ func (aaq *AuthAssgimentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aaq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range aaq.modifiers {
+		m(selector)
+	}
+	t1.Schema(aaq.schemaConfig.AuthAssgiment)
+	ctx = internal.NewSchemaConfigContext(ctx, aaq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range aaq.predicates {
 		p(selector)
 	}
@@ -398,6 +417,32 @@ func (aaq *AuthAssgimentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aaq *AuthAssgimentQuery) ForUpdate(opts ...sql.LockOption) *AuthAssgimentQuery {
+	if aaq.driver.Dialect() == dialect.Postgres {
+		aaq.Unique(false)
+	}
+	aaq.modifiers = append(aaq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aaq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aaq *AuthAssgimentQuery) ForShare(opts ...sql.LockOption) *AuthAssgimentQuery {
+	if aaq.driver.Dialect() == dialect.Postgres {
+		aaq.Unique(false)
+	}
+	aaq.modifiers = append(aaq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aaq
 }
 
 // AuthAssgimentGroupBy is the group-by builder for AuthAssgiment entities.

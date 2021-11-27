@@ -67,10 +67,12 @@ func (that *Captcha) Driver() (driver base64Captcha.Driver) {
 	// 宽度锁定
 	if that.Width < 1 {
 		if that.MaxWidth < 1 {
-			that.Width = 120
+			that.Width = 256
 		} else {
 			that.Width = helpers.RandomRangeInt(1, that.MaxWidth)
 		}
+	} else if that.Width > 1024 {
+		that.Width = 256
 	}
 	// 高度锁定
 	if that.Height < 1 {
@@ -79,6 +81,8 @@ func (that *Captcha) Driver() (driver base64Captcha.Driver) {
 		} else {
 			that.Height = helpers.RandomRangeInt(1, that.MaxHeight)
 		}
+	} else if that.Height > 960 {
+		that.Height = 60
 	}
 	// 噪点数
 	if that.NoiseCount < 1 {

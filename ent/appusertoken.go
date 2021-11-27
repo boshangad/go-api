@@ -37,13 +37,13 @@ type AppUserToken struct {
 	ClientVersion string `json:"client_version,omitempty"`
 	// UUID holds the value of the "uuid" field.
 	// 设备唯一标识
-	UUID uuid.UUID `json:"uuid,omitempty"`
+	UUID *uuid.UUID `json:"uuid,omitempty"`
 	// IP holds the value of the "ip" field.
 	// IP地址
 	IP string `json:"ip,omitempty"`
 	// ExpireTime holds the value of the "expire_time" field.
 	// 失效时间
-	ExpireTime uint64 `json:"expire_time,omitempty"`
+	ExpireTime int64 `json:"expire_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AppUserTokenQuery when eager-loading is set.
 	Edges AppUserTokenEdges `json:"edges"`
@@ -170,7 +170,7 @@ func (aut *AppUserToken) assignValues(columns []string, values []interface{}) er
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field uuid", values[i])
 			} else if value != nil {
-				aut.UUID = *value
+				aut.UUID = value
 			}
 		case appusertoken.FieldIP:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -182,7 +182,7 @@ func (aut *AppUserToken) assignValues(columns []string, values []interface{}) er
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field expire_time", values[i])
 			} else if value.Valid {
-				aut.ExpireTime = uint64(value.Int64)
+				aut.ExpireTime = value.Int64
 			}
 		}
 	}

@@ -1477,8 +1477,8 @@ type AppOptionMutation struct {
 	description    *string
 	name           *string
 	value          *string
-	expire_time    *uint64
-	addexpire_time *uint64
+	expire_time    *int64
+	addexpire_time *int64
 	edit_type      *uint
 	addedit_type   *uint
 	clearedFields  map[string]struct{}
@@ -1979,13 +1979,13 @@ func (m *AppOptionMutation) ResetValue() {
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (m *AppOptionMutation) SetExpireTime(u uint64) {
-	m.expire_time = &u
+func (m *AppOptionMutation) SetExpireTime(i int64) {
+	m.expire_time = &i
 	m.addexpire_time = nil
 }
 
 // ExpireTime returns the value of the "expire_time" field in the mutation.
-func (m *AppOptionMutation) ExpireTime() (r uint64, exists bool) {
+func (m *AppOptionMutation) ExpireTime() (r int64, exists bool) {
 	v := m.expire_time
 	if v == nil {
 		return
@@ -1996,7 +1996,7 @@ func (m *AppOptionMutation) ExpireTime() (r uint64, exists bool) {
 // OldExpireTime returns the old "expire_time" field's value of the AppOption entity.
 // If the AppOption object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AppOptionMutation) OldExpireTime(ctx context.Context) (v uint64, err error) {
+func (m *AppOptionMutation) OldExpireTime(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldExpireTime is only allowed on UpdateOne operations")
 	}
@@ -2010,17 +2010,17 @@ func (m *AppOptionMutation) OldExpireTime(ctx context.Context) (v uint64, err er
 	return oldValue.ExpireTime, nil
 }
 
-// AddExpireTime adds u to the "expire_time" field.
-func (m *AppOptionMutation) AddExpireTime(u uint64) {
+// AddExpireTime adds i to the "expire_time" field.
+func (m *AppOptionMutation) AddExpireTime(i int64) {
 	if m.addexpire_time != nil {
-		*m.addexpire_time += u
+		*m.addexpire_time += i
 	} else {
-		m.addexpire_time = &u
+		m.addexpire_time = &i
 	}
 }
 
 // AddedExpireTime returns the value that was added to the "expire_time" field in this mutation.
-func (m *AppOptionMutation) AddedExpireTime() (r uint64, exists bool) {
+func (m *AppOptionMutation) AddedExpireTime() (r int64, exists bool) {
 	v := m.addexpire_time
 	if v == nil {
 		return
@@ -2303,7 +2303,7 @@ func (m *AppOptionMutation) SetField(name string, value ent.Value) error {
 		m.SetValue(v)
 		return nil
 	case appoption.FieldExpireTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2400,7 +2400,7 @@ func (m *AppOptionMutation) AddField(name string, value ent.Value) error {
 		m.AddUpdateBy(v)
 		return nil
 	case appoption.FieldExpireTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5207,10 +5207,10 @@ type AppUserTokenMutation struct {
 	create_time    *int64
 	addcreate_time *int64
 	client_version *string
-	uuid           *uuid.UUID
+	uuid           **uuid.UUID
 	ip             *string
-	expire_time    *uint64
-	addexpire_time *uint64
+	expire_time    *int64
+	addexpire_time *int64
 	clearedFields  map[string]struct{}
 	app            *uint64
 	clearedapp     bool
@@ -5509,12 +5509,12 @@ func (m *AppUserTokenMutation) ResetClientVersion() {
 }
 
 // SetUUID sets the "uuid" field.
-func (m *AppUserTokenMutation) SetUUID(u uuid.UUID) {
+func (m *AppUserTokenMutation) SetUUID(u *uuid.UUID) {
 	m.uuid = &u
 }
 
 // UUID returns the value of the "uuid" field in the mutation.
-func (m *AppUserTokenMutation) UUID() (r uuid.UUID, exists bool) {
+func (m *AppUserTokenMutation) UUID() (r *uuid.UUID, exists bool) {
 	v := m.uuid
 	if v == nil {
 		return
@@ -5525,7 +5525,7 @@ func (m *AppUserTokenMutation) UUID() (r uuid.UUID, exists bool) {
 // OldUUID returns the old "uuid" field's value of the AppUserToken entity.
 // If the AppUserToken object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AppUserTokenMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *AppUserTokenMutation) OldUUID(ctx context.Context) (v *uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
 	}
@@ -5581,13 +5581,13 @@ func (m *AppUserTokenMutation) ResetIP() {
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (m *AppUserTokenMutation) SetExpireTime(u uint64) {
-	m.expire_time = &u
+func (m *AppUserTokenMutation) SetExpireTime(i int64) {
+	m.expire_time = &i
 	m.addexpire_time = nil
 }
 
 // ExpireTime returns the value of the "expire_time" field in the mutation.
-func (m *AppUserTokenMutation) ExpireTime() (r uint64, exists bool) {
+func (m *AppUserTokenMutation) ExpireTime() (r int64, exists bool) {
 	v := m.expire_time
 	if v == nil {
 		return
@@ -5598,7 +5598,7 @@ func (m *AppUserTokenMutation) ExpireTime() (r uint64, exists bool) {
 // OldExpireTime returns the old "expire_time" field's value of the AppUserToken entity.
 // If the AppUserToken object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AppUserTokenMutation) OldExpireTime(ctx context.Context) (v uint64, err error) {
+func (m *AppUserTokenMutation) OldExpireTime(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldExpireTime is only allowed on UpdateOne operations")
 	}
@@ -5612,17 +5612,17 @@ func (m *AppUserTokenMutation) OldExpireTime(ctx context.Context) (v uint64, err
 	return oldValue.ExpireTime, nil
 }
 
-// AddExpireTime adds u to the "expire_time" field.
-func (m *AppUserTokenMutation) AddExpireTime(u uint64) {
+// AddExpireTime adds i to the "expire_time" field.
+func (m *AppUserTokenMutation) AddExpireTime(i int64) {
 	if m.addexpire_time != nil {
-		*m.addexpire_time += u
+		*m.addexpire_time += i
 	} else {
-		m.addexpire_time = &u
+		m.addexpire_time = &i
 	}
 }
 
 // AddedExpireTime returns the value that was added to the "expire_time" field in this mutation.
-func (m *AppUserTokenMutation) AddedExpireTime() (r uint64, exists bool) {
+func (m *AppUserTokenMutation) AddedExpireTime() (r int64, exists bool) {
 	v := m.addexpire_time
 	if v == nil {
 		return
@@ -5852,7 +5852,7 @@ func (m *AppUserTokenMutation) SetField(name string, value ent.Value) error {
 		m.SetClientVersion(v)
 		return nil
 	case appusertoken.FieldUUID:
-		v, ok := value.(uuid.UUID)
+		v, ok := value.(*uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5866,7 +5866,7 @@ func (m *AppUserTokenMutation) SetField(name string, value ent.Value) error {
 		m.SetIP(v)
 		return nil
 	case appusertoken.FieldExpireTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5915,7 +5915,7 @@ func (m *AppUserTokenMutation) AddField(name string, value ent.Value) error {
 		m.AddCreateTime(v)
 		return nil
 	case appusertoken.FieldExpireTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

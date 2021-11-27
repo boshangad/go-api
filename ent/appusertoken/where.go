@@ -5,6 +5,7 @@ package appusertoken
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/google/uuid"
 )
@@ -128,7 +129,7 @@ func ClientVersion(v string) predicate.AppUserToken {
 }
 
 // UUID applies equality check predicate on the "uuid" field. It's identical to UUIDEQ.
-func UUID(v uuid.UUID) predicate.AppUserToken {
+func UUID(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
@@ -142,7 +143,7 @@ func IP(v string) predicate.AppUserToken {
 }
 
 // ExpireTime applies equality check predicate on the "expire_time" field. It's identical to ExpireTimeEQ.
-func ExpireTime(v uint64) predicate.AppUserToken {
+func ExpireTime(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldExpireTime), v))
 	})
@@ -480,21 +481,21 @@ func ClientVersionContainsFold(v string) predicate.AppUserToken {
 }
 
 // UUIDEQ applies the EQ predicate on the "uuid" field.
-func UUIDEQ(v uuid.UUID) predicate.AppUserToken {
+func UUIDEQ(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
 }
 
 // UUIDNEQ applies the NEQ predicate on the "uuid" field.
-func UUIDNEQ(v uuid.UUID) predicate.AppUserToken {
+func UUIDNEQ(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldUUID), v))
 	})
 }
 
 // UUIDIn applies the In predicate on the "uuid" field.
-func UUIDIn(vs ...uuid.UUID) predicate.AppUserToken {
+func UUIDIn(vs ...*uuid.UUID) predicate.AppUserToken {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -511,7 +512,7 @@ func UUIDIn(vs ...uuid.UUID) predicate.AppUserToken {
 }
 
 // UUIDNotIn applies the NotIn predicate on the "uuid" field.
-func UUIDNotIn(vs ...uuid.UUID) predicate.AppUserToken {
+func UUIDNotIn(vs ...*uuid.UUID) predicate.AppUserToken {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -528,28 +529,28 @@ func UUIDNotIn(vs ...uuid.UUID) predicate.AppUserToken {
 }
 
 // UUIDGT applies the GT predicate on the "uuid" field.
-func UUIDGT(v uuid.UUID) predicate.AppUserToken {
+func UUIDGT(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldUUID), v))
 	})
 }
 
 // UUIDGTE applies the GTE predicate on the "uuid" field.
-func UUIDGTE(v uuid.UUID) predicate.AppUserToken {
+func UUIDGTE(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldUUID), v))
 	})
 }
 
 // UUIDLT applies the LT predicate on the "uuid" field.
-func UUIDLT(v uuid.UUID) predicate.AppUserToken {
+func UUIDLT(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldUUID), v))
 	})
 }
 
 // UUIDLTE applies the LTE predicate on the "uuid" field.
-func UUIDLTE(v uuid.UUID) predicate.AppUserToken {
+func UUIDLTE(v *uuid.UUID) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUUID), v))
 	})
@@ -667,21 +668,21 @@ func IPContainsFold(v string) predicate.AppUserToken {
 }
 
 // ExpireTimeEQ applies the EQ predicate on the "expire_time" field.
-func ExpireTimeEQ(v uint64) predicate.AppUserToken {
+func ExpireTimeEQ(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeNEQ applies the NEQ predicate on the "expire_time" field.
-func ExpireTimeNEQ(v uint64) predicate.AppUserToken {
+func ExpireTimeNEQ(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeIn applies the In predicate on the "expire_time" field.
-func ExpireTimeIn(vs ...uint64) predicate.AppUserToken {
+func ExpireTimeIn(vs ...int64) predicate.AppUserToken {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -698,7 +699,7 @@ func ExpireTimeIn(vs ...uint64) predicate.AppUserToken {
 }
 
 // ExpireTimeNotIn applies the NotIn predicate on the "expire_time" field.
-func ExpireTimeNotIn(vs ...uint64) predicate.AppUserToken {
+func ExpireTimeNotIn(vs ...int64) predicate.AppUserToken {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -715,28 +716,28 @@ func ExpireTimeNotIn(vs ...uint64) predicate.AppUserToken {
 }
 
 // ExpireTimeGT applies the GT predicate on the "expire_time" field.
-func ExpireTimeGT(v uint64) predicate.AppUserToken {
+func ExpireTimeGT(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeGTE applies the GTE predicate on the "expire_time" field.
-func ExpireTimeGTE(v uint64) predicate.AppUserToken {
+func ExpireTimeGTE(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeLT applies the LT predicate on the "expire_time" field.
-func ExpireTimeLT(v uint64) predicate.AppUserToken {
+func ExpireTimeLT(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeLTE applies the LTE predicate on the "expire_time" field.
-func ExpireTimeLTE(v uint64) predicate.AppUserToken {
+func ExpireTimeLTE(v int64) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldExpireTime), v))
 	})
@@ -750,6 +751,9 @@ func HasApp() predicate.AppUserToken {
 			sqlgraph.To(AppTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUserToken
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -762,6 +766,9 @@ func HasAppWith(preds ...predicate.App) predicate.AppUserToken {
 			sqlgraph.To(AppInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUserToken
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -778,6 +785,9 @@ func HasAppUser() predicate.AppUserToken {
 			sqlgraph.To(AppUserTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppUserTable, AppUserColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.AppUser
+		step.Edge.Schema = schemaConfig.AppUserToken
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -790,6 +800,9 @@ func HasAppUserWith(preds ...predicate.AppUser) predicate.AppUserToken {
 			sqlgraph.To(AppUserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppUserTable, AppUserColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.AppUser
+		step.Edge.Schema = schemaConfig.AppUserToken
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -806,6 +819,9 @@ func HasUser() predicate.AppUserToken {
 			sqlgraph.To(UserTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUserToken
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -818,6 +834,9 @@ func HasUserWith(preds ...predicate.User) predicate.AppUserToken {
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUserToken
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

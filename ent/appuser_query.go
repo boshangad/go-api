@@ -8,11 +8,13 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appuser"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/user"
 )
@@ -27,8 +29,9 @@ type AppUserQuery struct {
 	fields     []string
 	predicates []predicate.AppUser
 	// eager-loading edges.
-	withApp  *AppQuery
-	withUser *UserQuery
+	withApp   *AppQuery
+	withUser  *UserQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -81,6 +84,9 @@ func (auq *AppUserQuery) QueryApp() *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuser.AppTable, appuser.AppColumn),
 		)
+		schemaConfig := auq.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUser
 		fromU = sqlgraph.SetNeighbors(auq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -103,6 +109,9 @@ func (auq *AppUserQuery) QueryUser() *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuser.UserTable, appuser.UserColumn),
 		)
+		schemaConfig := auq.schemaConfig
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUser
 		fromU = sqlgraph.SetNeighbors(auq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -403,6 +412,11 @@ func (auq *AppUserQuery) sqlAll(ctx context.Context) ([]*AppUser, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(auq.modifiers) > 0 {
+		_spec.Modifiers = auq.modifiers
+	}
+	_spec.Node.Schema = auq.schemaConfig.AppUser
+	ctx = internal.NewSchemaConfigContext(ctx, auq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, auq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -467,6 +481,11 @@ func (auq *AppUserQuery) sqlAll(ctx context.Context) ([]*AppUser, error) {
 
 func (auq *AppUserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := auq.querySpec()
+	if len(auq.modifiers) > 0 {
+		_spec.Modifiers = auq.modifiers
+	}
+	_spec.Node.Schema = auq.schemaConfig.AppUser
+	ctx = internal.NewSchemaConfigContext(ctx, auq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, auq.driver, _spec)
 }
 
@@ -538,6 +557,12 @@ func (auq *AppUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = auq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range auq.modifiers {
+		m(selector)
+	}
+	t1.Schema(auq.schemaConfig.AppUser)
+	ctx = internal.NewSchemaConfigContext(ctx, auq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range auq.predicates {
 		p(selector)
 	}
@@ -553,6 +578,32 @@ func (auq *AppUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (auq *AppUserQuery) ForUpdate(opts ...sql.LockOption) *AppUserQuery {
+	if auq.driver.Dialect() == dialect.Postgres {
+		auq.Unique(false)
+	}
+	auq.modifiers = append(auq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return auq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (auq *AppUserQuery) ForShare(opts ...sql.LockOption) *AppUserQuery {
+	if auq.driver.Dialect() == dialect.Postgres {
+		auq.Unique(false)
+	}
+	auq.modifiers = append(auq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return auq
 }
 
 // AppUserGroupBy is the group-by builder for AppUser entities.

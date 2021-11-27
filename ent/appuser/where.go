@@ -5,6 +5,7 @@ package appuser
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -2297,6 +2298,9 @@ func HasApp() predicate.AppUser {
 			sqlgraph.To(AppTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUser
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -2309,6 +2313,9 @@ func HasAppWith(preds ...predicate.App) predicate.AppUser {
 			sqlgraph.To(AppInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUser
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -2325,6 +2332,9 @@ func HasUser() predicate.AppUser {
 			sqlgraph.To(UserTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUser
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -2337,6 +2347,9 @@ func HasUserWith(preds ...predicate.User) predicate.AppUser {
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUser
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

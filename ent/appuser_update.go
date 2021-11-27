@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appuser"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/user"
 )
@@ -717,6 +718,7 @@ func (auu *AppUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = auu.schemaConfig.AppUser
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auu.mutation.AppIDs(); len(nodes) > 0 {
@@ -733,6 +735,7 @@ func (auu *AppUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = auu.schemaConfig.AppUser
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -752,6 +755,7 @@ func (auu *AppUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = auu.schemaConfig.AppUser
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auu.mutation.UserIDs(); len(nodes) > 0 {
@@ -768,11 +772,14 @@ func (auu *AppUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = auu.schemaConfig.AppUser
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = auu.schemaConfig.AppUser
+	ctx = internal.NewSchemaConfigContext(ctx, auu.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, auu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{appuser.Label}
@@ -1504,6 +1511,7 @@ func (auuo *AppUserUpdateOne) sqlSave(ctx context.Context) (_node *AppUser, err 
 				},
 			},
 		}
+		edge.Schema = auuo.schemaConfig.AppUser
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auuo.mutation.AppIDs(); len(nodes) > 0 {
@@ -1520,6 +1528,7 @@ func (auuo *AppUserUpdateOne) sqlSave(ctx context.Context) (_node *AppUser, err 
 				},
 			},
 		}
+		edge.Schema = auuo.schemaConfig.AppUser
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -1539,6 +1548,7 @@ func (auuo *AppUserUpdateOne) sqlSave(ctx context.Context) (_node *AppUser, err 
 				},
 			},
 		}
+		edge.Schema = auuo.schemaConfig.AppUser
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auuo.mutation.UserIDs(); len(nodes) > 0 {
@@ -1555,11 +1565,14 @@ func (auuo *AppUserUpdateOne) sqlSave(ctx context.Context) (_node *AppUser, err 
 				},
 			},
 		}
+		edge.Schema = auuo.schemaConfig.AppUser
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = auuo.schemaConfig.AppUser
+	ctx = internal.NewSchemaConfigContext(ctx, auuo.schemaConfig)
 	_node = &AppUser{config: auuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

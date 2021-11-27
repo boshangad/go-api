@@ -38,9 +38,9 @@ func (AppUserToken) Fields() []ent.Field {
 		field.Uint64("app_user_id").Default(0).Comment("应用用户"),
 		field.Uint64("user_id").Default(0).Comment("用户"),
 		field.String("client_version").Default("").Comment("客户端版本").MaxLen(255),
-		field.UUID("uuid", uuid.New()).Default(uuid.New).Comment("设备唯一标识"),
+		field.Bytes("uuid").GoType(&uuid.UUID{}).Comment("设备唯一标识"),
 		field.String("ip").Default("127.0.0.1").Comment("IP地址").MaxLen(16),
-		field.Uint64("expire_time").Default(0).Comment("失效时间"),
+		field.Int64("expire_time").Default(0).Comment("失效时间"),
 	}
 }
 

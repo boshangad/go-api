@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
@@ -20,6 +21,7 @@ type AppUserLoginLogCreate struct {
 	config
 	mutation *AppUserLoginLogMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -322,6 +324,8 @@ func (aullc *AppUserLoginLogCreate) createSpec() (*AppUserLoginLog, *sqlgraph.Cr
 			},
 		}
 	)
+	_spec.Schema = aullc.schemaConfig.AppUserLoginLog
+	_spec.OnConflict = aullc.conflict
 	if id, ok := aullc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -380,6 +384,7 @@ func (aullc *AppUserLoginLogCreate) createSpec() (*AppUserLoginLog, *sqlgraph.Cr
 				},
 			},
 		}
+		edge.Schema = aullc.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -400,6 +405,7 @@ func (aullc *AppUserLoginLogCreate) createSpec() (*AppUserLoginLog, *sqlgraph.Cr
 				},
 			},
 		}
+		edge.Schema = aullc.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -420,6 +426,7 @@ func (aullc *AppUserLoginLogCreate) createSpec() (*AppUserLoginLog, *sqlgraph.Cr
 				},
 			},
 		}
+		edge.Schema = aullc.schemaConfig.AppUserLoginLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -429,10 +436,366 @@ func (aullc *AppUserLoginLogCreate) createSpec() (*AppUserLoginLog, *sqlgraph.Cr
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppUserLoginLog.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppUserLoginLogUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (aullc *AppUserLoginLogCreate) OnConflict(opts ...sql.ConflictOption) *AppUserLoginLogUpsertOne {
+	aullc.conflict = opts
+	return &AppUserLoginLogUpsertOne{
+		create: aullc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppUserLoginLog.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (aullc *AppUserLoginLogCreate) OnConflictColumns(columns ...string) *AppUserLoginLogUpsertOne {
+	aullc.conflict = append(aullc.conflict, sql.ConflictColumns(columns...))
+	return &AppUserLoginLogUpsertOne{
+		create: aullc,
+	}
+}
+
+type (
+	// AppUserLoginLogUpsertOne is the builder for "upsert"-ing
+	//  one AppUserLoginLog node.
+	AppUserLoginLogUpsertOne struct {
+		create *AppUserLoginLogCreate
+	}
+
+	// AppUserLoginLogUpsert is the "OnConflict" setter.
+	AppUserLoginLogUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserLoginLogUpsert) SetCreateTime(v int64) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateCreateTime() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldCreateTime)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserLoginLogUpsert) SetAppID(v uint64) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateAppID() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldAppID)
+	return u
+}
+
+// SetAppUserID sets the "app_user_id" field.
+func (u *AppUserLoginLogUpsert) SetAppUserID(v uint64) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldAppUserID, v)
+	return u
+}
+
+// UpdateAppUserID sets the "app_user_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateAppUserID() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldAppUserID)
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserLoginLogUpsert) SetUserID(v uint64) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldUserID, v)
+	return u
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateUserID() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldUserID)
+	return u
+}
+
+// SetLoginTypeID sets the "login_type_id" field.
+func (u *AppUserLoginLogUpsert) SetLoginTypeID(v uint) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldLoginTypeID, v)
+	return u
+}
+
+// UpdateLoginTypeID sets the "login_type_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateLoginTypeID() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldLoginTypeID)
+	return u
+}
+
+// SetIP sets the "ip" field.
+func (u *AppUserLoginLogUpsert) SetIP(v string) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldIP, v)
+	return u
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateIP() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldIP)
+	return u
+}
+
+// SetContent sets the "content" field.
+func (u *AppUserLoginLogUpsert) SetContent(v string) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldContent, v)
+	return u
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateContent() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldContent)
+	return u
+}
+
+// ClearContent clears the value of the "content" field.
+func (u *AppUserLoginLogUpsert) ClearContent() *AppUserLoginLogUpsert {
+	u.SetNull(appuserloginlog.FieldContent)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *AppUserLoginLogUpsert) SetStatus(v uint) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateStatus() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldStatus)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.AppUserLoginLog.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appuserloginlog.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppUserLoginLogUpsertOne) UpdateNewValues() *AppUserLoginLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(appuserloginlog.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.AppUserLoginLog.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *AppUserLoginLogUpsertOne) Ignore() *AppUserLoginLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppUserLoginLogUpsertOne) DoNothing() *AppUserLoginLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppUserLoginLogCreate.OnConflict
+// documentation for more info.
+func (u *AppUserLoginLogUpsertOne) Update(set func(*AppUserLoginLogUpsert)) *AppUserLoginLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppUserLoginLogUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserLoginLogUpsertOne) SetCreateTime(v int64) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateCreateTime() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserLoginLogUpsertOne) SetAppID(v uint64) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateAppID() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetAppUserID sets the "app_user_id" field.
+func (u *AppUserLoginLogUpsertOne) SetAppUserID(v uint64) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetAppUserID(v)
+	})
+}
+
+// UpdateAppUserID sets the "app_user_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateAppUserID() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateAppUserID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserLoginLogUpsertOne) SetUserID(v uint64) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateUserID() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetLoginTypeID sets the "login_type_id" field.
+func (u *AppUserLoginLogUpsertOne) SetLoginTypeID(v uint) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetLoginTypeID(v)
+	})
+}
+
+// UpdateLoginTypeID sets the "login_type_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateLoginTypeID() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateLoginTypeID()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *AppUserLoginLogUpsertOne) SetIP(v string) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateIP() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *AppUserLoginLogUpsertOne) SetContent(v string) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateContent() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// ClearContent clears the value of the "content" field.
+func (u *AppUserLoginLogUpsertOne) ClearContent() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.ClearContent()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *AppUserLoginLogUpsertOne) SetStatus(v uint) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateStatus() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// Exec executes the query.
+func (u *AppUserLoginLogUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppUserLoginLogCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppUserLoginLogUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *AppUserLoginLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *AppUserLoginLogUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // AppUserLoginLogCreateBulk is the builder for creating many AppUserLoginLog entities in bulk.
 type AppUserLoginLogCreateBulk struct {
 	config
 	builders []*AppUserLoginLogCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the AppUserLoginLog entities in the database.
@@ -459,6 +822,7 @@ func (aullcb *AppUserLoginLogCreateBulk) Save(ctx context.Context) ([]*AppUserLo
 					_, err = mutators[i+1].Mutate(root, aullcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = aullcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, aullcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -509,6 +873,241 @@ func (aullcb *AppUserLoginLogCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (aullcb *AppUserLoginLogCreateBulk) ExecX(ctx context.Context) {
 	if err := aullcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppUserLoginLog.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppUserLoginLogUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (aullcb *AppUserLoginLogCreateBulk) OnConflict(opts ...sql.ConflictOption) *AppUserLoginLogUpsertBulk {
+	aullcb.conflict = opts
+	return &AppUserLoginLogUpsertBulk{
+		create: aullcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppUserLoginLog.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (aullcb *AppUserLoginLogCreateBulk) OnConflictColumns(columns ...string) *AppUserLoginLogUpsertBulk {
+	aullcb.conflict = append(aullcb.conflict, sql.ConflictColumns(columns...))
+	return &AppUserLoginLogUpsertBulk{
+		create: aullcb,
+	}
+}
+
+// AppUserLoginLogUpsertBulk is the builder for "upsert"-ing
+// a bulk of AppUserLoginLog nodes.
+type AppUserLoginLogUpsertBulk struct {
+	create *AppUserLoginLogCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.AppUserLoginLog.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appuserloginlog.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppUserLoginLogUpsertBulk) UpdateNewValues() *AppUserLoginLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(appuserloginlog.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.AppUserLoginLog.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *AppUserLoginLogUpsertBulk) Ignore() *AppUserLoginLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppUserLoginLogUpsertBulk) DoNothing() *AppUserLoginLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppUserLoginLogCreateBulk.OnConflict
+// documentation for more info.
+func (u *AppUserLoginLogUpsertBulk) Update(set func(*AppUserLoginLogUpsert)) *AppUserLoginLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppUserLoginLogUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserLoginLogUpsertBulk) SetCreateTime(v int64) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateCreateTime() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserLoginLogUpsertBulk) SetAppID(v uint64) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateAppID() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetAppUserID sets the "app_user_id" field.
+func (u *AppUserLoginLogUpsertBulk) SetAppUserID(v uint64) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetAppUserID(v)
+	})
+}
+
+// UpdateAppUserID sets the "app_user_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateAppUserID() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateAppUserID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserLoginLogUpsertBulk) SetUserID(v uint64) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateUserID() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetLoginTypeID sets the "login_type_id" field.
+func (u *AppUserLoginLogUpsertBulk) SetLoginTypeID(v uint) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetLoginTypeID(v)
+	})
+}
+
+// UpdateLoginTypeID sets the "login_type_id" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateLoginTypeID() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateLoginTypeID()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *AppUserLoginLogUpsertBulk) SetIP(v string) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateIP() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *AppUserLoginLogUpsertBulk) SetContent(v string) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateContent() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// ClearContent clears the value of the "content" field.
+func (u *AppUserLoginLogUpsertBulk) ClearContent() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.ClearContent()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *AppUserLoginLogUpsertBulk) SetStatus(v uint) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateStatus() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// Exec executes the query.
+func (u *AppUserLoginLogUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AppUserLoginLogCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppUserLoginLogCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppUserLoginLogUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

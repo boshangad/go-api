@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authrole"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -24,6 +26,7 @@ type AuthRoleQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.AuthRole
+	modifiers  []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -301,6 +304,11 @@ func (arq *AuthRoleQuery) sqlAll(ctx context.Context) ([]*AuthRole, error) {
 		node := nodes[len(nodes)-1]
 		return node.assignValues(columns, values)
 	}
+	if len(arq.modifiers) > 0 {
+		_spec.Modifiers = arq.modifiers
+	}
+	_spec.Node.Schema = arq.schemaConfig.AuthRole
+	ctx = internal.NewSchemaConfigContext(ctx, arq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, arq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -312,6 +320,11 @@ func (arq *AuthRoleQuery) sqlAll(ctx context.Context) ([]*AuthRole, error) {
 
 func (arq *AuthRoleQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := arq.querySpec()
+	if len(arq.modifiers) > 0 {
+		_spec.Modifiers = arq.modifiers
+	}
+	_spec.Node.Schema = arq.schemaConfig.AuthRole
+	ctx = internal.NewSchemaConfigContext(ctx, arq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, arq.driver, _spec)
 }
 
@@ -383,6 +396,12 @@ func (arq *AuthRoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = arq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range arq.modifiers {
+		m(selector)
+	}
+	t1.Schema(arq.schemaConfig.AuthRole)
+	ctx = internal.NewSchemaConfigContext(ctx, arq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range arq.predicates {
 		p(selector)
 	}
@@ -398,6 +417,32 @@ func (arq *AuthRoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (arq *AuthRoleQuery) ForUpdate(opts ...sql.LockOption) *AuthRoleQuery {
+	if arq.driver.Dialect() == dialect.Postgres {
+		arq.Unique(false)
+	}
+	arq.modifiers = append(arq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return arq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (arq *AuthRoleQuery) ForShare(opts ...sql.LockOption) *AuthRoleQuery {
+	if arq.driver.Dialect() == dialect.Postgres {
+		arq.Unique(false)
+	}
+	arq.modifiers = append(arq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return arq
 }
 
 // AuthRoleGroupBy is the group-by builder for AuthRole entities.

@@ -1,16 +1,40 @@
+#应用配置项
 app:
   baseurl: http://localhost:8080
   listen: :8080
   name: test
   rootpath: ""
+# DB数据库
 db:
-  db:
-    driver: mysql
-    host: 127.0.0.1
-    port: 3306
-    username: root
-    password: 'xingyun'
-    dbname: ad_boshang    
+  driver: mysql
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: "xingyun"
+  dbname: "ad_boshang"
+# 日志功能
+log:
+  director: ""
+  Level: "debug"
+  showLine: true
+  stacktraceKey: ""
+  encodeLevel: "LowercaseLevelEncoder"
+  logInConsole: true
+  prefix: ""
+  format: "row"
+  maxSize: 0
+  maxBackups: 0
+  maxAge: 0
+  compress: true
+cache:
+  type: "file"
+  director: ""
+  keyPrefix: ""
+  cacheFileSuffix: ""
+  directoryLevel: 0
+  gcProbability: 0
+  fileMode: 0644
+  dirMode: 0744
 captcha:
   image:
     type: image

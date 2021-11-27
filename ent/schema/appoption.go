@@ -41,7 +41,7 @@ func (AppOption) Fields() []ent.Field {
 		field.String("description").Default("").Comment("描述").MaxLen(225),
 		field.String("name").Default("").Comment("键").MaxLen(128),
 		field.String("value").Default("").Comment("值").MaxLen(255),
-		field.Uint64("expire_time").Default(0).Comment("失效时间"),
+		field.Int64("expire_time").Default(0).Comment("失效时间"),
 		field.Uint("edit_type").Default(0).Comment("编辑类型"),
 	}
 }

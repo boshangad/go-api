@@ -5,6 +5,7 @@ package app
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -1492,6 +1493,9 @@ func HasAppOptions() predicate.App {
 			sqlgraph.To(AppOptionsTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, AppOptionsTable, AppOptionsColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.AppOption
+		step.Edge.Schema = schemaConfig.AppOption
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -1504,6 +1508,9 @@ func HasAppOptionsWith(preds ...predicate.AppOption) predicate.App {
 			sqlgraph.To(AppOptionsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, AppOptionsTable, AppOptionsColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.AppOption
+		step.Edge.Schema = schemaConfig.AppOption
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

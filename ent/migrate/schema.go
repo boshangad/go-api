@@ -13,7 +13,7 @@ var (
 	AppColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "create_by", Type: field.TypeUint64, Default: 0},
 		{Name: "update_time", Type: field.TypeInt64, Default: 0},
 		{Name: "update_by", Type: field.TypeUint64, Default: 0},
@@ -44,7 +44,7 @@ var (
 	// AppOptionColumns holds the columns for the "app_option" table.
 	AppOptionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "create_by", Type: field.TypeUint64, Default: 0},
 		{Name: "update_time", Type: field.TypeInt64, Default: 0},
 		{Name: "update_by", Type: field.TypeUint64, Default: 0},
@@ -52,7 +52,7 @@ var (
 		{Name: "description", Type: field.TypeString, Size: 225, Default: ""},
 		{Name: "name", Type: field.TypeString, Size: 128, Default: ""},
 		{Name: "value", Type: field.TypeString, Size: 255, Default: ""},
-		{Name: "expire_time", Type: field.TypeUint64, Default: 0},
+		{Name: "expire_time", Type: field.TypeInt64, Default: 0},
 		{Name: "edit_type", Type: field.TypeUint, Default: 0},
 		{Name: "app_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -85,7 +85,7 @@ var (
 	// AppUserColumns holds the columns for the "app_user" table.
 	AppUserColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "update_time", Type: field.TypeInt64, Default: 0},
 		{Name: "open_id", Type: field.TypeString, Size: 64, Default: ""},
 		{Name: "unionid", Type: field.TypeString, Size: 32, Default: ""},
@@ -153,7 +153,7 @@ var (
 	// AppUserLoginLogColumns holds the columns for the "app_user_login_log" table.
 	AppUserLoginLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "login_type_id", Type: field.TypeUint, Default: 0},
 		{Name: "ip", Type: field.TypeString, Size: 16, Default: "127.0.0.1"},
 		{Name: "content", Type: field.TypeString, Nullable: true},
@@ -198,11 +198,11 @@ var (
 	// AppUserTokenColumns holds the columns for the "app_user_token" table.
 	AppUserTokenColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "client_version", Type: field.TypeString, Size: 255, Default: ""},
-		{Name: "uuid", Type: field.TypeUUID},
+		{Name: "uuid", Type: field.TypeBytes},
 		{Name: "ip", Type: field.TypeString, Size: 16, Default: "127.0.0.1"},
-		{Name: "expire_time", Type: field.TypeUint64, Default: 0},
+		{Name: "expire_time", Type: field.TypeInt64, Default: 0},
 		{Name: "app_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "app_user_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "user_id", Type: field.TypeUint64, Nullable: true},
@@ -303,7 +303,7 @@ var (
 	// EmailLogColumns holds the columns for the "email_log" table.
 	EmailLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "create_by", Type: field.TypeUint64, Default: 0},
 		{Name: "update_time", Type: field.TypeInt64, Default: 0},
 		{Name: "update_by", Type: field.TypeUint64, Default: 0},
@@ -346,7 +346,7 @@ var (
 	// SmsLogColumns holds the columns for the "sms_log" table.
 	SmsLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "create_by", Type: field.TypeUint64, Default: 0},
 		{Name: "update_time", Type: field.TypeInt64, Default: 0},
 		{Name: "update_by", Type: field.TypeUint64, Default: 0},
@@ -389,7 +389,7 @@ var (
 	UserColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
-		{Name: "create_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64, Default: 1637990296},
 		{Name: "create_by", Type: field.TypeUint64, Default: 0},
 		{Name: "update_time", Type: field.TypeInt64, Default: 0},
 		{Name: "update_by", Type: field.TypeUint64, Default: 0},

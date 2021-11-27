@@ -5,6 +5,7 @@ package appoption
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -155,7 +156,7 @@ func Value(v string) predicate.AppOption {
 }
 
 // ExpireTime applies equality check predicate on the "expire_time" field. It's identical to ExpireTimeEQ.
-func ExpireTime(v uint64) predicate.AppOption {
+func ExpireTime(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldExpireTime), v))
 	})
@@ -965,21 +966,21 @@ func ValueContainsFold(v string) predicate.AppOption {
 }
 
 // ExpireTimeEQ applies the EQ predicate on the "expire_time" field.
-func ExpireTimeEQ(v uint64) predicate.AppOption {
+func ExpireTimeEQ(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeNEQ applies the NEQ predicate on the "expire_time" field.
-func ExpireTimeNEQ(v uint64) predicate.AppOption {
+func ExpireTimeNEQ(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeIn applies the In predicate on the "expire_time" field.
-func ExpireTimeIn(vs ...uint64) predicate.AppOption {
+func ExpireTimeIn(vs ...int64) predicate.AppOption {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -996,7 +997,7 @@ func ExpireTimeIn(vs ...uint64) predicate.AppOption {
 }
 
 // ExpireTimeNotIn applies the NotIn predicate on the "expire_time" field.
-func ExpireTimeNotIn(vs ...uint64) predicate.AppOption {
+func ExpireTimeNotIn(vs ...int64) predicate.AppOption {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1013,28 +1014,28 @@ func ExpireTimeNotIn(vs ...uint64) predicate.AppOption {
 }
 
 // ExpireTimeGT applies the GT predicate on the "expire_time" field.
-func ExpireTimeGT(v uint64) predicate.AppOption {
+func ExpireTimeGT(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeGTE applies the GTE predicate on the "expire_time" field.
-func ExpireTimeGTE(v uint64) predicate.AppOption {
+func ExpireTimeGTE(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeLT applies the LT predicate on the "expire_time" field.
-func ExpireTimeLT(v uint64) predicate.AppOption {
+func ExpireTimeLT(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldExpireTime), v))
 	})
 }
 
 // ExpireTimeLTE applies the LTE predicate on the "expire_time" field.
-func ExpireTimeLTE(v uint64) predicate.AppOption {
+func ExpireTimeLTE(v int64) predicate.AppOption {
 	return predicate.AppOption(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldExpireTime), v))
 	})
@@ -1124,6 +1125,9 @@ func HasApp() predicate.AppOption {
 			sqlgraph.To(AppTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppOption
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -1136,6 +1140,9 @@ func HasAppWith(preds ...predicate.App) predicate.AppOption {
 			sqlgraph.To(AppInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppOption
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

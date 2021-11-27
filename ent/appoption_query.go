@@ -8,11 +8,13 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appoption"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -26,7 +28,8 @@ type AppOptionQuery struct {
 	fields     []string
 	predicates []predicate.AppOption
 	// eager-loading edges.
-	withApp *AppQuery
+	withApp   *AppQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,9 @@ func (aoq *AppOptionQuery) QueryApp() *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, appoption.AppTable, appoption.AppColumn),
 		)
+		schemaConfig := aoq.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppOption
 		fromU = sqlgraph.SetNeighbors(aoq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -366,6 +372,11 @@ func (aoq *AppOptionQuery) sqlAll(ctx context.Context) ([]*AppOption, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(aoq.modifiers) > 0 {
+		_spec.Modifiers = aoq.modifiers
+	}
+	_spec.Node.Schema = aoq.schemaConfig.AppOption
+	ctx = internal.NewSchemaConfigContext(ctx, aoq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, aoq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -404,6 +415,11 @@ func (aoq *AppOptionQuery) sqlAll(ctx context.Context) ([]*AppOption, error) {
 
 func (aoq *AppOptionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aoq.querySpec()
+	if len(aoq.modifiers) > 0 {
+		_spec.Modifiers = aoq.modifiers
+	}
+	_spec.Node.Schema = aoq.schemaConfig.AppOption
+	ctx = internal.NewSchemaConfigContext(ctx, aoq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, aoq.driver, _spec)
 }
 
@@ -475,6 +491,12 @@ func (aoq *AppOptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aoq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range aoq.modifiers {
+		m(selector)
+	}
+	t1.Schema(aoq.schemaConfig.AppOption)
+	ctx = internal.NewSchemaConfigContext(ctx, aoq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range aoq.predicates {
 		p(selector)
 	}
@@ -490,6 +512,32 @@ func (aoq *AppOptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aoq *AppOptionQuery) ForUpdate(opts ...sql.LockOption) *AppOptionQuery {
+	if aoq.driver.Dialect() == dialect.Postgres {
+		aoq.Unique(false)
+	}
+	aoq.modifiers = append(aoq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aoq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aoq *AppOptionQuery) ForShare(opts ...sql.LockOption) *AppOptionQuery {
+	if aoq.driver.Dialect() == dialect.Postgres {
+		aoq.Unique(false)
+	}
+	aoq.modifiers = append(aoq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aoq
 }
 
 // AppOptionGroupBy is the group-by builder for AppOption entities.

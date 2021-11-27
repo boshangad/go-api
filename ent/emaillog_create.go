@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
@@ -18,6 +19,7 @@ type EmailLogCreate struct {
 	config
 	mutation *EmailLogMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -549,6 +551,8 @@ func (elc *EmailLogCreate) createSpec() (*EmailLog, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.Schema = elc.schemaConfig.EmailLog
+	_spec.OnConflict = elc.conflict
 	if id, ok := elc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -703,6 +707,7 @@ func (elc *EmailLogCreate) createSpec() (*EmailLog, *sqlgraph.CreateSpec) {
 				},
 			},
 		}
+		edge.Schema = elc.schemaConfig.EmailLog
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -712,10 +717,613 @@ func (elc *EmailLogCreate) createSpec() (*EmailLog, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.EmailLog.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.EmailLogUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (elc *EmailLogCreate) OnConflict(opts ...sql.ConflictOption) *EmailLogUpsertOne {
+	elc.conflict = opts
+	return &EmailLogUpsertOne{
+		create: elc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.EmailLog.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (elc *EmailLogCreate) OnConflictColumns(columns ...string) *EmailLogUpsertOne {
+	elc.conflict = append(elc.conflict, sql.ConflictColumns(columns...))
+	return &EmailLogUpsertOne{
+		create: elc,
+	}
+}
+
+type (
+	// EmailLogUpsertOne is the builder for "upsert"-ing
+	//  one EmailLog node.
+	EmailLogUpsertOne struct {
+		create *EmailLogCreate
+	}
+
+	// EmailLogUpsert is the "OnConflict" setter.
+	EmailLogUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *EmailLogUpsert) SetCreateTime(v int64) *EmailLogUpsert {
+	u.Set(emaillog.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateCreateTime() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldCreateTime)
+	return u
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *EmailLogUpsert) SetCreateBy(v uint64) *EmailLogUpsert {
+	u.Set(emaillog.FieldCreateBy, v)
+	return u
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateCreateBy() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldCreateBy)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *EmailLogUpsert) SetUpdateTime(v int64) *EmailLogUpsert {
+	u.Set(emaillog.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateUpdateTime() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldUpdateTime)
+	return u
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *EmailLogUpsert) SetUpdateBy(v uint64) *EmailLogUpsert {
+	u.Set(emaillog.FieldUpdateBy, v)
+	return u
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateUpdateBy() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldUpdateBy)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *EmailLogUpsert) SetAppID(v uint64) *EmailLogUpsert {
+	u.Set(emaillog.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateAppID() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldAppID)
+	return u
+}
+
+// SetEmail sets the "email" field.
+func (u *EmailLogUpsert) SetEmail(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldEmail, v)
+	return u
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateEmail() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldEmail)
+	return u
+}
+
+// SetScope sets the "scope" field.
+func (u *EmailLogUpsert) SetScope(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldScope, v)
+	return u
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateScope() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldScope)
+	return u
+}
+
+// SetTypeID sets the "type_id" field.
+func (u *EmailLogUpsert) SetTypeID(v uint64) *EmailLogUpsert {
+	u.Set(emaillog.FieldTypeID, v)
+	return u
+}
+
+// UpdateTypeID sets the "type_id" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateTypeID() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldTypeID)
+	return u
+}
+
+// SetGateway sets the "gateway" field.
+func (u *EmailLogUpsert) SetGateway(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldGateway, v)
+	return u
+}
+
+// UpdateGateway sets the "gateway" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateGateway() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldGateway)
+	return u
+}
+
+// SetIP sets the "ip" field.
+func (u *EmailLogUpsert) SetIP(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldIP, v)
+	return u
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateIP() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldIP)
+	return u
+}
+
+// SetFromName sets the "from_name" field.
+func (u *EmailLogUpsert) SetFromName(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldFromName, v)
+	return u
+}
+
+// UpdateFromName sets the "from_name" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateFromName() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldFromName)
+	return u
+}
+
+// SetFromAddress sets the "from_address" field.
+func (u *EmailLogUpsert) SetFromAddress(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldFromAddress, v)
+	return u
+}
+
+// UpdateFromAddress sets the "from_address" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateFromAddress() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldFromAddress)
+	return u
+}
+
+// SetTitle sets the "title" field.
+func (u *EmailLogUpsert) SetTitle(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldTitle, v)
+	return u
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateTitle() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldTitle)
+	return u
+}
+
+// SetContent sets the "content" field.
+func (u *EmailLogUpsert) SetContent(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldContent, v)
+	return u
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateContent() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldContent)
+	return u
+}
+
+// SetData sets the "data" field.
+func (u *EmailLogUpsert) SetData(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldData, v)
+	return u
+}
+
+// UpdateData sets the "data" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateData() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldData)
+	return u
+}
+
+// SetCheckCount sets the "check_count" field.
+func (u *EmailLogUpsert) SetCheckCount(v uint8) *EmailLogUpsert {
+	u.Set(emaillog.FieldCheckCount, v)
+	return u
+}
+
+// UpdateCheckCount sets the "check_count" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateCheckCount() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldCheckCount)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *EmailLogUpsert) SetStatus(v uint) *EmailLogUpsert {
+	u.Set(emaillog.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateStatus() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldStatus)
+	return u
+}
+
+// SetReturnMsg sets the "return_msg" field.
+func (u *EmailLogUpsert) SetReturnMsg(v string) *EmailLogUpsert {
+	u.Set(emaillog.FieldReturnMsg, v)
+	return u
+}
+
+// UpdateReturnMsg sets the "return_msg" field to the value that was provided on create.
+func (u *EmailLogUpsert) UpdateReturnMsg() *EmailLogUpsert {
+	u.SetExcluded(emaillog.FieldReturnMsg)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.EmailLog.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(emaillog.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *EmailLogUpsertOne) UpdateNewValues() *EmailLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(emaillog.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.EmailLog.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *EmailLogUpsertOne) Ignore() *EmailLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *EmailLogUpsertOne) DoNothing() *EmailLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the EmailLogCreate.OnConflict
+// documentation for more info.
+func (u *EmailLogUpsertOne) Update(set func(*EmailLogUpsert)) *EmailLogUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&EmailLogUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *EmailLogUpsertOne) SetCreateTime(v int64) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateCreateTime() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *EmailLogUpsertOne) SetCreateBy(v uint64) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetCreateBy(v)
+	})
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateCreateBy() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateCreateBy()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *EmailLogUpsertOne) SetUpdateTime(v int64) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateUpdateTime() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *EmailLogUpsertOne) SetUpdateBy(v uint64) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetUpdateBy(v)
+	})
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateUpdateBy() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateUpdateBy()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *EmailLogUpsertOne) SetAppID(v uint64) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateAppID() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetEmail sets the "email" field.
+func (u *EmailLogUpsertOne) SetEmail(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateEmail() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateEmail()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *EmailLogUpsertOne) SetScope(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateScope() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// SetTypeID sets the "type_id" field.
+func (u *EmailLogUpsertOne) SetTypeID(v uint64) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetTypeID(v)
+	})
+}
+
+// UpdateTypeID sets the "type_id" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateTypeID() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateTypeID()
+	})
+}
+
+// SetGateway sets the "gateway" field.
+func (u *EmailLogUpsertOne) SetGateway(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetGateway(v)
+	})
+}
+
+// UpdateGateway sets the "gateway" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateGateway() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateGateway()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *EmailLogUpsertOne) SetIP(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateIP() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetFromName sets the "from_name" field.
+func (u *EmailLogUpsertOne) SetFromName(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetFromName(v)
+	})
+}
+
+// UpdateFromName sets the "from_name" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateFromName() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateFromName()
+	})
+}
+
+// SetFromAddress sets the "from_address" field.
+func (u *EmailLogUpsertOne) SetFromAddress(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetFromAddress(v)
+	})
+}
+
+// UpdateFromAddress sets the "from_address" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateFromAddress() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateFromAddress()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *EmailLogUpsertOne) SetTitle(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateTitle() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *EmailLogUpsertOne) SetContent(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateContent() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// SetData sets the "data" field.
+func (u *EmailLogUpsertOne) SetData(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetData(v)
+	})
+}
+
+// UpdateData sets the "data" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateData() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateData()
+	})
+}
+
+// SetCheckCount sets the "check_count" field.
+func (u *EmailLogUpsertOne) SetCheckCount(v uint8) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetCheckCount(v)
+	})
+}
+
+// UpdateCheckCount sets the "check_count" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateCheckCount() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateCheckCount()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *EmailLogUpsertOne) SetStatus(v uint) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateStatus() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetReturnMsg sets the "return_msg" field.
+func (u *EmailLogUpsertOne) SetReturnMsg(v string) *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetReturnMsg(v)
+	})
+}
+
+// UpdateReturnMsg sets the "return_msg" field to the value that was provided on create.
+func (u *EmailLogUpsertOne) UpdateReturnMsg() *EmailLogUpsertOne {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateReturnMsg()
+	})
+}
+
+// Exec executes the query.
+func (u *EmailLogUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for EmailLogCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *EmailLogUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *EmailLogUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *EmailLogUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // EmailLogCreateBulk is the builder for creating many EmailLog entities in bulk.
 type EmailLogCreateBulk struct {
 	config
 	builders []*EmailLogCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the EmailLog entities in the database.
@@ -742,6 +1350,7 @@ func (elcb *EmailLogCreateBulk) Save(ctx context.Context) ([]*EmailLog, error) {
 					_, err = mutators[i+1].Mutate(root, elcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = elcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, elcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -792,6 +1401,374 @@ func (elcb *EmailLogCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (elcb *EmailLogCreateBulk) ExecX(ctx context.Context) {
 	if err := elcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.EmailLog.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.EmailLogUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (elcb *EmailLogCreateBulk) OnConflict(opts ...sql.ConflictOption) *EmailLogUpsertBulk {
+	elcb.conflict = opts
+	return &EmailLogUpsertBulk{
+		create: elcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.EmailLog.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (elcb *EmailLogCreateBulk) OnConflictColumns(columns ...string) *EmailLogUpsertBulk {
+	elcb.conflict = append(elcb.conflict, sql.ConflictColumns(columns...))
+	return &EmailLogUpsertBulk{
+		create: elcb,
+	}
+}
+
+// EmailLogUpsertBulk is the builder for "upsert"-ing
+// a bulk of EmailLog nodes.
+type EmailLogUpsertBulk struct {
+	create *EmailLogCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.EmailLog.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(emaillog.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *EmailLogUpsertBulk) UpdateNewValues() *EmailLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(emaillog.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.EmailLog.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *EmailLogUpsertBulk) Ignore() *EmailLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *EmailLogUpsertBulk) DoNothing() *EmailLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the EmailLogCreateBulk.OnConflict
+// documentation for more info.
+func (u *EmailLogUpsertBulk) Update(set func(*EmailLogUpsert)) *EmailLogUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&EmailLogUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *EmailLogUpsertBulk) SetCreateTime(v int64) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateCreateTime() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetCreateBy sets the "create_by" field.
+func (u *EmailLogUpsertBulk) SetCreateBy(v uint64) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetCreateBy(v)
+	})
+}
+
+// UpdateCreateBy sets the "create_by" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateCreateBy() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateCreateBy()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *EmailLogUpsertBulk) SetUpdateTime(v int64) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateUpdateTime() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (u *EmailLogUpsertBulk) SetUpdateBy(v uint64) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetUpdateBy(v)
+	})
+}
+
+// UpdateUpdateBy sets the "update_by" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateUpdateBy() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateUpdateBy()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *EmailLogUpsertBulk) SetAppID(v uint64) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateAppID() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetEmail sets the "email" field.
+func (u *EmailLogUpsertBulk) SetEmail(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateEmail() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateEmail()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *EmailLogUpsertBulk) SetScope(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateScope() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// SetTypeID sets the "type_id" field.
+func (u *EmailLogUpsertBulk) SetTypeID(v uint64) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetTypeID(v)
+	})
+}
+
+// UpdateTypeID sets the "type_id" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateTypeID() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateTypeID()
+	})
+}
+
+// SetGateway sets the "gateway" field.
+func (u *EmailLogUpsertBulk) SetGateway(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetGateway(v)
+	})
+}
+
+// UpdateGateway sets the "gateway" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateGateway() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateGateway()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *EmailLogUpsertBulk) SetIP(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateIP() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetFromName sets the "from_name" field.
+func (u *EmailLogUpsertBulk) SetFromName(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetFromName(v)
+	})
+}
+
+// UpdateFromName sets the "from_name" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateFromName() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateFromName()
+	})
+}
+
+// SetFromAddress sets the "from_address" field.
+func (u *EmailLogUpsertBulk) SetFromAddress(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetFromAddress(v)
+	})
+}
+
+// UpdateFromAddress sets the "from_address" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateFromAddress() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateFromAddress()
+	})
+}
+
+// SetTitle sets the "title" field.
+func (u *EmailLogUpsertBulk) SetTitle(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetTitle(v)
+	})
+}
+
+// UpdateTitle sets the "title" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateTitle() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateTitle()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *EmailLogUpsertBulk) SetContent(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateContent() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateContent()
+	})
+}
+
+// SetData sets the "data" field.
+func (u *EmailLogUpsertBulk) SetData(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetData(v)
+	})
+}
+
+// UpdateData sets the "data" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateData() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateData()
+	})
+}
+
+// SetCheckCount sets the "check_count" field.
+func (u *EmailLogUpsertBulk) SetCheckCount(v uint8) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetCheckCount(v)
+	})
+}
+
+// UpdateCheckCount sets the "check_count" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateCheckCount() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateCheckCount()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *EmailLogUpsertBulk) SetStatus(v uint) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateStatus() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetReturnMsg sets the "return_msg" field.
+func (u *EmailLogUpsertBulk) SetReturnMsg(v string) *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.SetReturnMsg(v)
+	})
+}
+
+// UpdateReturnMsg sets the "return_msg" field to the value that was provided on create.
+func (u *EmailLogUpsertBulk) UpdateReturnMsg() *EmailLogUpsertBulk {
+	return u.Update(func(s *EmailLogUpsert) {
+		s.UpdateReturnMsg()
+	})
+}
+
+// Exec executes the query.
+func (u *EmailLogUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EmailLogCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for EmailLogCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *EmailLogUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

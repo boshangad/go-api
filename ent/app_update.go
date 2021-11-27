@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appoption"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -552,6 +553,7 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = au.schemaConfig.AppOption
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := au.mutation.RemovedAppOptionsIDs(); len(nodes) > 0 && !au.mutation.AppOptionsCleared() {
@@ -568,6 +570,7 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = au.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -587,11 +590,14 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = au.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = au.schemaConfig.App
+	ctx = internal.NewSchemaConfigContext(ctx, au.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{app.Label}
@@ -1160,6 +1166,7 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 				},
 			},
 		}
+		edge.Schema = auo.schemaConfig.AppOption
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auo.mutation.RemovedAppOptionsIDs(); len(nodes) > 0 && !auo.mutation.AppOptionsCleared() {
@@ -1176,6 +1183,7 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 				},
 			},
 		}
+		edge.Schema = auo.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -1195,11 +1203,14 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 				},
 			},
 		}
+		edge.Schema = auo.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = auo.schemaConfig.App
+	ctx = internal.NewSchemaConfigContext(ctx, auo.schemaConfig)
 	_node = &App{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

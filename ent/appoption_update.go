@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appoption"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -141,23 +142,23 @@ func (aou *AppOptionUpdate) SetNillableValue(s *string) *AppOptionUpdate {
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (aou *AppOptionUpdate) SetExpireTime(u uint64) *AppOptionUpdate {
+func (aou *AppOptionUpdate) SetExpireTime(i int64) *AppOptionUpdate {
 	aou.mutation.ResetExpireTime()
-	aou.mutation.SetExpireTime(u)
+	aou.mutation.SetExpireTime(i)
 	return aou
 }
 
 // SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (aou *AppOptionUpdate) SetNillableExpireTime(u *uint64) *AppOptionUpdate {
-	if u != nil {
-		aou.SetExpireTime(*u)
+func (aou *AppOptionUpdate) SetNillableExpireTime(i *int64) *AppOptionUpdate {
+	if i != nil {
+		aou.SetExpireTime(*i)
 	}
 	return aou
 }
 
-// AddExpireTime adds u to the "expire_time" field.
-func (aou *AppOptionUpdate) AddExpireTime(u uint64) *AppOptionUpdate {
-	aou.mutation.AddExpireTime(u)
+// AddExpireTime adds i to the "expire_time" field.
+func (aou *AppOptionUpdate) AddExpireTime(i int64) *AppOptionUpdate {
+	aou.mutation.AddExpireTime(i)
 	return aou
 }
 
@@ -362,14 +363,14 @@ func (aou *AppOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := aou.mutation.ExpireTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appoption.FieldExpireTime,
 		})
 	}
 	if value, ok := aou.mutation.AddedExpireTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appoption.FieldExpireTime,
 		})
@@ -402,6 +403,7 @@ func (aou *AppOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = aou.schemaConfig.AppOption
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aou.mutation.AppIDs(); len(nodes) > 0 {
@@ -418,11 +420,14 @@ func (aou *AppOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
+		edge.Schema = aou.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = aou.schemaConfig.AppOption
+	ctx = internal.NewSchemaConfigContext(ctx, aou.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, aou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{appoption.Label}
@@ -555,23 +560,23 @@ func (aouo *AppOptionUpdateOne) SetNillableValue(s *string) *AppOptionUpdateOne 
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (aouo *AppOptionUpdateOne) SetExpireTime(u uint64) *AppOptionUpdateOne {
+func (aouo *AppOptionUpdateOne) SetExpireTime(i int64) *AppOptionUpdateOne {
 	aouo.mutation.ResetExpireTime()
-	aouo.mutation.SetExpireTime(u)
+	aouo.mutation.SetExpireTime(i)
 	return aouo
 }
 
 // SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (aouo *AppOptionUpdateOne) SetNillableExpireTime(u *uint64) *AppOptionUpdateOne {
-	if u != nil {
-		aouo.SetExpireTime(*u)
+func (aouo *AppOptionUpdateOne) SetNillableExpireTime(i *int64) *AppOptionUpdateOne {
+	if i != nil {
+		aouo.SetExpireTime(*i)
 	}
 	return aouo
 }
 
-// AddExpireTime adds u to the "expire_time" field.
-func (aouo *AppOptionUpdateOne) AddExpireTime(u uint64) *AppOptionUpdateOne {
-	aouo.mutation.AddExpireTime(u)
+// AddExpireTime adds i to the "expire_time" field.
+func (aouo *AppOptionUpdateOne) AddExpireTime(i int64) *AppOptionUpdateOne {
+	aouo.mutation.AddExpireTime(i)
 	return aouo
 }
 
@@ -800,14 +805,14 @@ func (aouo *AppOptionUpdateOne) sqlSave(ctx context.Context) (_node *AppOption, 
 	}
 	if value, ok := aouo.mutation.ExpireTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appoption.FieldExpireTime,
 		})
 	}
 	if value, ok := aouo.mutation.AddedExpireTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appoption.FieldExpireTime,
 		})
@@ -840,6 +845,7 @@ func (aouo *AppOptionUpdateOne) sqlSave(ctx context.Context) (_node *AppOption, 
 				},
 			},
 		}
+		edge.Schema = aouo.schemaConfig.AppOption
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aouo.mutation.AppIDs(); len(nodes) > 0 {
@@ -856,11 +862,14 @@ func (aouo *AppOptionUpdateOne) sqlSave(ctx context.Context) (_node *AppOption, 
 				},
 			},
 		}
+		edge.Schema = aouo.schemaConfig.AppOption
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.Node.Schema = aouo.schemaConfig.AppOption
+	ctx = internal.NewSchemaConfigContext(ctx, aouo.schemaConfig)
 	_node = &AppOption{config: aouo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

@@ -9,8 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// LoadApp 加载应用模型
-func LoadApp(c *gin.Context) {
+func AppMiddleware(c *gin.Context) {
 	appModel := helpers.GetGinApp(c)
 	if appModel == nil {
 		var data map[string]string

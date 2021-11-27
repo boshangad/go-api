@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/smslog"
 )
@@ -26,7 +28,8 @@ type SmsLogQuery struct {
 	fields     []string
 	predicates []predicate.SmsLog
 	// eager-loading edges.
-	withApp *AppQuery
+	withApp   *AppQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,9 @@ func (slq *SmsLogQuery) QueryApp() *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, smslog.AppTable, smslog.AppColumn),
 		)
+		schemaConfig := slq.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.SmsLog
 		fromU = sqlgraph.SetNeighbors(slq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -366,6 +372,11 @@ func (slq *SmsLogQuery) sqlAll(ctx context.Context) ([]*SmsLog, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(slq.modifiers) > 0 {
+		_spec.Modifiers = slq.modifiers
+	}
+	_spec.Node.Schema = slq.schemaConfig.SmsLog
+	ctx = internal.NewSchemaConfigContext(ctx, slq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, slq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -404,6 +415,11 @@ func (slq *SmsLogQuery) sqlAll(ctx context.Context) ([]*SmsLog, error) {
 
 func (slq *SmsLogQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := slq.querySpec()
+	if len(slq.modifiers) > 0 {
+		_spec.Modifiers = slq.modifiers
+	}
+	_spec.Node.Schema = slq.schemaConfig.SmsLog
+	ctx = internal.NewSchemaConfigContext(ctx, slq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, slq.driver, _spec)
 }
 
@@ -475,6 +491,12 @@ func (slq *SmsLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = slq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range slq.modifiers {
+		m(selector)
+	}
+	t1.Schema(slq.schemaConfig.SmsLog)
+	ctx = internal.NewSchemaConfigContext(ctx, slq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range slq.predicates {
 		p(selector)
 	}
@@ -490,6 +512,32 @@ func (slq *SmsLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (slq *SmsLogQuery) ForUpdate(opts ...sql.LockOption) *SmsLogQuery {
+	if slq.driver.Dialect() == dialect.Postgres {
+		slq.Unique(false)
+	}
+	slq.modifiers = append(slq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return slq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (slq *SmsLogQuery) ForShare(opts ...sql.LockOption) *SmsLogQuery {
+	if slq.driver.Dialect() == dialect.Postgres {
+		slq.Unique(false)
+	}
+	slq.modifiers = append(slq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return slq
 }
 
 // SmsLogGroupBy is the group-by builder for SmsLog entities.

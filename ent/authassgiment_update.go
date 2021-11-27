@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/authassgiment"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -103,6 +104,8 @@ func (aau *AuthAssgimentUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			}
 		}
 	}
+	_spec.Node.Schema = aau.schemaConfig.AuthAssgiment
+	ctx = internal.NewSchemaConfigContext(ctx, aau.schemaConfig)
 	if n, err = sqlgraph.UpdateNodes(ctx, aau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authassgiment.Label}
@@ -223,6 +226,8 @@ func (aauo *AuthAssgimentUpdateOne) sqlSave(ctx context.Context) (_node *AuthAss
 			}
 		}
 	}
+	_spec.Node.Schema = aauo.schemaConfig.AuthAssgiment
+	ctx = internal.NewSchemaConfigContext(ctx, aauo.schemaConfig)
 	_node = &AuthAssgiment{config: aauo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

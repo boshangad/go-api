@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
@@ -21,6 +22,7 @@ type AppUserTokenCreate struct {
 	config
 	mutation *AppUserTokenMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -94,7 +96,7 @@ func (autc *AppUserTokenCreate) SetNillableClientVersion(s *string) *AppUserToke
 }
 
 // SetUUID sets the "uuid" field.
-func (autc *AppUserTokenCreate) SetUUID(u uuid.UUID) *AppUserTokenCreate {
+func (autc *AppUserTokenCreate) SetUUID(u *uuid.UUID) *AppUserTokenCreate {
 	autc.mutation.SetUUID(u)
 	return autc
 }
@@ -114,15 +116,15 @@ func (autc *AppUserTokenCreate) SetNillableIP(s *string) *AppUserTokenCreate {
 }
 
 // SetExpireTime sets the "expire_time" field.
-func (autc *AppUserTokenCreate) SetExpireTime(u uint64) *AppUserTokenCreate {
-	autc.mutation.SetExpireTime(u)
+func (autc *AppUserTokenCreate) SetExpireTime(i int64) *AppUserTokenCreate {
+	autc.mutation.SetExpireTime(i)
 	return autc
 }
 
 // SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (autc *AppUserTokenCreate) SetNillableExpireTime(u *uint64) *AppUserTokenCreate {
-	if u != nil {
-		autc.SetExpireTime(*u)
+func (autc *AppUserTokenCreate) SetNillableExpireTime(i *int64) *AppUserTokenCreate {
+	if i != nil {
+		autc.SetExpireTime(*i)
 	}
 	return autc
 }
@@ -239,10 +241,6 @@ func (autc *AppUserTokenCreate) defaults() {
 		v := appusertoken.DefaultClientVersion
 		autc.mutation.SetClientVersion(v)
 	}
-	if _, ok := autc.mutation.UUID(); !ok {
-		v := appusertoken.DefaultUUID()
-		autc.mutation.SetUUID(v)
-	}
 	if _, ok := autc.mutation.IP(); !ok {
 		v := appusertoken.DefaultIP
 		autc.mutation.SetIP(v)
@@ -327,6 +325,8 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 			},
 		}
 	)
+	_spec.Schema = autc.schemaConfig.AppUserToken
+	_spec.OnConflict = autc.conflict
 	if id, ok := autc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -349,7 +349,7 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 	}
 	if value, ok := autc.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeBytes,
 			Value:  value,
 			Column: appusertoken.FieldUUID,
 		})
@@ -365,7 +365,7 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 	}
 	if value, ok := autc.mutation.ExpireTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appusertoken.FieldExpireTime,
 		})
@@ -385,6 +385,7 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 				},
 			},
 		}
+		edge.Schema = autc.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -405,6 +406,7 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 				},
 			},
 		}
+		edge.Schema = autc.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -425,6 +427,7 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 				},
 			},
 		}
+		edge.Schema = autc.schemaConfig.AppUserToken
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
@@ -434,10 +437,353 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppUserToken.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppUserTokenUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (autc *AppUserTokenCreate) OnConflict(opts ...sql.ConflictOption) *AppUserTokenUpsertOne {
+	autc.conflict = opts
+	return &AppUserTokenUpsertOne{
+		create: autc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppUserToken.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (autc *AppUserTokenCreate) OnConflictColumns(columns ...string) *AppUserTokenUpsertOne {
+	autc.conflict = append(autc.conflict, sql.ConflictColumns(columns...))
+	return &AppUserTokenUpsertOne{
+		create: autc,
+	}
+}
+
+type (
+	// AppUserTokenUpsertOne is the builder for "upsert"-ing
+	//  one AppUserToken node.
+	AppUserTokenUpsertOne struct {
+		create *AppUserTokenCreate
+	}
+
+	// AppUserTokenUpsert is the "OnConflict" setter.
+	AppUserTokenUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserTokenUpsert) SetCreateTime(v int64) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateCreateTime() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldCreateTime)
+	return u
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserTokenUpsert) SetAppID(v uint64) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldAppID, v)
+	return u
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateAppID() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldAppID)
+	return u
+}
+
+// SetAppUserID sets the "app_user_id" field.
+func (u *AppUserTokenUpsert) SetAppUserID(v uint64) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldAppUserID, v)
+	return u
+}
+
+// UpdateAppUserID sets the "app_user_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateAppUserID() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldAppUserID)
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserTokenUpsert) SetUserID(v uint64) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldUserID, v)
+	return u
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateUserID() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldUserID)
+	return u
+}
+
+// SetClientVersion sets the "client_version" field.
+func (u *AppUserTokenUpsert) SetClientVersion(v string) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldClientVersion, v)
+	return u
+}
+
+// UpdateClientVersion sets the "client_version" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateClientVersion() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldClientVersion)
+	return u
+}
+
+// SetUUID sets the "uuid" field.
+func (u *AppUserTokenUpsert) SetUUID(v *uuid.UUID) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldUUID, v)
+	return u
+}
+
+// UpdateUUID sets the "uuid" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateUUID() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldUUID)
+	return u
+}
+
+// SetIP sets the "ip" field.
+func (u *AppUserTokenUpsert) SetIP(v string) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldIP, v)
+	return u
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateIP() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldIP)
+	return u
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *AppUserTokenUpsert) SetExpireTime(v int64) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldExpireTime, v)
+	return u
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateExpireTime() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldExpireTime)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.AppUserToken.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appusertoken.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppUserTokenUpsertOne) UpdateNewValues() *AppUserTokenUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(appusertoken.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.AppUserToken.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *AppUserTokenUpsertOne) Ignore() *AppUserTokenUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppUserTokenUpsertOne) DoNothing() *AppUserTokenUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppUserTokenCreate.OnConflict
+// documentation for more info.
+func (u *AppUserTokenUpsertOne) Update(set func(*AppUserTokenUpsert)) *AppUserTokenUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppUserTokenUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserTokenUpsertOne) SetCreateTime(v int64) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateCreateTime() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserTokenUpsertOne) SetAppID(v uint64) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateAppID() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetAppUserID sets the "app_user_id" field.
+func (u *AppUserTokenUpsertOne) SetAppUserID(v uint64) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetAppUserID(v)
+	})
+}
+
+// UpdateAppUserID sets the "app_user_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateAppUserID() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateAppUserID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserTokenUpsertOne) SetUserID(v uint64) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateUserID() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetClientVersion sets the "client_version" field.
+func (u *AppUserTokenUpsertOne) SetClientVersion(v string) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetClientVersion(v)
+	})
+}
+
+// UpdateClientVersion sets the "client_version" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateClientVersion() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateClientVersion()
+	})
+}
+
+// SetUUID sets the "uuid" field.
+func (u *AppUserTokenUpsertOne) SetUUID(v *uuid.UUID) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetUUID(v)
+	})
+}
+
+// UpdateUUID sets the "uuid" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateUUID() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateUUID()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *AppUserTokenUpsertOne) SetIP(v string) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateIP() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *AppUserTokenUpsertOne) SetExpireTime(v int64) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetExpireTime(v)
+	})
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateExpireTime() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateExpireTime()
+	})
+}
+
+// Exec executes the query.
+func (u *AppUserTokenUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppUserTokenCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppUserTokenUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *AppUserTokenUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *AppUserTokenUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // AppUserTokenCreateBulk is the builder for creating many AppUserToken entities in bulk.
 type AppUserTokenCreateBulk struct {
 	config
 	builders []*AppUserTokenCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the AppUserToken entities in the database.
@@ -464,6 +810,7 @@ func (autcb *AppUserTokenCreateBulk) Save(ctx context.Context) ([]*AppUserToken,
 					_, err = mutators[i+1].Mutate(root, autcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = autcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, autcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -514,6 +861,234 @@ func (autcb *AppUserTokenCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (autcb *AppUserTokenCreateBulk) ExecX(ctx context.Context) {
 	if err := autcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.AppUserToken.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.AppUserTokenUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (autcb *AppUserTokenCreateBulk) OnConflict(opts ...sql.ConflictOption) *AppUserTokenUpsertBulk {
+	autcb.conflict = opts
+	return &AppUserTokenUpsertBulk{
+		create: autcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.AppUserToken.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (autcb *AppUserTokenCreateBulk) OnConflictColumns(columns ...string) *AppUserTokenUpsertBulk {
+	autcb.conflict = append(autcb.conflict, sql.ConflictColumns(columns...))
+	return &AppUserTokenUpsertBulk{
+		create: autcb,
+	}
+}
+
+// AppUserTokenUpsertBulk is the builder for "upsert"-ing
+// a bulk of AppUserToken nodes.
+type AppUserTokenUpsertBulk struct {
+	create *AppUserTokenCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.AppUserToken.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(appusertoken.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *AppUserTokenUpsertBulk) UpdateNewValues() *AppUserTokenUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(appusertoken.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.AppUserToken.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *AppUserTokenUpsertBulk) Ignore() *AppUserTokenUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *AppUserTokenUpsertBulk) DoNothing() *AppUserTokenUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the AppUserTokenCreateBulk.OnConflict
+// documentation for more info.
+func (u *AppUserTokenUpsertBulk) Update(set func(*AppUserTokenUpsert)) *AppUserTokenUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&AppUserTokenUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *AppUserTokenUpsertBulk) SetCreateTime(v int64) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateCreateTime() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetAppID sets the "app_id" field.
+func (u *AppUserTokenUpsertBulk) SetAppID(v uint64) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetAppID(v)
+	})
+}
+
+// UpdateAppID sets the "app_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateAppID() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateAppID()
+	})
+}
+
+// SetAppUserID sets the "app_user_id" field.
+func (u *AppUserTokenUpsertBulk) SetAppUserID(v uint64) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetAppUserID(v)
+	})
+}
+
+// UpdateAppUserID sets the "app_user_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateAppUserID() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateAppUserID()
+	})
+}
+
+// SetUserID sets the "user_id" field.
+func (u *AppUserTokenUpsertBulk) SetUserID(v uint64) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateUserID() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetClientVersion sets the "client_version" field.
+func (u *AppUserTokenUpsertBulk) SetClientVersion(v string) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetClientVersion(v)
+	})
+}
+
+// UpdateClientVersion sets the "client_version" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateClientVersion() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateClientVersion()
+	})
+}
+
+// SetUUID sets the "uuid" field.
+func (u *AppUserTokenUpsertBulk) SetUUID(v *uuid.UUID) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetUUID(v)
+	})
+}
+
+// UpdateUUID sets the "uuid" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateUUID() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateUUID()
+	})
+}
+
+// SetIP sets the "ip" field.
+func (u *AppUserTokenUpsertBulk) SetIP(v string) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetIP(v)
+	})
+}
+
+// UpdateIP sets the "ip" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateIP() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateIP()
+	})
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *AppUserTokenUpsertBulk) SetExpireTime(v int64) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetExpireTime(v)
+	})
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateExpireTime() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateExpireTime()
+	})
+}
+
+// Exec executes the query.
+func (u *AppUserTokenUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AppUserTokenCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for AppUserTokenCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *AppUserTokenUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

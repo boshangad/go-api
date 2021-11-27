@@ -3,50 +3,45 @@ package db
 import (
 	"time"
 
-	basicSql "database/sql"
-
 	"entgo.io/ent/dialect/sql"
 
+	"entgo.io/ent/dialect"
 	"github.com/boshangad/v1/ent"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/mitchellh/mapstructure"
 )
 
 type Mysql struct {
-	// ent模型客户端
-	client *ent.Client
-	// 打开的数据库连接器
-	db *basicSql.DB
-	// 数据库类型
-	Driver string `mapstructure:"driver" json:"driver" yaml:"driver"`
+	Driver string `json:"driver,omitempty" yaml:"driver"`
 	// dsn连接字符串
-	Dsn string `mapstructure:"dsn" json:"dsn" yaml:"dsn"`
+	Dsn string `json:"dsn,omitempty" yaml:"dsn"`
 	// 服务地址
-	Host string `mapstructure:"host" json:"host" yaml:"host"`
+	Host string `json:"host,omitempty" yaml:"host"`
 	// 登录用户名
-	Username string `mapstructure:"username" json:"username" yaml:"username"`
+	Username string `json:"username,omitempty" yaml:"username"`
 	// 用户密码
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
+	Password string `json:"password,omitempty" yaml:"password"`
 	// 链接方式
-	Protocol string `mapstructure:"protocol" json:"protocol" yaml:"protocol"`
+	Protocol string `json:"protocol,omitempty" yaml:"protocol"`
 	// 数据库名称
-	Dbname string `mapstructure:"dbname" json:"dbname" yaml:"dbname"`
+	Dbname string `json:"dbname,omitempty" yaml:"dbname"`
 	// 高级连接参数
-	Params string `mapstructure:"params" json:"params" yaml:"params"`
+	Params string `json:"params,omitempty" yaml:"params"`
 	// 空闲中的最大连接数
-	MaxIdleConns int `mapstructure:"maxIdleConns" json:"maxdleConns" yaml:"maxIdleConns"`
+	MaxIdleConns int `json:"maxdleConns,omitempty" yaml:"maxIdleConns"`
 	// 打开到数据库的最大连接数
-	MaxOpenConns int `mapstructure:"maxOpenConns" json:"maxOpenConns" yaml:"maxOpenConns"`
+	MaxOpenConns int `json:"maxOpenConns,omitempty" yaml:"maxOpenConns"`
 	// 可以重用连接的最长时间
-	ConnMaxLifetime int64 `mapstructure:"connMaxLifetime" json:"connMaxLifetime" yaml:"connMaxLifetime"`
+	ConnMaxLifetime int64 `json:"connMaxLifetime,omitempty" yaml:"connMaxLifetime"`
 	// 连接可能空闲的最长时间
-	ConnMaxIdleTime int64 `mapstructure:"connMaxIdleTime" json:"connMaxIdleTime" yaml:"connMaxIdleTime"`
+	ConnMaxIdleTime int64 `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime"`
 }
 
 // 获取Dsn连接字符串
-func (that *Mysql) dsnStr() string {
+func (that *Mysql) dsnStr() (dsnStr string) {
 	// dsn数据源格式 [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
-	var dsnStr string = that.Dsn
-	if dsnStr == "" {
+	if that.Dsn == "" {
+		// 自己组装Dsn连接字符串
 		if that.Username != "" && that.Password != "" {
 			dsnStr += that.Username + ":" + that.Password + "@"
 		} else if that.Username != "" {
@@ -67,43 +62,38 @@ func (that *Mysql) dsnStr() string {
 		if that.Params != "" {
 			dsnStr += that.Params
 		}
-		that.Dsn = dsnStr
+		return dsnStr
 	}
-	return dsnStr
+	return that.Dsn
 }
 
 // 打开连接
 func (that *Mysql) Open() (*ent.Client, error) {
-	if that.client == nil {
-		drv, err := sql.Open(that.Driver, that.dsnStr())
-		if err != nil {
-			return nil, err
-		}
-		// 获取数据库驱动中的sql.DB对象。
-		db := drv.DB()
-		db.SetMaxIdleConns(that.MaxIdleConns)
-		db.SetMaxOpenConns(that.MaxOpenConns)
-		if that.ConnMaxLifetime != 0 {
-			db.SetConnMaxLifetime(time.Duration(that.ConnMaxLifetime))
-		}
-		if that.ConnMaxIdleTime != 0 {
-			db.SetConnMaxIdleTime(time.Duration(that.ConnMaxIdleTime))
-		}
-		client := ent.NewClient(ent.Driver(drv))
-		that.client = client
-		that.db = db
-		return client, nil
+	drv, err := sql.Open(that.Driver, that.dsnStr())
+	if err != nil {
+		return nil, err
 	}
-	return that.client, nil
+	// 获取数据库驱动中的sql.DB对象。
+	db := drv.DB()
+	db.SetMaxIdleConns(that.MaxIdleConns)
+	db.SetMaxOpenConns(that.MaxOpenConns)
+	if that.ConnMaxLifetime != 0 {
+		db.SetConnMaxLifetime(time.Duration(that.ConnMaxLifetime))
+	}
+	if that.ConnMaxIdleTime != 0 {
+		db.SetConnMaxIdleTime(time.Duration(that.ConnMaxIdleTime))
+	}
+	client := ent.NewClient(ent.Driver(drv))
+	return client, nil
 }
 
-// 关闭数据库连接
-func (that *Mysql) Close() error {
-	if that.client != nil {
-		c := that.client
-		that.client = nil
-		e := c.Close()
-		return e
+// 实例化Mysql配置项
+func NewMysql(data map[string]interface{}) *Mysql {
+	mysql := Mysql{}
+	err := mapstructure.Decode(data, &mysql)
+	mysql.Driver = dialect.MySQL
+	if err != nil {
+		return nil
 	}
-	return nil
+	return &mysql
 }

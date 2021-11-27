@@ -5,6 +5,7 @@ package smslog
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 )
 
@@ -1797,6 +1798,9 @@ func HasApp() predicate.SmsLog {
 			sqlgraph.To(AppTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.SmsLog
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
@@ -1809,6 +1813,9 @@ func HasAppWith(preds ...predicate.App) predicate.SmsLog {
 			sqlgraph.To(AppInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, AppTable, AppColumn),
 		)
+		schemaConfig := internal.SchemaConfigFromContext(s.Context())
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.SmsLog
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

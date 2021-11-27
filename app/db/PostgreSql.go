@@ -1,49 +1,42 @@
 package db
 
 import (
+	"database/sql"
+
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
 	"github.com/boshangad/v1/ent"
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 type PostgreSql struct {
-	client *ent.Client
 	// 数据库类型
-	Driver string `mapstructure:"driver" json:"driver" yaml:"driver"`
+	Driver string `json:"driver,omitempty" yaml:"driver"`
+	// DSN 连接
+	Dsn string `json:"dsn,omitempty" yaml:"dsn"`
 	// 服务地址
-	Host string `mapstructure:"host" json:"host" yaml:"host"`
+	Host string `json:"host,omitempty" yaml:"host"`
 	// 登录用户名
-	Username string `mapstructure:"username" json:"username" yaml:"username"`
+	Username string `json:"username,omitempty" yaml:"username"`
 	// 用户密码
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
+	Password string `json:"password,omitempty" yaml:"password"`
 	// 数据库名称
-	Dbname string `mapstructure:"dbname" json:"dbname" yaml:"dbname"`
+	Dbname string `json:"dbname,omitempty" yaml:"dbname"`
 	// 端口
-	Port string `mapstructure:"port" json:"port,omitempty" yaml:"port"`
+	Port string `json:"port,omitempty" yaml:"port"`
 }
 
-func (that PostgreSql) Dsn() string {
+func (that PostgreSql) dsnStr() string {
 	return "host=" + that.Host + " port=" + that.Port + " user=" + that.Username + " dbname=" + that.Dbname + " password=" + that.Password
 }
 
 // 打开连接
-func (that *PostgreSql) Open() (*ent.Client, error) {
-	if that.client == nil {
-		client, err := ent.Open(that.Driver, that.Dsn())
-		if err != nil {
-			return nil, err
-		}
-		that.client = client
+func (that *PostgreSql) Open() (client *ent.Client, err error) {
+	// postgresql://user:password@127.0.0.1/database
+	db, err := sql.Open("pgx", that.dsnStr())
+	if err != nil {
+		return nil, err
 	}
-	return that.client, nil
-}
-
-// 关闭数据库连接
-func (that *PostgreSql) Close() error {
-	if that.client != nil {
-		c := that.client
-		that.client = nil
-		e := c.Close()
-		return e
-	}
-	return nil
+	drv := entsql.OpenDB(dialect.Postgres, db)
+	return ent.NewClient(ent.Driver(drv)), nil
 }

@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appuserloginlog"
+	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/user"
 )
@@ -31,6 +33,7 @@ type AppUserLoginLogQuery struct {
 	withApp     *AppQuery
 	withAppUser *AppUserQuery
 	withUser    *UserQuery
+	modifiers   []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -83,6 +86,9 @@ func (aullq *AppUserLoginLogQuery) QueryApp() *AppQuery {
 			sqlgraph.To(app.Table, app.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuserloginlog.AppTable, appuserloginlog.AppColumn),
 		)
+		schemaConfig := aullq.schemaConfig
+		step.To.Schema = schemaConfig.App
+		step.Edge.Schema = schemaConfig.AppUserLoginLog
 		fromU = sqlgraph.SetNeighbors(aullq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -105,6 +111,9 @@ func (aullq *AppUserLoginLogQuery) QueryAppUser() *AppUserQuery {
 			sqlgraph.To(appuser.Table, appuser.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuserloginlog.AppUserTable, appuserloginlog.AppUserColumn),
 		)
+		schemaConfig := aullq.schemaConfig
+		step.To.Schema = schemaConfig.AppUser
+		step.Edge.Schema = schemaConfig.AppUserLoginLog
 		fromU = sqlgraph.SetNeighbors(aullq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -127,6 +136,9 @@ func (aullq *AppUserLoginLogQuery) QueryUser() *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, appuserloginlog.UserTable, appuserloginlog.UserColumn),
 		)
+		schemaConfig := aullq.schemaConfig
+		step.To.Schema = schemaConfig.User
+		step.Edge.Schema = schemaConfig.AppUserLoginLog
 		fromU = sqlgraph.SetNeighbors(aullq.driver.Dialect(), step)
 		return fromU, nil
 	}
@@ -440,6 +452,11 @@ func (aullq *AppUserLoginLogQuery) sqlAll(ctx context.Context) ([]*AppUserLoginL
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(aullq.modifiers) > 0 {
+		_spec.Modifiers = aullq.modifiers
+	}
+	_spec.Node.Schema = aullq.schemaConfig.AppUserLoginLog
+	ctx = internal.NewSchemaConfigContext(ctx, aullq.schemaConfig)
 	if err := sqlgraph.QueryNodes(ctx, aullq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -530,6 +547,11 @@ func (aullq *AppUserLoginLogQuery) sqlAll(ctx context.Context) ([]*AppUserLoginL
 
 func (aullq *AppUserLoginLogQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aullq.querySpec()
+	if len(aullq.modifiers) > 0 {
+		_spec.Modifiers = aullq.modifiers
+	}
+	_spec.Node.Schema = aullq.schemaConfig.AppUserLoginLog
+	ctx = internal.NewSchemaConfigContext(ctx, aullq.schemaConfig)
 	return sqlgraph.CountNodes(ctx, aullq.driver, _spec)
 }
 
@@ -601,6 +623,12 @@ func (aullq *AppUserLoginLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aullq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range aullq.modifiers {
+		m(selector)
+	}
+	t1.Schema(aullq.schemaConfig.AppUserLoginLog)
+	ctx = internal.NewSchemaConfigContext(ctx, aullq.schemaConfig)
+	selector.WithContext(ctx)
 	for _, p := range aullq.predicates {
 		p(selector)
 	}
@@ -616,6 +644,32 @@ func (aullq *AppUserLoginLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (aullq *AppUserLoginLogQuery) ForUpdate(opts ...sql.LockOption) *AppUserLoginLogQuery {
+	if aullq.driver.Dialect() == dialect.Postgres {
+		aullq.Unique(false)
+	}
+	aullq.modifiers = append(aullq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return aullq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (aullq *AppUserLoginLogQuery) ForShare(opts ...sql.LockOption) *AppUserLoginLogQuery {
+	if aullq.driver.Dialect() == dialect.Postgres {
+		aullq.Unique(false)
+	}
+	aullq.modifiers = append(aullq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return aullq
 }
 
 // AppUserLoginLogGroupBy is the group-by builder for AppUserLoginLog entities.
