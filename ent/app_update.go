@@ -13,6 +13,7 @@ import (
 	"github.com/boshangad/v1/ent/appoption"
 	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // AppUpdate is the builder for updating App entities.
@@ -56,14 +57,6 @@ func (au *AppUpdate) SetUpdateTime(i int64) *AppUpdate {
 	return au
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (au *AppUpdate) SetNillableUpdateTime(i *int64) *AppUpdate {
-	if i != nil {
-		au.SetUpdateTime(*i)
-	}
-	return au
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (au *AppUpdate) AddUpdateTime(i int64) *AppUpdate {
 	au.mutation.AddUpdateTime(i)
@@ -91,17 +84,9 @@ func (au *AppUpdate) AddUpdateBy(u uint64) *AppUpdate {
 	return au
 }
 
-// SetAlias sets the "alias" field.
-func (au *AppUpdate) SetAlias(s string) *AppUpdate {
-	au.mutation.SetAlias(s)
-	return au
-}
-
-// SetNillableAlias sets the "alias" field if the given value is not nil.
-func (au *AppUpdate) SetNillableAlias(s *string) *AppUpdate {
-	if s != nil {
-		au.SetAlias(*s)
-	}
+// SetUUID sets the "uuid" field.
+func (au *AppUpdate) SetUUID(u *uuid.UUID) *AppUpdate {
+	au.mutation.SetUUID(u)
 	return au
 }
 
@@ -299,6 +284,7 @@ func (au *AppUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	au.defaults()
 	if len(au.hooks) == 0 {
 		if err = au.check(); err != nil {
 			return 0, err
@@ -350,6 +336,14 @@ func (au *AppUpdate) Exec(ctx context.Context) error {
 func (au *AppUpdate) ExecX(ctx context.Context) {
 	if err := au.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (au *AppUpdate) defaults() {
+	if _, ok := au.mutation.UpdateTime(); !ok {
+		v := app.UpdateDefaultUpdateTime()
+		au.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -448,11 +442,11 @@ func (au *AppUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: app.FieldUpdateBy,
 		})
 	}
-	if value, ok := au.mutation.Alias(); ok {
+	if value, ok := au.mutation.UUID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: app.FieldAlias,
+			Column: app.FieldUUID,
 		})
 	}
 	if value, ok := au.mutation.TypeID(); ok {
@@ -645,14 +639,6 @@ func (auo *AppUpdateOne) SetUpdateTime(i int64) *AppUpdateOne {
 	return auo
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (auo *AppUpdateOne) SetNillableUpdateTime(i *int64) *AppUpdateOne {
-	if i != nil {
-		auo.SetUpdateTime(*i)
-	}
-	return auo
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (auo *AppUpdateOne) AddUpdateTime(i int64) *AppUpdateOne {
 	auo.mutation.AddUpdateTime(i)
@@ -680,17 +666,9 @@ func (auo *AppUpdateOne) AddUpdateBy(u uint64) *AppUpdateOne {
 	return auo
 }
 
-// SetAlias sets the "alias" field.
-func (auo *AppUpdateOne) SetAlias(s string) *AppUpdateOne {
-	auo.mutation.SetAlias(s)
-	return auo
-}
-
-// SetNillableAlias sets the "alias" field if the given value is not nil.
-func (auo *AppUpdateOne) SetNillableAlias(s *string) *AppUpdateOne {
-	if s != nil {
-		auo.SetAlias(*s)
-	}
+// SetUUID sets the "uuid" field.
+func (auo *AppUpdateOne) SetUUID(u *uuid.UUID) *AppUpdateOne {
+	auo.mutation.SetUUID(u)
 	return auo
 }
 
@@ -895,6 +873,7 @@ func (auo *AppUpdateOne) Save(ctx context.Context) (*App, error) {
 		err  error
 		node *App
 	)
+	auo.defaults()
 	if len(auo.hooks) == 0 {
 		if err = auo.check(); err != nil {
 			return nil, err
@@ -946,6 +925,14 @@ func (auo *AppUpdateOne) Exec(ctx context.Context) error {
 func (auo *AppUpdateOne) ExecX(ctx context.Context) {
 	if err := auo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (auo *AppUpdateOne) defaults() {
+	if _, ok := auo.mutation.UpdateTime(); !ok {
+		v := app.UpdateDefaultUpdateTime()
+		auo.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -1061,11 +1048,11 @@ func (auo *AppUpdateOne) sqlSave(ctx context.Context) (_node *App, err error) {
 			Column: app.FieldUpdateBy,
 		})
 	}
-	if value, ok := auo.mutation.Alias(); ok {
+	if value, ok := auo.mutation.UUID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: app.FieldAlias,
+			Column: app.FieldUUID,
 		})
 	}
 	if value, ok := auo.mutation.TypeID(); ok {

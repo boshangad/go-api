@@ -16,7 +16,9 @@ type CreateTime struct {
 // 字段
 func (CreateTime) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("create_time").Default(time.Now().Unix()).Comment("创建时间").Immutable(),
+		field.Int64("create_time").DefaultFunc(func() int64 {
+			return time.Now().Unix()
+		}).Comment("创建时间").Immutable(),
 	}
 }
 

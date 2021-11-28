@@ -3,8 +3,10 @@ package controller
 import (
 	"net/http"
 
+	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 const (
@@ -75,6 +77,27 @@ func (that *Context) SetAppUserToken(appUserToken *ent.AppUserToken) {
 	that.Set(ContextKeyByAppUserToken, appUserToken)
 }
 
+// 绑定数据，允许多次调用
+func (that *Context) ShouldBindValue(obj interface{}) (err error) {
+	// 如果请求类型是JSOn,Xml 存在数据
+	var (
+		contentType = that.ContentType()
+	)
+	if that.Request.Method != http.MethodGet {
+		switch contentType {
+		case binding.MIMEJSON:
+			return that.Context.ShouldBindBodyWith(obj, binding.JSON)
+		case binding.MIMEXML, binding.MIMEXML2:
+			return that.Context.ShouldBindBodyWith(obj, binding.XML)
+		case binding.MIMEPROTOBUF:
+			return that.Context.ShouldBindBodyWith(obj, binding.ProtoBuf)
+		case binding.MIMEMSGPACK, binding.MIMEMSGPACK2:
+			return that.Context.ShouldBindBodyWith(obj, binding.MsgPack)
+		}
+	}
+	return that.Context.ShouldBind(obj)
+}
+
 // 输出json格式数据
 func (that Context) JsonOut(error int64, msg string, data interface{}) {
 	response := gin.H{}
@@ -87,4 +110,16 @@ func (that Context) JsonOut(error int64, msg string, data interface{}) {
 		response["data"] = data
 	}
 	that.Context.AbortWithStatusJSON(http.StatusOK, response)
+}
+
+// 输出错误信息
+func (that Context) JsonOutError(err error) {
+	if err == nil {
+		return
+	}
+	if e, ok := err.(ContextError); ok {
+		that.JsonOut(e.Code, e.Msg, e.Data)
+		return
+	}
+	that.JsonOut(global.ErrNotice, err.Error(), nil)
 }

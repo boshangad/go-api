@@ -2,6 +2,10 @@
 
 package appusertoken
 
+import (
+	"github.com/google/uuid"
+)
+
 const (
 	// Label holds the string label denoting the appusertoken type in the database.
 	Label = "app_user_token"
@@ -79,7 +83,7 @@ func ValidColumn(column string) bool {
 
 var (
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.
-	DefaultCreateTime int64
+	DefaultCreateTime func() int64
 	// DefaultAppID holds the default value on creation for the "app_id" field.
 	DefaultAppID uint64
 	// DefaultAppUserID holds the default value on creation for the "app_user_id" field.
@@ -90,6 +94,8 @@ var (
 	DefaultClientVersion string
 	// ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.
 	ClientVersionValidator func(string) error
+	// DefaultUUID holds the default value on creation for the "uuid" field.
+	DefaultUUID func() *uuid.UUID
 	// DefaultIP holds the default value on creation for the "ip" field.
 	DefaultIP string
 	// IPValidator is a validator for the "ip" field. It is called by the builders before save.

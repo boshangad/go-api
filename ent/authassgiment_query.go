@@ -445,6 +445,12 @@ func (aaq *AuthAssgimentQuery) ForShare(opts ...sql.LockOption) *AuthAssgimentQu
 	return aaq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aaq *AuthAssgimentQuery) Modify(modifiers ...func(s *sql.Selector)) *AuthAssgimentSelect {
+	aaq.modifiers = append(aaq.modifiers, modifiers...)
+	return aaq.Select()
+}
+
 // AuthAssgimentGroupBy is the group-by builder for AuthAssgiment entities.
 type AuthAssgimentGroupBy struct {
 	config
@@ -933,4 +939,10 @@ func (aas *AuthAssgimentSelect) sqlScan(ctx context.Context, v interface{}) erro
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aas *AuthAssgimentSelect) Modify(modifiers ...func(s *sql.Selector)) *AuthAssgimentSelect {
+	aas.modifiers = append(aas.modifiers, modifiers...)
+	return aas
 }

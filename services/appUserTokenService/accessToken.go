@@ -3,6 +3,7 @@ package appUserTokenService
 import (
 	"context"
 	"crypto/ed25519"
+	"encoding/hex"
 	"errors"
 	"time"
 
@@ -24,7 +25,7 @@ type AccessToken struct {
 }
 
 // 通过Token登录用户
-func (that AccessToken) Login() (appUser *ent.AppUser, err error) {
+func (that AccessToken) Login() (appUserToken *ent.AppUserToken, err error) {
 	var (
 		publicKey, _, _ = ed25519.GenerateKey(nil)
 		pk              = pvx.NewAsymmetricPublicKey(publicKey, pvx.Version4)
@@ -32,9 +33,9 @@ func (that AccessToken) Login() (appUser *ent.AppUser, err error) {
 		pvxToken        *pvx.Token
 		cliams          pvx.RegisteredClaims = pvx.RegisteredClaims{}
 		tokenUuid       uuid.UUID
-		appUserToken    *ent.AppUserToken
-		ctx             = context.Background()
-		nowTime         = time.Now()
+		// appUser         *ent.AppUser
+		ctx     = context.Background()
+		nowTime = time.Now()
 	)
 	pvxToken = pv4.Verify(that.AccessToken, pk)
 	if pvxToken.Err() != nil {
@@ -62,10 +63,6 @@ func (that AccessToken) Login() (appUser *ent.AppUser, err error) {
 	if appUserToken.ExpireTime <= nowTime.Unix() {
 		return nil, errors.New("token has expired")
 	}
-	appUser, err = appUserToken.Edges.AppUserOrErr()
-	if err != nil {
-		return nil, errors.New("token is abnormal, please obtain the token again")
-	}
 	return
 }
 
@@ -75,7 +72,7 @@ func NewAccessToken() (*AccessToken, error) {
 		nowTime     = time.Now()
 		expireTime  = nowTime.Add(2 * time.Hour)
 		accessToken = AccessToken{
-			Uuid:  uuid.New(),
+			Uuid:       uuid.New(),
 			ExpireTime: expireTime.Unix(),
 		}
 		_, privateKey, err = ed25519.GenerateKey(nil)
@@ -84,8 +81,8 @@ func NewAccessToken() (*AccessToken, error) {
 
 		cliams pvx.RegisteredClaims = pvx.RegisteredClaims{
 			NotBefore:  &nowTime,
-			Expiration: &expireTime,
-			TokenID:    accessToken.Uuid.String(),
+			// Expiration: &expireTime,
+			TokenID:    hex.EncodeToString(accessToken.Uuid[0:]),
 			// KeyID:      "",
 		}
 	)

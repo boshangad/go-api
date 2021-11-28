@@ -445,6 +445,12 @@ func (arq *AuthRoleQuery) ForShare(opts ...sql.LockOption) *AuthRoleQuery {
 	return arq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (arq *AuthRoleQuery) Modify(modifiers ...func(s *sql.Selector)) *AuthRoleSelect {
+	arq.modifiers = append(arq.modifiers, modifiers...)
+	return arq.Select()
+}
+
 // AuthRoleGroupBy is the group-by builder for AuthRole entities.
 type AuthRoleGroupBy struct {
 	config
@@ -933,4 +939,10 @@ func (ars *AuthRoleSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (ars *AuthRoleSelect) Modify(modifiers ...func(s *sql.Selector)) *AuthRoleSelect {
+	ars.modifiers = append(ars.modifiers, modifiers...)
+	return ars
 }

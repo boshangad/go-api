@@ -18,6 +18,7 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/vk-rv/pvx v0.0.0-20210912195928-ac00bc32f6e7
 	go.uber.org/zap v1.17.0
+	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
@@ -57,7 +58,6 @@ require (
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
 	golang.org/x/text v0.3.7 // indirect

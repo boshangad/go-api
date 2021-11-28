@@ -3,12 +3,21 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/boshangad/v1/app/controller"
+	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/ent"
+	"github.com/boshangad/v1/services/appUserTokenService"
+	"go.uber.org/zap"
 )
 
-// LoadAppUser 检查应用用户是否有效
-func LoadAppUser(c *gin.Context) {
-	authorization := c.GetHeader("authorization")
+// AppUserMiddleware 检查应用用户是否有效
+func AppUserMiddleware(c *controller.Context) {
+	var (
+		authorization = c.GetHeader("authorization")
+		accessToken   appUserTokenService.AccessToken
+		appUserToken  *ent.AppUserToken
+		err           error
+	)
 	if authorization == "" {
 		if c.Request.Method == http.MethodPost {
 			authorization = c.DefaultPostForm("access_token", "")
@@ -20,16 +29,15 @@ func LoadAppUser(c *gin.Context) {
 	if authorization == "" {
 		return
 	}
-	// model := appUserTokenService.NewModel()
-	// err := model.LoginByAccessToken(authorization)
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-	// 		"error": http.StatusForbidden,
-	// 		"msg":   err.Error(),
-	// 	})
-	// 	return
-	// }
-	// helpers.SetGinAppUserToken(c, model.AppUserToken)
-	// helpers.SetGinApp(c, model.AppUserToken.Edges.App)
-	// helpers.SetGinAppUser(c, model.AppUserToken.Edges.AppUser)
+	accessToken.AccessToken = authorization
+	appUserToken, err = accessToken.Login()
+	if err != nil {
+		global.Log.Info("token invalid", zap.String("token", authorization))
+		return
+	}
+	c.SetAppUserToken(appUserToken)
+	c.SetApp(appUserToken.Edges.App)
+	c.SetAppUser(appUserToken.Edges.AppUser)
+	c.SetUser(appUserToken.Edges.User)
+	return
 }

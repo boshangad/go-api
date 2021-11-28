@@ -222,7 +222,7 @@ func (autc *AppUserTokenCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (autc *AppUserTokenCreate) defaults() {
 	if _, ok := autc.mutation.CreateTime(); !ok {
-		v := appusertoken.DefaultCreateTime
+		v := appusertoken.DefaultCreateTime()
 		autc.mutation.SetCreateTime(v)
 	}
 	if _, ok := autc.mutation.AppID(); !ok {
@@ -240,6 +240,10 @@ func (autc *AppUserTokenCreate) defaults() {
 	if _, ok := autc.mutation.ClientVersion(); !ok {
 		v := appusertoken.DefaultClientVersion
 		autc.mutation.SetClientVersion(v)
+	}
+	if _, ok := autc.mutation.UUID(); !ok {
+		v := appusertoken.DefaultUUID()
+		autc.mutation.SetUUID(v)
 	}
 	if _, ok := autc.mutation.IP(); !ok {
 		v := appusertoken.DefaultIP

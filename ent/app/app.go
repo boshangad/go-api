@@ -2,6 +2,10 @@
 
 package app
 
+import (
+	"github.com/google/uuid"
+)
+
 const (
 	// Label holds the string label denoting the app type in the database.
 	Label = "app"
@@ -17,8 +21,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldUpdateBy holds the string denoting the update_by field in the database.
 	FieldUpdateBy = "update_by"
-	// FieldAlias holds the string denoting the alias field in the database.
-	FieldAlias = "alias"
+	// FieldUUID holds the string denoting the uuid field in the database.
+	FieldUUID = "uuid"
 	// FieldTypeID holds the string denoting the type_id field in the database.
 	FieldTypeID = "type_id"
 	// FieldTitle holds the string denoting the title field in the database.
@@ -58,7 +62,7 @@ var Columns = []string{
 	FieldCreateBy,
 	FieldUpdateTime,
 	FieldUpdateBy,
-	FieldAlias,
+	FieldUUID,
 	FieldTypeID,
 	FieldTitle,
 	FieldIntro,
@@ -84,15 +88,15 @@ var (
 	// DefaultDeleteTime holds the default value on creation for the "delete_time" field.
 	DefaultDeleteTime int64
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.
-	DefaultCreateTime int64
+	DefaultCreateTime func() int64
 	// DefaultCreateBy holds the default value on creation for the "create_by" field.
 	DefaultCreateBy uint64
-	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
-	DefaultUpdateTime int64
+	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
+	UpdateDefaultUpdateTime func() int64
 	// DefaultUpdateBy holds the default value on creation for the "update_by" field.
 	DefaultUpdateBy uint64
-	// DefaultAlias holds the default value on creation for the "alias" field.
-	DefaultAlias func() string
+	// DefaultUUID holds the default value on creation for the "uuid" field.
+	DefaultUUID func() *uuid.UUID
 	// DefaultTypeID holds the default value on creation for the "type_id" field.
 	DefaultTypeID uint64
 	// DefaultTitle holds the default value on creation for the "title" field.
@@ -123,4 +127,24 @@ var (
 	DefaultStatus uint
 	// StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	StatusValidator func(uint) error
+)
+
+const (
+	// TypePC 网页端
+	TypePC = 1
+	// TypeMobile 移动网页端
+	TypeMobile = 2
+	// TypeAndroid 安卓应用
+	TypeAndroid = 3
+	// TypeIOS 苹果应用
+	TypeIOS = 4
+	// TypeMiniWechat 微信小程序
+	TypeMiniWechat = 5
+)
+
+const (
+	// StatusDraft 草稿
+	StatusDraft = 0
+	// StatusRelease 发布
+	StatusRelease = 1
 )

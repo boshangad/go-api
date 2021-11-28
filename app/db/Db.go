@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -53,12 +52,19 @@ func (that *Db) WithTx(ctx context.Context, fn func(db *ent.Client, tx *ent.Tx) 
 
 // 实例化DB服务
 func NewDb(client *ent.Client, logger *zap.Logger) *Db {
+	client = client.Debug()
 	// Add a global hook that runs on all types and all operations.
 	client.Use(func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			start := time.Now()
 			defer func() {
-				log.Printf("Op=%s\tType=%s\tTime=%s\tConcreteType=%T\n", m.Op(), m.Type(), time.Since(start), m)
+				logger.Info(
+					"db usage log",
+					zap.String("op", m.Op().String()),
+					zap.String("type", m.Type()),
+					zap.String("time", time.Since(start).String()),
+					zap.String("fields", strings.Join(m.Fields(), ",")),
+				)
 			}()
 			return next.Mutate(ctx, m)
 		})

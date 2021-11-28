@@ -36,14 +36,6 @@ func (elu *EmailLogUpdate) SetUpdateTime(i int64) *EmailLogUpdate {
 	return elu
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (elu *EmailLogUpdate) SetNillableUpdateTime(i *int64) *EmailLogUpdate {
-	if i != nil {
-		elu.SetUpdateTime(*i)
-	}
-	return elu
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (elu *EmailLogUpdate) AddUpdateTime(i int64) *EmailLogUpdate {
 	elu.mutation.AddUpdateTime(i)
@@ -302,6 +294,7 @@ func (elu *EmailLogUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	elu.defaults()
 	if len(elu.hooks) == 0 {
 		if err = elu.check(); err != nil {
 			return 0, err
@@ -353,6 +346,14 @@ func (elu *EmailLogUpdate) Exec(ctx context.Context) error {
 func (elu *EmailLogUpdate) ExecX(ctx context.Context) {
 	if err := elu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (elu *EmailLogUpdate) defaults() {
+	if _, ok := elu.mutation.UpdateTime(); !ok {
+		v := emaillog.UpdateDefaultUpdateTime()
+		elu.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -632,14 +633,6 @@ func (eluo *EmailLogUpdateOne) SetUpdateTime(i int64) *EmailLogUpdateOne {
 	return eluo
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (eluo *EmailLogUpdateOne) SetNillableUpdateTime(i *int64) *EmailLogUpdateOne {
-	if i != nil {
-		eluo.SetUpdateTime(*i)
-	}
-	return eluo
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (eluo *EmailLogUpdateOne) AddUpdateTime(i int64) *EmailLogUpdateOne {
 	eluo.mutation.AddUpdateTime(i)
@@ -905,6 +898,7 @@ func (eluo *EmailLogUpdateOne) Save(ctx context.Context) (*EmailLog, error) {
 		err  error
 		node *EmailLog
 	)
+	eluo.defaults()
 	if len(eluo.hooks) == 0 {
 		if err = eluo.check(); err != nil {
 			return nil, err
@@ -956,6 +950,14 @@ func (eluo *EmailLogUpdateOne) Exec(ctx context.Context) error {
 func (eluo *EmailLogUpdateOne) ExecX(ctx context.Context) {
 	if err := eluo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (eluo *EmailLogUpdateOne) defaults() {
+	if _, ok := eluo.mutation.UpdateTime(); !ok {
+		v := emaillog.UpdateDefaultUpdateTime()
+		eluo.mutation.SetUpdateTime(v)
 	}
 }
 

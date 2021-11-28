@@ -233,14 +233,14 @@ func Watermark(v string) predicate.AppUser {
 }
 
 // LoadUserProfileTime applies equality check predicate on the "load_user_profile_time" field. It's identical to LoadUserProfileTimeEQ.
-func LoadUserProfileTime(v uint64) predicate.AppUser {
+func LoadUserProfileTime(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LastLoginTime applies equality check predicate on the "last_login_time" field. It's identical to LastLoginTimeEQ.
-func LastLoginTime(v uint64) predicate.AppUser {
+func LastLoginTime(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastLoginTime), v))
 	})
@@ -2139,21 +2139,21 @@ func WatermarkContainsFold(v string) predicate.AppUser {
 }
 
 // LoadUserProfileTimeEQ applies the EQ predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeEQ(v uint64) predicate.AppUser {
+func LoadUserProfileTimeEQ(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LoadUserProfileTimeNEQ applies the NEQ predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeNEQ(v uint64) predicate.AppUser {
+func LoadUserProfileTimeNEQ(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LoadUserProfileTimeIn applies the In predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeIn(vs ...uint64) predicate.AppUser {
+func LoadUserProfileTimeIn(vs ...int64) predicate.AppUser {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2170,7 +2170,7 @@ func LoadUserProfileTimeIn(vs ...uint64) predicate.AppUser {
 }
 
 // LoadUserProfileTimeNotIn applies the NotIn predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeNotIn(vs ...uint64) predicate.AppUser {
+func LoadUserProfileTimeNotIn(vs ...int64) predicate.AppUser {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2187,49 +2187,49 @@ func LoadUserProfileTimeNotIn(vs ...uint64) predicate.AppUser {
 }
 
 // LoadUserProfileTimeGT applies the GT predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeGT(v uint64) predicate.AppUser {
+func LoadUserProfileTimeGT(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LoadUserProfileTimeGTE applies the GTE predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeGTE(v uint64) predicate.AppUser {
+func LoadUserProfileTimeGTE(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LoadUserProfileTimeLT applies the LT predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeLT(v uint64) predicate.AppUser {
+func LoadUserProfileTimeLT(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LoadUserProfileTimeLTE applies the LTE predicate on the "load_user_profile_time" field.
-func LoadUserProfileTimeLTE(v uint64) predicate.AppUser {
+func LoadUserProfileTimeLTE(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLoadUserProfileTime), v))
 	})
 }
 
 // LastLoginTimeEQ applies the EQ predicate on the "last_login_time" field.
-func LastLoginTimeEQ(v uint64) predicate.AppUser {
+func LastLoginTimeEQ(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastLoginTime), v))
 	})
 }
 
 // LastLoginTimeNEQ applies the NEQ predicate on the "last_login_time" field.
-func LastLoginTimeNEQ(v uint64) predicate.AppUser {
+func LastLoginTimeNEQ(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLastLoginTime), v))
 	})
 }
 
 // LastLoginTimeIn applies the In predicate on the "last_login_time" field.
-func LastLoginTimeIn(vs ...uint64) predicate.AppUser {
+func LastLoginTimeIn(vs ...int64) predicate.AppUser {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2246,7 +2246,7 @@ func LastLoginTimeIn(vs ...uint64) predicate.AppUser {
 }
 
 // LastLoginTimeNotIn applies the NotIn predicate on the "last_login_time" field.
-func LastLoginTimeNotIn(vs ...uint64) predicate.AppUser {
+func LastLoginTimeNotIn(vs ...int64) predicate.AppUser {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2263,28 +2263,28 @@ func LastLoginTimeNotIn(vs ...uint64) predicate.AppUser {
 }
 
 // LastLoginTimeGT applies the GT predicate on the "last_login_time" field.
-func LastLoginTimeGT(v uint64) predicate.AppUser {
+func LastLoginTimeGT(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLastLoginTime), v))
 	})
 }
 
 // LastLoginTimeGTE applies the GTE predicate on the "last_login_time" field.
-func LastLoginTimeGTE(v uint64) predicate.AppUser {
+func LastLoginTimeGTE(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLastLoginTime), v))
 	})
 }
 
 // LastLoginTimeLT applies the LT predicate on the "last_login_time" field.
-func LastLoginTimeLT(v uint64) predicate.AppUser {
+func LastLoginTimeLT(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLastLoginTime), v))
 	})
 }
 
 // LastLoginTimeLTE applies the LTE predicate on the "last_login_time" field.
-func LastLoginTimeLTE(v uint64) predicate.AppUser {
+func LastLoginTimeLTE(v int64) predicate.AppUser {
 	return predicate.AppUser(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLastLoginTime), v))
 	})

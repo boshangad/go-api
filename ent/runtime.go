@@ -39,23 +39,23 @@ func init() {
 	// appDescCreateTime is the schema descriptor for create_time field.
 	appDescCreateTime := appMixinFields2[0].Descriptor()
 	// app.DefaultCreateTime holds the default value on creation for the create_time field.
-	app.DefaultCreateTime = appDescCreateTime.Default.(int64)
+	app.DefaultCreateTime = appDescCreateTime.Default.(func() int64)
 	// appDescCreateBy is the schema descriptor for create_by field.
 	appDescCreateBy := appMixinFields3[0].Descriptor()
 	// app.DefaultCreateBy holds the default value on creation for the create_by field.
 	app.DefaultCreateBy = appDescCreateBy.Default.(uint64)
 	// appDescUpdateTime is the schema descriptor for update_time field.
 	appDescUpdateTime := appMixinFields4[0].Descriptor()
-	// app.DefaultUpdateTime holds the default value on creation for the update_time field.
-	app.DefaultUpdateTime = appDescUpdateTime.Default.(int64)
+	// app.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	app.UpdateDefaultUpdateTime = appDescUpdateTime.UpdateDefault.(func() int64)
 	// appDescUpdateBy is the schema descriptor for update_by field.
 	appDescUpdateBy := appMixinFields5[0].Descriptor()
 	// app.DefaultUpdateBy holds the default value on creation for the update_by field.
 	app.DefaultUpdateBy = appDescUpdateBy.Default.(uint64)
-	// appDescAlias is the schema descriptor for alias field.
-	appDescAlias := appFields[0].Descriptor()
-	// app.DefaultAlias holds the default value on creation for the alias field.
-	app.DefaultAlias = appDescAlias.Default.(func() string)
+	// appDescUUID is the schema descriptor for uuid field.
+	appDescUUID := appFields[0].Descriptor()
+	// app.DefaultUUID holds the default value on creation for the uuid field.
+	app.DefaultUUID = appDescUUID.Default.(func() *uuid.UUID)
 	// appDescTypeID is the schema descriptor for type_id field.
 	appDescTypeID := appFields[1].Descriptor()
 	// app.DefaultTypeID holds the default value on creation for the type_id field.
@@ -118,15 +118,15 @@ func init() {
 	// appoptionDescCreateTime is the schema descriptor for create_time field.
 	appoptionDescCreateTime := appoptionMixinFields1[0].Descriptor()
 	// appoption.DefaultCreateTime holds the default value on creation for the create_time field.
-	appoption.DefaultCreateTime = appoptionDescCreateTime.Default.(int64)
+	appoption.DefaultCreateTime = appoptionDescCreateTime.Default.(func() int64)
 	// appoptionDescCreateBy is the schema descriptor for create_by field.
 	appoptionDescCreateBy := appoptionMixinFields2[0].Descriptor()
 	// appoption.DefaultCreateBy holds the default value on creation for the create_by field.
 	appoption.DefaultCreateBy = appoptionDescCreateBy.Default.(uint64)
 	// appoptionDescUpdateTime is the schema descriptor for update_time field.
 	appoptionDescUpdateTime := appoptionMixinFields3[0].Descriptor()
-	// appoption.DefaultUpdateTime holds the default value on creation for the update_time field.
-	appoption.DefaultUpdateTime = appoptionDescUpdateTime.Default.(int64)
+	// appoption.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	appoption.UpdateDefaultUpdateTime = appoptionDescUpdateTime.UpdateDefault.(func() int64)
 	// appoptionDescUpdateBy is the schema descriptor for update_by field.
 	appoptionDescUpdateBy := appoptionMixinFields4[0].Descriptor()
 	// appoption.DefaultUpdateBy holds the default value on creation for the update_by field.
@@ -177,11 +177,11 @@ func init() {
 	// appuserDescCreateTime is the schema descriptor for create_time field.
 	appuserDescCreateTime := appuserMixinFields1[0].Descriptor()
 	// appuser.DefaultCreateTime holds the default value on creation for the create_time field.
-	appuser.DefaultCreateTime = appuserDescCreateTime.Default.(int64)
+	appuser.DefaultCreateTime = appuserDescCreateTime.Default.(func() int64)
 	// appuserDescUpdateTime is the schema descriptor for update_time field.
 	appuserDescUpdateTime := appuserMixinFields2[0].Descriptor()
-	// appuser.DefaultUpdateTime holds the default value on creation for the update_time field.
-	appuser.DefaultUpdateTime = appuserDescUpdateTime.Default.(int64)
+	// appuser.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	appuser.UpdateDefaultUpdateTime = appuserDescUpdateTime.UpdateDefault.(func() int64)
 	// appuserDescAppID is the schema descriptor for app_id field.
 	appuserDescAppID := appuserFields[0].Descriptor()
 	// appuser.DefaultAppID holds the default value on creation for the app_id field.
@@ -287,11 +287,11 @@ func init() {
 	// appuserDescLoadUserProfileTime is the schema descriptor for load_user_profile_time field.
 	appuserDescLoadUserProfileTime := appuserFields[18].Descriptor()
 	// appuser.DefaultLoadUserProfileTime holds the default value on creation for the load_user_profile_time field.
-	appuser.DefaultLoadUserProfileTime = appuserDescLoadUserProfileTime.Default.(uint64)
+	appuser.DefaultLoadUserProfileTime = appuserDescLoadUserProfileTime.Default.(int64)
 	// appuserDescLastLoginTime is the schema descriptor for last_login_time field.
 	appuserDescLastLoginTime := appuserFields[19].Descriptor()
 	// appuser.DefaultLastLoginTime holds the default value on creation for the last_login_time field.
-	appuser.DefaultLastLoginTime = appuserDescLastLoginTime.Default.(uint64)
+	appuser.DefaultLastLoginTime = appuserDescLastLoginTime.Default.(int64)
 	appuserloginlogMixin := schema.AppUserLoginLog{}.Mixin()
 	appuserloginlogMixinFields1 := appuserloginlogMixin[1].Fields()
 	_ = appuserloginlogMixinFields1
@@ -300,7 +300,7 @@ func init() {
 	// appuserloginlogDescCreateTime is the schema descriptor for create_time field.
 	appuserloginlogDescCreateTime := appuserloginlogMixinFields1[0].Descriptor()
 	// appuserloginlog.DefaultCreateTime holds the default value on creation for the create_time field.
-	appuserloginlog.DefaultCreateTime = appuserloginlogDescCreateTime.Default.(int64)
+	appuserloginlog.DefaultCreateTime = appuserloginlogDescCreateTime.Default.(func() int64)
 	// appuserloginlogDescAppID is the schema descriptor for app_id field.
 	appuserloginlogDescAppID := appuserloginlogFields[0].Descriptor()
 	// appuserloginlog.DefaultAppID holds the default value on creation for the app_id field.
@@ -335,7 +335,7 @@ func init() {
 	// appusertokenDescCreateTime is the schema descriptor for create_time field.
 	appusertokenDescCreateTime := appusertokenMixinFields1[0].Descriptor()
 	// appusertoken.DefaultCreateTime holds the default value on creation for the create_time field.
-	appusertoken.DefaultCreateTime = appusertokenDescCreateTime.Default.(int64)
+	appusertoken.DefaultCreateTime = appusertokenDescCreateTime.Default.(func() int64)
 	// appusertokenDescAppID is the schema descriptor for app_id field.
 	appusertokenDescAppID := appusertokenFields[0].Descriptor()
 	// appusertoken.DefaultAppID holds the default value on creation for the app_id field.
@@ -354,6 +354,10 @@ func init() {
 	appusertoken.DefaultClientVersion = appusertokenDescClientVersion.Default.(string)
 	// appusertoken.ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.
 	appusertoken.ClientVersionValidator = appusertokenDescClientVersion.Validators[0].(func(string) error)
+	// appusertokenDescUUID is the schema descriptor for uuid field.
+	appusertokenDescUUID := appusertokenFields[4].Descriptor()
+	// appusertoken.DefaultUUID holds the default value on creation for the uuid field.
+	appusertoken.DefaultUUID = appusertokenDescUUID.Default.(func() *uuid.UUID)
 	// appusertokenDescIP is the schema descriptor for ip field.
 	appusertokenDescIP := appusertokenFields[5].Descriptor()
 	// appusertoken.DefaultIP holds the default value on creation for the ip field.
@@ -378,15 +382,15 @@ func init() {
 	// emaillogDescCreateTime is the schema descriptor for create_time field.
 	emaillogDescCreateTime := emaillogMixinFields1[0].Descriptor()
 	// emaillog.DefaultCreateTime holds the default value on creation for the create_time field.
-	emaillog.DefaultCreateTime = emaillogDescCreateTime.Default.(int64)
+	emaillog.DefaultCreateTime = emaillogDescCreateTime.Default.(func() int64)
 	// emaillogDescCreateBy is the schema descriptor for create_by field.
 	emaillogDescCreateBy := emaillogMixinFields2[0].Descriptor()
 	// emaillog.DefaultCreateBy holds the default value on creation for the create_by field.
 	emaillog.DefaultCreateBy = emaillogDescCreateBy.Default.(uint64)
 	// emaillogDescUpdateTime is the schema descriptor for update_time field.
 	emaillogDescUpdateTime := emaillogMixinFields3[0].Descriptor()
-	// emaillog.DefaultUpdateTime holds the default value on creation for the update_time field.
-	emaillog.DefaultUpdateTime = emaillogDescUpdateTime.Default.(int64)
+	// emaillog.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	emaillog.UpdateDefaultUpdateTime = emaillogDescUpdateTime.UpdateDefault.(func() int64)
 	// emaillogDescUpdateBy is the schema descriptor for update_by field.
 	emaillogDescUpdateBy := emaillogMixinFields4[0].Descriptor()
 	// emaillog.DefaultUpdateBy holds the default value on creation for the update_by field.
@@ -477,15 +481,15 @@ func init() {
 	// smslogDescCreateTime is the schema descriptor for create_time field.
 	smslogDescCreateTime := smslogMixinFields1[0].Descriptor()
 	// smslog.DefaultCreateTime holds the default value on creation for the create_time field.
-	smslog.DefaultCreateTime = smslogDescCreateTime.Default.(int64)
+	smslog.DefaultCreateTime = smslogDescCreateTime.Default.(func() int64)
 	// smslogDescCreateBy is the schema descriptor for create_by field.
 	smslogDescCreateBy := smslogMixinFields2[0].Descriptor()
 	// smslog.DefaultCreateBy holds the default value on creation for the create_by field.
 	smslog.DefaultCreateBy = smslogDescCreateBy.Default.(uint64)
 	// smslogDescUpdateTime is the schema descriptor for update_time field.
 	smslogDescUpdateTime := smslogMixinFields3[0].Descriptor()
-	// smslog.DefaultUpdateTime holds the default value on creation for the update_time field.
-	smslog.DefaultUpdateTime = smslogDescUpdateTime.Default.(int64)
+	// smslog.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	smslog.UpdateDefaultUpdateTime = smslogDescUpdateTime.UpdateDefault.(func() int64)
 	// smslogDescUpdateBy is the schema descriptor for update_by field.
 	smslogDescUpdateBy := smslogMixinFields4[0].Descriptor()
 	// smslog.DefaultUpdateBy holds the default value on creation for the update_by field.
@@ -580,15 +584,15 @@ func init() {
 	// userDescCreateTime is the schema descriptor for create_time field.
 	userDescCreateTime := userMixinFields2[0].Descriptor()
 	// user.DefaultCreateTime holds the default value on creation for the create_time field.
-	user.DefaultCreateTime = userDescCreateTime.Default.(int64)
+	user.DefaultCreateTime = userDescCreateTime.Default.(func() int64)
 	// userDescCreateBy is the schema descriptor for create_by field.
 	userDescCreateBy := userMixinFields3[0].Descriptor()
 	// user.DefaultCreateBy holds the default value on creation for the create_by field.
 	user.DefaultCreateBy = userDescCreateBy.Default.(uint64)
 	// userDescUpdateTime is the schema descriptor for update_time field.
 	userDescUpdateTime := userMixinFields4[0].Descriptor()
-	// user.DefaultUpdateTime holds the default value on creation for the update_time field.
-	user.DefaultUpdateTime = userDescUpdateTime.Default.(int64)
+	// user.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	user.UpdateDefaultUpdateTime = userDescUpdateTime.UpdateDefault.(func() int64)
 	// userDescUpdateBy is the schema descriptor for update_by field.
 	userDescUpdateBy := userMixinFields5[0].Descriptor()
 	// user.DefaultUpdateBy holds the default value on creation for the update_by field.

@@ -1,0 +1,28 @@
+{{/* A template for adding additional static fields to specific types. */}}
+{{- define "meta/additional/metaConst" }}
+    {{- if $constAnnotation := $.Annotations.ConstAnnotation }}
+    const (
+        {{- range $value := $constAnnotation.Values }}
+            // {{ $value.Name }} {{ $value.Annotation }}
+            {{ $value.Name }} = {{ $value.Value }}
+        {{- end }}
+    )
+    {{- end }}
+    {{/* 字段所属的常量值 */}}
+    {{- if $.Fields }}
+        {{- range $f := $.Fields }}
+            {{- if $annotations := $f.Annotations }}
+                {{- if $annotation := $annotations.ConstAnnotation }}
+                    {{ if $values := $annotation.Values }}
+                        const (
+                            {{- range $value := $values }}
+                                // {{ $value.Name }} {{ $value.Annotation }}
+                                {{ $value.Name }} = {{ $value.Value }}
+                            {{- end }}
+                        )
+                    {{- end }}
+                {{- end }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+{{ end }}

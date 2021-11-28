@@ -445,6 +445,12 @@ func (aiq *AuthItemQuery) ForShare(opts ...sql.LockOption) *AuthItemQuery {
 	return aiq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aiq *AuthItemQuery) Modify(modifiers ...func(s *sql.Selector)) *AuthItemSelect {
+	aiq.modifiers = append(aiq.modifiers, modifiers...)
+	return aiq.Select()
+}
+
 // AuthItemGroupBy is the group-by builder for AuthItem entities.
 type AuthItemGroupBy struct {
 	config
@@ -933,4 +939,10 @@ func (ais *AuthItemSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (ais *AuthItemSelect) Modify(modifiers ...func(s *sql.Selector)) *AuthItemSelect {
+	ais.modifiers = append(ais.modifiers, modifiers...)
+	return ais
 }

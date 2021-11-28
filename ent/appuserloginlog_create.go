@@ -229,7 +229,7 @@ func (aullc *AppUserLoginLogCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (aullc *AppUserLoginLogCreate) defaults() {
 	if _, ok := aullc.mutation.CreateTime(); !ok {
-		v := appuserloginlog.DefaultCreateTime
+		v := appuserloginlog.DefaultCreateTime()
 		aullc.mutation.SetCreateTime(v)
 	}
 	if _, ok := aullc.mutation.AppID(); !ok {

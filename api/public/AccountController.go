@@ -3,12 +3,17 @@ package public
 import (
 	"context"
 	"net/http/httputil"
+	"time"
 
 	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
+	"github.com/boshangad/v1/ent/appuser"
+	"github.com/boshangad/v1/ent/appuserloginlog"
 	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/services/appUserService"
 	"github.com/boshangad/v1/services/appUserTokenService"
+	"go.uber.org/zap"
 )
 
 type AccountController struct {
@@ -18,17 +23,73 @@ type AccountController struct {
 // @route login [POST]
 func (that AccountController) Login(c *controller.Context) {
 	var (
-		ctx            context.Context = context.Background()
-		appUser        *ent.AppUser
-		err            error
+		appUserLogin struct {
+			appUserService.LoginType
+			appUserService.LoginCaptcha
+			appUserService.LoginUsername
+			appUserService.LoginMobile
+			appUserService.LoginEmail
+		}
+		// 应用
+		app = c.GetApp()
+		// db上下文
+		ctx context.Context = context.Background()
+		// 登录用户
+		user *ent.User
+		// 登录的应用用户
+		appUser *ent.AppUser
+		// 错误信息
+		err error
+		// 登录成功的令牌
 		accessToken    *appUserTokenService.AccessToken
 		httpRequest, _ = httputil.DumpRequest(c.Request, false)
 	)
-	appUser, err = global.Db.AppUser.Query().First(ctx)
-	if err != nil {
+	if err = c.ShouldBind(&appUserLogin); err != nil {
 		c.JsonOut(global.ErrNotice, err.Error(), nil)
 		return
 	}
+	switch appUserLogin.Type {
+	case "username":
+		_, err = appUserLogin.LoginUsername.Login()
+		if err != nil {
+			c.JsonOut(global.ErrNotice, err.Error(), nil)
+			return
+		}
+	case "mobile":
+	case "email":
+	default:
+		c.JsonOut(global.ErrNotice, "Invalid type, please choose an accurate login method", nil)
+		return
+	}
+	// 查询用户
+	global.Db.WithTx(ctx, func(db *ent.Client, tx *ent.Tx) (err error) {
+		appUser, err = db.AppUser.Query().
+			Where(appuser.UserIDEQ(user.ID), appuser.AppIDEQ(app.ID)).
+			First(ctx)
+		if err != nil {
+			if !ent.IsNotFound(err) {
+				global.Log.Warn("query appUser failed to login", zap.Uint64("userId", user.ID), zap.Error(err))
+				return err
+			}
+			appUser, err = db.AppUser.Create().
+				SetApp(app).
+				SetUser(user).
+				SetAvatar(user.Avatar).
+				SetGender(user.Sex).
+				SetNickname(user.Nickname).
+				SetLastLoginTime(time.Now().Unix()).
+				SetLoadUserProfileTime(time.Now().Unix()).
+				Save(ctx)
+			if err != nil {
+				if !ent.IsNotFound(err) {
+					global.Log.Warn("create appUser failed to login", zap.Uint64("userId", user.ID), zap.Error(err))
+				}
+				return err
+			}
+		}
+		return
+	})
+	// 创建登录令牌
 	accessToken, err = appUserTokenService.NewAccessToken()
 	if err != nil {
 		c.JsonOut(global.ErrNotice, err.Error(), nil)
@@ -55,9 +116,9 @@ func (that AccountController) Login(c *controller.Context) {
 			SetAppUserID(appUser.ID).
 			SetUserID(appUser.UserID).
 			SetIP(c.ClientIP()).
-			SetLoginTypeID(1).
+			SetLoginTypeID(appuserloginlog.LoginTypeUnknow).
 			SetContent(string(httpRequest)).
-			SetStatus(1).
+			SetStatus(appuserloginlog.StatusSuccess).
 			Save(ctx)
 		if err != nil {
 			return err

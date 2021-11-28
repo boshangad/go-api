@@ -61,7 +61,7 @@ type AppMutation struct {
 	addupdate_time          *int64
 	update_by               *uint64
 	addupdate_by            *uint64
-	alias                   *string
+	uuid                    **uuid.UUID
 	type_id                 *uint64
 	addtype_id              *uint64
 	title                   *string
@@ -448,40 +448,40 @@ func (m *AppMutation) ResetUpdateBy() {
 	m.addupdate_by = nil
 }
 
-// SetAlias sets the "alias" field.
-func (m *AppMutation) SetAlias(s string) {
-	m.alias = &s
+// SetUUID sets the "uuid" field.
+func (m *AppMutation) SetUUID(u *uuid.UUID) {
+	m.uuid = &u
 }
 
-// Alias returns the value of the "alias" field in the mutation.
-func (m *AppMutation) Alias() (r string, exists bool) {
-	v := m.alias
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *AppMutation) UUID() (r *uuid.UUID, exists bool) {
+	v := m.uuid
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAlias returns the old "alias" field's value of the App entity.
+// OldUUID returns the old "uuid" field's value of the App entity.
 // If the App object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AppMutation) OldAlias(ctx context.Context) (v string, err error) {
+func (m *AppMutation) OldUUID(ctx context.Context) (v *uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldAlias is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldAlias requires an ID field in the mutation")
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAlias: %w", err)
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
 	}
-	return oldValue.Alias, nil
+	return oldValue.UUID, nil
 }
 
-// ResetAlias resets all changes to the "alias" field.
-func (m *AppMutation) ResetAlias() {
-	m.alias = nil
+// ResetUUID resets all changes to the "uuid" field.
+func (m *AppMutation) ResetUUID() {
+	m.uuid = nil
 }
 
 // SetTypeID sets the "type_id" field.
@@ -957,8 +957,8 @@ func (m *AppMutation) Fields() []string {
 	if m.update_by != nil {
 		fields = append(fields, app.FieldUpdateBy)
 	}
-	if m.alias != nil {
-		fields = append(fields, app.FieldAlias)
+	if m.uuid != nil {
+		fields = append(fields, app.FieldUUID)
 	}
 	if m.type_id != nil {
 		fields = append(fields, app.FieldTypeID)
@@ -1005,8 +1005,8 @@ func (m *AppMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case app.FieldUpdateBy:
 		return m.UpdateBy()
-	case app.FieldAlias:
-		return m.Alias()
+	case app.FieldUUID:
+		return m.UUID()
 	case app.FieldTypeID:
 		return m.TypeID()
 	case app.FieldTitle:
@@ -1044,8 +1044,8 @@ func (m *AppMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldUpdateTime(ctx)
 	case app.FieldUpdateBy:
 		return m.OldUpdateBy(ctx)
-	case app.FieldAlias:
-		return m.OldAlias(ctx)
+	case app.FieldUUID:
+		return m.OldUUID(ctx)
 	case app.FieldTypeID:
 		return m.OldTypeID(ctx)
 	case app.FieldTitle:
@@ -1108,12 +1108,12 @@ func (m *AppMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdateBy(v)
 		return nil
-	case app.FieldAlias:
-		v, ok := value.(string)
+	case app.FieldUUID:
+		v, ok := value.(*uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAlias(v)
+		m.SetUUID(v)
 		return nil
 	case app.FieldTypeID:
 		v, ok := value.(uint64)
@@ -1341,8 +1341,8 @@ func (m *AppMutation) ResetField(name string) error {
 	case app.FieldUpdateBy:
 		m.ResetUpdateBy()
 		return nil
-	case app.FieldAlias:
-		m.ResetAlias()
+	case app.FieldUUID:
+		m.ResetUUID()
 		return nil
 	case app.FieldTypeID:
 		m.ResetTypeID()
@@ -2580,10 +2580,10 @@ type AppUserMutation struct {
 	phone_number              *string
 	pure_phone_number         *string
 	watermark                 *string
-	load_user_profile_time    *uint64
-	addload_user_profile_time *uint64
-	last_login_time           *uint64
-	addlast_login_time        *uint64
+	load_user_profile_time    *int64
+	addload_user_profile_time *int64
+	last_login_time           *int64
+	addlast_login_time        *int64
 	clearedFields             map[string]struct{}
 	app                       *uint64
 	clearedapp                bool
@@ -3460,13 +3460,13 @@ func (m *AppUserMutation) ResetWatermark() {
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (m *AppUserMutation) SetLoadUserProfileTime(u uint64) {
-	m.load_user_profile_time = &u
+func (m *AppUserMutation) SetLoadUserProfileTime(i int64) {
+	m.load_user_profile_time = &i
 	m.addload_user_profile_time = nil
 }
 
 // LoadUserProfileTime returns the value of the "load_user_profile_time" field in the mutation.
-func (m *AppUserMutation) LoadUserProfileTime() (r uint64, exists bool) {
+func (m *AppUserMutation) LoadUserProfileTime() (r int64, exists bool) {
 	v := m.load_user_profile_time
 	if v == nil {
 		return
@@ -3477,7 +3477,7 @@ func (m *AppUserMutation) LoadUserProfileTime() (r uint64, exists bool) {
 // OldLoadUserProfileTime returns the old "load_user_profile_time" field's value of the AppUser entity.
 // If the AppUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AppUserMutation) OldLoadUserProfileTime(ctx context.Context) (v uint64, err error) {
+func (m *AppUserMutation) OldLoadUserProfileTime(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldLoadUserProfileTime is only allowed on UpdateOne operations")
 	}
@@ -3491,17 +3491,17 @@ func (m *AppUserMutation) OldLoadUserProfileTime(ctx context.Context) (v uint64,
 	return oldValue.LoadUserProfileTime, nil
 }
 
-// AddLoadUserProfileTime adds u to the "load_user_profile_time" field.
-func (m *AppUserMutation) AddLoadUserProfileTime(u uint64) {
+// AddLoadUserProfileTime adds i to the "load_user_profile_time" field.
+func (m *AppUserMutation) AddLoadUserProfileTime(i int64) {
 	if m.addload_user_profile_time != nil {
-		*m.addload_user_profile_time += u
+		*m.addload_user_profile_time += i
 	} else {
-		m.addload_user_profile_time = &u
+		m.addload_user_profile_time = &i
 	}
 }
 
 // AddedLoadUserProfileTime returns the value that was added to the "load_user_profile_time" field in this mutation.
-func (m *AppUserMutation) AddedLoadUserProfileTime() (r uint64, exists bool) {
+func (m *AppUserMutation) AddedLoadUserProfileTime() (r int64, exists bool) {
 	v := m.addload_user_profile_time
 	if v == nil {
 		return
@@ -3516,13 +3516,13 @@ func (m *AppUserMutation) ResetLoadUserProfileTime() {
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (m *AppUserMutation) SetLastLoginTime(u uint64) {
-	m.last_login_time = &u
+func (m *AppUserMutation) SetLastLoginTime(i int64) {
+	m.last_login_time = &i
 	m.addlast_login_time = nil
 }
 
 // LastLoginTime returns the value of the "last_login_time" field in the mutation.
-func (m *AppUserMutation) LastLoginTime() (r uint64, exists bool) {
+func (m *AppUserMutation) LastLoginTime() (r int64, exists bool) {
 	v := m.last_login_time
 	if v == nil {
 		return
@@ -3533,7 +3533,7 @@ func (m *AppUserMutation) LastLoginTime() (r uint64, exists bool) {
 // OldLastLoginTime returns the old "last_login_time" field's value of the AppUser entity.
 // If the AppUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AppUserMutation) OldLastLoginTime(ctx context.Context) (v uint64, err error) {
+func (m *AppUserMutation) OldLastLoginTime(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldLastLoginTime is only allowed on UpdateOne operations")
 	}
@@ -3547,17 +3547,17 @@ func (m *AppUserMutation) OldLastLoginTime(ctx context.Context) (v uint64, err e
 	return oldValue.LastLoginTime, nil
 }
 
-// AddLastLoginTime adds u to the "last_login_time" field.
-func (m *AppUserMutation) AddLastLoginTime(u uint64) {
+// AddLastLoginTime adds i to the "last_login_time" field.
+func (m *AppUserMutation) AddLastLoginTime(i int64) {
 	if m.addlast_login_time != nil {
-		*m.addlast_login_time += u
+		*m.addlast_login_time += i
 	} else {
-		m.addlast_login_time = &u
+		m.addlast_login_time = &i
 	}
 }
 
 // AddedLastLoginTime returns the value that was added to the "last_login_time" field in this mutation.
-func (m *AppUserMutation) AddedLastLoginTime() (r uint64, exists bool) {
+func (m *AppUserMutation) AddedLastLoginTime() (r int64, exists bool) {
 	v := m.addlast_login_time
 	if v == nil {
 		return
@@ -3964,14 +3964,14 @@ func (m *AppUserMutation) SetField(name string, value ent.Value) error {
 		m.SetWatermark(v)
 		return nil
 	case appuser.FieldLoadUserProfileTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLoadUserProfileTime(v)
 		return nil
 	case appuser.FieldLastLoginTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4049,14 +4049,14 @@ func (m *AppUserMutation) AddField(name string, value ent.Value) error {
 		m.AddGender(v)
 		return nil
 	case appuser.FieldLoadUserProfileTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddLoadUserProfileTime(v)
 		return nil
 	case appuser.FieldLastLoginTime:
-		v, ok := value.(uint64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

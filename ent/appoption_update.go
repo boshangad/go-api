@@ -36,14 +36,6 @@ func (aou *AppOptionUpdate) SetUpdateTime(i int64) *AppOptionUpdate {
 	return aou
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (aou *AppOptionUpdate) SetNillableUpdateTime(i *int64) *AppOptionUpdate {
-	if i != nil {
-		aou.SetUpdateTime(*i)
-	}
-	return aou
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (aou *AppOptionUpdate) AddUpdateTime(i int64) *AppOptionUpdate {
 	aou.mutation.AddUpdateTime(i)
@@ -205,6 +197,7 @@ func (aou *AppOptionUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	aou.defaults()
 	if len(aou.hooks) == 0 {
 		if err = aou.check(); err != nil {
 			return 0, err
@@ -256,6 +249,14 @@ func (aou *AppOptionUpdate) Exec(ctx context.Context) error {
 func (aou *AppOptionUpdate) ExecX(ctx context.Context) {
 	if err := aou.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (aou *AppOptionUpdate) defaults() {
+	if _, ok := aou.mutation.UpdateTime(); !ok {
+		v := appoption.UpdateDefaultUpdateTime()
+		aou.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -454,14 +455,6 @@ func (aouo *AppOptionUpdateOne) SetUpdateTime(i int64) *AppOptionUpdateOne {
 	return aouo
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (aouo *AppOptionUpdateOne) SetNillableUpdateTime(i *int64) *AppOptionUpdateOne {
-	if i != nil {
-		aouo.SetUpdateTime(*i)
-	}
-	return aouo
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (aouo *AppOptionUpdateOne) AddUpdateTime(i int64) *AppOptionUpdateOne {
 	aouo.mutation.AddUpdateTime(i)
@@ -630,6 +623,7 @@ func (aouo *AppOptionUpdateOne) Save(ctx context.Context) (*AppOption, error) {
 		err  error
 		node *AppOption
 	)
+	aouo.defaults()
 	if len(aouo.hooks) == 0 {
 		if err = aouo.check(); err != nil {
 			return nil, err
@@ -681,6 +675,14 @@ func (aouo *AppOptionUpdateOne) Exec(ctx context.Context) error {
 func (aouo *AppOptionUpdateOne) ExecX(ctx context.Context) {
 	if err := aouo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (aouo *AppOptionUpdateOne) defaults() {
+	if _, ok := aouo.mutation.UpdateTime(); !ok {
+		v := appoption.UpdateDefaultUpdateTime()
+		aouo.mutation.SetUpdateTime(v)
 	}
 }
 

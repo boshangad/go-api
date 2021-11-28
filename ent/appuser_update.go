@@ -37,14 +37,6 @@ func (auu *AppUserUpdate) SetUpdateTime(i int64) *AppUserUpdate {
 	return auu
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (auu *AppUserUpdate) SetNillableUpdateTime(i *int64) *AppUserUpdate {
-	if i != nil {
-		auu.SetUpdateTime(*i)
-	}
-	return auu
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (auu *AppUserUpdate) AddUpdateTime(i int64) *AppUserUpdate {
 	auu.mutation.AddUpdateTime(i)
@@ -311,44 +303,44 @@ func (auu *AppUserUpdate) SetNillableWatermark(s *string) *AppUserUpdate {
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (auu *AppUserUpdate) SetLoadUserProfileTime(u uint64) *AppUserUpdate {
+func (auu *AppUserUpdate) SetLoadUserProfileTime(i int64) *AppUserUpdate {
 	auu.mutation.ResetLoadUserProfileTime()
-	auu.mutation.SetLoadUserProfileTime(u)
+	auu.mutation.SetLoadUserProfileTime(i)
 	return auu
 }
 
 // SetNillableLoadUserProfileTime sets the "load_user_profile_time" field if the given value is not nil.
-func (auu *AppUserUpdate) SetNillableLoadUserProfileTime(u *uint64) *AppUserUpdate {
-	if u != nil {
-		auu.SetLoadUserProfileTime(*u)
+func (auu *AppUserUpdate) SetNillableLoadUserProfileTime(i *int64) *AppUserUpdate {
+	if i != nil {
+		auu.SetLoadUserProfileTime(*i)
 	}
 	return auu
 }
 
-// AddLoadUserProfileTime adds u to the "load_user_profile_time" field.
-func (auu *AppUserUpdate) AddLoadUserProfileTime(u uint64) *AppUserUpdate {
-	auu.mutation.AddLoadUserProfileTime(u)
+// AddLoadUserProfileTime adds i to the "load_user_profile_time" field.
+func (auu *AppUserUpdate) AddLoadUserProfileTime(i int64) *AppUserUpdate {
+	auu.mutation.AddLoadUserProfileTime(i)
 	return auu
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (auu *AppUserUpdate) SetLastLoginTime(u uint64) *AppUserUpdate {
+func (auu *AppUserUpdate) SetLastLoginTime(i int64) *AppUserUpdate {
 	auu.mutation.ResetLastLoginTime()
-	auu.mutation.SetLastLoginTime(u)
+	auu.mutation.SetLastLoginTime(i)
 	return auu
 }
 
 // SetNillableLastLoginTime sets the "last_login_time" field if the given value is not nil.
-func (auu *AppUserUpdate) SetNillableLastLoginTime(u *uint64) *AppUserUpdate {
-	if u != nil {
-		auu.SetLastLoginTime(*u)
+func (auu *AppUserUpdate) SetNillableLastLoginTime(i *int64) *AppUserUpdate {
+	if i != nil {
+		auu.SetLastLoginTime(*i)
 	}
 	return auu
 }
 
-// AddLastLoginTime adds u to the "last_login_time" field.
-func (auu *AppUserUpdate) AddLastLoginTime(u uint64) *AppUserUpdate {
-	auu.mutation.AddLastLoginTime(u)
+// AddLastLoginTime adds i to the "last_login_time" field.
+func (auu *AppUserUpdate) AddLastLoginTime(i int64) *AppUserUpdate {
+	auu.mutation.AddLastLoginTime(i)
 	return auu
 }
 
@@ -385,6 +377,7 @@ func (auu *AppUserUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	auu.defaults()
 	if len(auu.hooks) == 0 {
 		if err = auu.check(); err != nil {
 			return 0, err
@@ -436,6 +429,14 @@ func (auu *AppUserUpdate) Exec(ctx context.Context) error {
 func (auu *AppUserUpdate) ExecX(ctx context.Context) {
 	if err := auu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (auu *AppUserUpdate) defaults() {
+	if _, ok := auu.mutation.UpdateTime(); !ok {
+		v := appuser.UpdateDefaultUpdateTime()
+		auu.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -678,28 +679,28 @@ func (auu *AppUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := auu.mutation.LoadUserProfileTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLoadUserProfileTime,
 		})
 	}
 	if value, ok := auu.mutation.AddedLoadUserProfileTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLoadUserProfileTime,
 		})
 	}
 	if value, ok := auu.mutation.LastLoginTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLastLoginTime,
 		})
 	}
 	if value, ok := auu.mutation.AddedLastLoginTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLastLoginTime,
 		})
@@ -803,14 +804,6 @@ type AppUserUpdateOne struct {
 func (auuo *AppUserUpdateOne) SetUpdateTime(i int64) *AppUserUpdateOne {
 	auuo.mutation.ResetUpdateTime()
 	auuo.mutation.SetUpdateTime(i)
-	return auuo
-}
-
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (auuo *AppUserUpdateOne) SetNillableUpdateTime(i *int64) *AppUserUpdateOne {
-	if i != nil {
-		auuo.SetUpdateTime(*i)
-	}
 	return auuo
 }
 
@@ -1080,44 +1073,44 @@ func (auuo *AppUserUpdateOne) SetNillableWatermark(s *string) *AppUserUpdateOne 
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (auuo *AppUserUpdateOne) SetLoadUserProfileTime(u uint64) *AppUserUpdateOne {
+func (auuo *AppUserUpdateOne) SetLoadUserProfileTime(i int64) *AppUserUpdateOne {
 	auuo.mutation.ResetLoadUserProfileTime()
-	auuo.mutation.SetLoadUserProfileTime(u)
+	auuo.mutation.SetLoadUserProfileTime(i)
 	return auuo
 }
 
 // SetNillableLoadUserProfileTime sets the "load_user_profile_time" field if the given value is not nil.
-func (auuo *AppUserUpdateOne) SetNillableLoadUserProfileTime(u *uint64) *AppUserUpdateOne {
-	if u != nil {
-		auuo.SetLoadUserProfileTime(*u)
+func (auuo *AppUserUpdateOne) SetNillableLoadUserProfileTime(i *int64) *AppUserUpdateOne {
+	if i != nil {
+		auuo.SetLoadUserProfileTime(*i)
 	}
 	return auuo
 }
 
-// AddLoadUserProfileTime adds u to the "load_user_profile_time" field.
-func (auuo *AppUserUpdateOne) AddLoadUserProfileTime(u uint64) *AppUserUpdateOne {
-	auuo.mutation.AddLoadUserProfileTime(u)
+// AddLoadUserProfileTime adds i to the "load_user_profile_time" field.
+func (auuo *AppUserUpdateOne) AddLoadUserProfileTime(i int64) *AppUserUpdateOne {
+	auuo.mutation.AddLoadUserProfileTime(i)
 	return auuo
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (auuo *AppUserUpdateOne) SetLastLoginTime(u uint64) *AppUserUpdateOne {
+func (auuo *AppUserUpdateOne) SetLastLoginTime(i int64) *AppUserUpdateOne {
 	auuo.mutation.ResetLastLoginTime()
-	auuo.mutation.SetLastLoginTime(u)
+	auuo.mutation.SetLastLoginTime(i)
 	return auuo
 }
 
 // SetNillableLastLoginTime sets the "last_login_time" field if the given value is not nil.
-func (auuo *AppUserUpdateOne) SetNillableLastLoginTime(u *uint64) *AppUserUpdateOne {
-	if u != nil {
-		auuo.SetLastLoginTime(*u)
+func (auuo *AppUserUpdateOne) SetNillableLastLoginTime(i *int64) *AppUserUpdateOne {
+	if i != nil {
+		auuo.SetLastLoginTime(*i)
 	}
 	return auuo
 }
 
-// AddLastLoginTime adds u to the "last_login_time" field.
-func (auuo *AppUserUpdateOne) AddLastLoginTime(u uint64) *AppUserUpdateOne {
-	auuo.mutation.AddLastLoginTime(u)
+// AddLastLoginTime adds i to the "last_login_time" field.
+func (auuo *AppUserUpdateOne) AddLastLoginTime(i int64) *AppUserUpdateOne {
+	auuo.mutation.AddLastLoginTime(i)
 	return auuo
 }
 
@@ -1161,6 +1154,7 @@ func (auuo *AppUserUpdateOne) Save(ctx context.Context) (*AppUser, error) {
 		err  error
 		node *AppUser
 	)
+	auuo.defaults()
 	if len(auuo.hooks) == 0 {
 		if err = auuo.check(); err != nil {
 			return nil, err
@@ -1212,6 +1206,14 @@ func (auuo *AppUserUpdateOne) Exec(ctx context.Context) error {
 func (auuo *AppUserUpdateOne) ExecX(ctx context.Context) {
 	if err := auuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (auuo *AppUserUpdateOne) defaults() {
+	if _, ok := auuo.mutation.UpdateTime(); !ok {
+		v := appuser.UpdateDefaultUpdateTime()
+		auuo.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -1471,28 +1473,28 @@ func (auuo *AppUserUpdateOne) sqlSave(ctx context.Context) (_node *AppUser, err 
 	}
 	if value, ok := auuo.mutation.LoadUserProfileTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLoadUserProfileTime,
 		})
 	}
 	if value, ok := auuo.mutation.AddedLoadUserProfileTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLoadUserProfileTime,
 		})
 	}
 	if value, ok := auuo.mutation.LastLoginTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLastLoginTime,
 		})
 	}
 	if value, ok := auuo.mutation.AddedLastLoginTime(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLastLoginTime,
 		})

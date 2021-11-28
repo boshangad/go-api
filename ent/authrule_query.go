@@ -445,6 +445,12 @@ func (arq *AuthRuleQuery) ForShare(opts ...sql.LockOption) *AuthRuleQuery {
 	return arq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (arq *AuthRuleQuery) Modify(modifiers ...func(s *sql.Selector)) *AuthRuleSelect {
+	arq.modifiers = append(arq.modifiers, modifiers...)
+	return arq.Select()
+}
+
 // AuthRuleGroupBy is the group-by builder for AuthRule entities.
 type AuthRuleGroupBy struct {
 	config
@@ -933,4 +939,10 @@ func (ars *AuthRuleSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (ars *AuthRuleSelect) Modify(modifiers ...func(s *sql.Selector)) *AuthRuleSelect {
+	ars.modifiers = append(ars.modifiers, modifiers...)
+	return ars
 }

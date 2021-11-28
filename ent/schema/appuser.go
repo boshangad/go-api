@@ -55,8 +55,8 @@ func (AppUser) Fields() []ent.Field {
 		field.String("phone_number").Default("").Comment("联系号码").MaxLen(32),
 		field.String("pure_phone_number").Default("").Comment("联系号码").MaxLen(32),
 		field.String("watermark").Default("").Comment("备注").MaxLen(255),
-		field.Uint64("load_user_profile_time").Default(0).Comment("加载用户信息时间"),
-		field.Uint64("last_login_time").Default(0).Comment("最后登录时间"),
+		field.Int64("load_user_profile_time").Default(0).Comment("加载用户信息时间"),
+		field.Int64("last_login_time").Default(0).Comment("最后登录时间"),
 	}
 }
 

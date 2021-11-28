@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/app/middlewares"
 	"github.com/boshangad/v1/routers"
@@ -64,7 +65,12 @@ func NewServer(addr string) Server {
 			Recovery(true),
 		)
 		// 跨域,如需跨域可以打开
-		rootGroup.Use(middlewares.Cors())
+		rootGroup.Use(
+			middlewares.Cors(),
+			controller.BindingFunc(middlewares.AppUserMiddleware),
+			controller.BindingFunc(middlewares.AppMiddleware),
+		)
+
 		//e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		// 获取路由组实例
 		publicGroup := rootGroup.Group("")

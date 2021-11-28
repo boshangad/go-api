@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/boshangad/v1/ent/app"
 	"github.com/boshangad/v1/ent/appoption"
+	"github.com/google/uuid"
 )
 
 // AppCreate is the builder for creating a App entity.
@@ -70,14 +71,6 @@ func (ac *AppCreate) SetUpdateTime(i int64) *AppCreate {
 	return ac
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (ac *AppCreate) SetNillableUpdateTime(i *int64) *AppCreate {
-	if i != nil {
-		ac.SetUpdateTime(*i)
-	}
-	return ac
-}
-
 // SetUpdateBy sets the "update_by" field.
 func (ac *AppCreate) SetUpdateBy(u uint64) *AppCreate {
 	ac.mutation.SetUpdateBy(u)
@@ -92,17 +85,9 @@ func (ac *AppCreate) SetNillableUpdateBy(u *uint64) *AppCreate {
 	return ac
 }
 
-// SetAlias sets the "alias" field.
-func (ac *AppCreate) SetAlias(s string) *AppCreate {
-	ac.mutation.SetAlias(s)
-	return ac
-}
-
-// SetNillableAlias sets the "alias" field if the given value is not nil.
-func (ac *AppCreate) SetNillableAlias(s *string) *AppCreate {
-	if s != nil {
-		ac.SetAlias(*s)
-	}
+// SetUUID sets the "uuid" field.
+func (ac *AppCreate) SetUUID(u *uuid.UUID) *AppCreate {
+	ac.mutation.SetUUID(u)
 	return ac
 }
 
@@ -329,24 +314,20 @@ func (ac *AppCreate) defaults() {
 		ac.mutation.SetDeleteTime(v)
 	}
 	if _, ok := ac.mutation.CreateTime(); !ok {
-		v := app.DefaultCreateTime
+		v := app.DefaultCreateTime()
 		ac.mutation.SetCreateTime(v)
 	}
 	if _, ok := ac.mutation.CreateBy(); !ok {
 		v := app.DefaultCreateBy
 		ac.mutation.SetCreateBy(v)
 	}
-	if _, ok := ac.mutation.UpdateTime(); !ok {
-		v := app.DefaultUpdateTime
-		ac.mutation.SetUpdateTime(v)
-	}
 	if _, ok := ac.mutation.UpdateBy(); !ok {
 		v := app.DefaultUpdateBy
 		ac.mutation.SetUpdateBy(v)
 	}
-	if _, ok := ac.mutation.Alias(); !ok {
-		v := app.DefaultAlias()
-		ac.mutation.SetAlias(v)
+	if _, ok := ac.mutation.UUID(); !ok {
+		v := app.DefaultUUID()
+		ac.mutation.SetUUID(v)
 	}
 	if _, ok := ac.mutation.TypeID(); !ok {
 		v := app.DefaultTypeID
@@ -403,8 +384,8 @@ func (ac *AppCreate) check() error {
 	if _, ok := ac.mutation.UpdateBy(); !ok {
 		return &ValidationError{Name: "update_by", err: errors.New(`ent: missing required field "update_by"`)}
 	}
-	if _, ok := ac.mutation.Alias(); !ok {
-		return &ValidationError{Name: "alias", err: errors.New(`ent: missing required field "alias"`)}
+	if _, ok := ac.mutation.UUID(); !ok {
+		return &ValidationError{Name: "uuid", err: errors.New(`ent: missing required field "uuid"`)}
 	}
 	if _, ok := ac.mutation.TypeID(); !ok {
 		return &ValidationError{Name: "type_id", err: errors.New(`ent: missing required field "type_id"`)}
@@ -538,13 +519,13 @@ func (ac *AppCreate) createSpec() (*App, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdateBy = value
 	}
-	if value, ok := ac.mutation.Alias(); ok {
+	if value, ok := ac.mutation.UUID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: app.FieldAlias,
+			Column: app.FieldUUID,
 		})
-		_node.Alias = value
+		_node.UUID = value
 	}
 	if value, ok := ac.mutation.TypeID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -752,15 +733,15 @@ func (u *AppUpsert) UpdateUpdateBy() *AppUpsert {
 	return u
 }
 
-// SetAlias sets the "alias" field.
-func (u *AppUpsert) SetAlias(v string) *AppUpsert {
-	u.Set(app.FieldAlias, v)
+// SetUUID sets the "uuid" field.
+func (u *AppUpsert) SetUUID(v *uuid.UUID) *AppUpsert {
+	u.Set(app.FieldUUID, v)
 	return u
 }
 
-// UpdateAlias sets the "alias" field to the value that was provided on create.
-func (u *AppUpsert) UpdateAlias() *AppUpsert {
-	u.SetExcluded(app.FieldAlias)
+// UpdateUUID sets the "uuid" field to the value that was provided on create.
+func (u *AppUpsert) UpdateUUID() *AppUpsert {
+	u.SetExcluded(app.FieldUUID)
 	return u
 }
 
@@ -992,17 +973,17 @@ func (u *AppUpsertOne) UpdateUpdateBy() *AppUpsertOne {
 	})
 }
 
-// SetAlias sets the "alias" field.
-func (u *AppUpsertOne) SetAlias(v string) *AppUpsertOne {
+// SetUUID sets the "uuid" field.
+func (u *AppUpsertOne) SetUUID(v *uuid.UUID) *AppUpsertOne {
 	return u.Update(func(s *AppUpsert) {
-		s.SetAlias(v)
+		s.SetUUID(v)
 	})
 }
 
-// UpdateAlias sets the "alias" field to the value that was provided on create.
-func (u *AppUpsertOne) UpdateAlias() *AppUpsertOne {
+// UpdateUUID sets the "uuid" field to the value that was provided on create.
+func (u *AppUpsertOne) UpdateUUID() *AppUpsertOne {
 	return u.Update(func(s *AppUpsert) {
-		s.UpdateAlias()
+		s.UpdateUUID()
 	})
 }
 
@@ -1417,17 +1398,17 @@ func (u *AppUpsertBulk) UpdateUpdateBy() *AppUpsertBulk {
 	})
 }
 
-// SetAlias sets the "alias" field.
-func (u *AppUpsertBulk) SetAlias(v string) *AppUpsertBulk {
+// SetUUID sets the "uuid" field.
+func (u *AppUpsertBulk) SetUUID(v *uuid.UUID) *AppUpsertBulk {
 	return u.Update(func(s *AppUpsert) {
-		s.SetAlias(v)
+		s.SetUUID(v)
 	})
 }
 
-// UpdateAlias sets the "alias" field to the value that was provided on create.
-func (u *AppUpsertBulk) UpdateAlias() *AppUpsertBulk {
+// UpdateUUID sets the "uuid" field to the value that was provided on create.
+func (u *AppUpsertBulk) UpdateUUID() *AppUpsertBulk {
 	return u.Update(func(s *AppUpsert) {
-		s.UpdateAlias()
+		s.UpdateUUID()
 	})
 }
 

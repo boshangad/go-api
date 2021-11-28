@@ -79,7 +79,7 @@ func ValidColumn(column string) bool {
 
 var (
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.
-	DefaultCreateTime int64
+	DefaultCreateTime func() int64
 	// DefaultAppID holds the default value on creation for the "app_id" field.
 	DefaultAppID uint64
 	// DefaultAppUserID holds the default value on creation for the "app_user_id" field.
@@ -94,4 +94,24 @@ var (
 	IPValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint
+)
+
+const (
+	// LoginTypeUnknow 未知的登录方式
+	LoginTypeUnknow = 0
+	// LoginTypeUsername 使用用户名登录
+	LoginTypeUsername = 1
+	// LoginTypeMobile 使用手机号登录
+	LoginTypeMobile = 2
+	// LoginTypeEmail 使用邮箱登录
+	LoginTypeEmail = 3
+	// LoginTypeThired 第三方快捷登录
+	LoginTypeThired = 4
+)
+
+const (
+	// StatusWaitConfirm 待确认
+	StatusWaitConfirm = 0
+	// StatusSuccess 成功
+	StatusSuccess = 1
 )

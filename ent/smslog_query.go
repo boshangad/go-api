@@ -540,6 +540,12 @@ func (slq *SmsLogQuery) ForShare(opts ...sql.LockOption) *SmsLogQuery {
 	return slq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (slq *SmsLogQuery) Modify(modifiers ...func(s *sql.Selector)) *SmsLogSelect {
+	slq.modifiers = append(slq.modifiers, modifiers...)
+	return slq.Select()
+}
+
 // SmsLogGroupBy is the group-by builder for SmsLog entities.
 type SmsLogGroupBy struct {
 	config
@@ -1028,4 +1034,10 @@ func (sls *SmsLogSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (sls *SmsLogSelect) Modify(modifiers ...func(s *sql.Selector)) *SmsLogSelect {
+	sls.modifiers = append(sls.modifiers, modifiers...)
+	return sls
 }

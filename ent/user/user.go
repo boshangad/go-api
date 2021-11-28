@@ -100,11 +100,11 @@ var (
 	// DefaultDeleteTime holds the default value on creation for the "delete_time" field.
 	DefaultDeleteTime int64
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.
-	DefaultCreateTime int64
+	DefaultCreateTime func() int64
 	// DefaultCreateBy holds the default value on creation for the "create_by" field.
 	DefaultCreateBy uint64
-	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
-	DefaultUpdateTime int64
+	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
+	UpdateDefaultUpdateTime func() int64
 	// DefaultUpdateBy holds the default value on creation for the "update_by" field.
 	DefaultUpdateBy uint64
 	// DefaultUUID holds the default value on creation for the "uuid" field.
@@ -165,4 +165,13 @@ var (
 	DefaultLastLoginTime uint64
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint
+)
+
+const (
+	// StatusDisabled 禁用
+	StatusDisabled = 0
+	// StatusWaitPublish 待激活
+	StatusWaitPublish = 1
+	// StatusPublished 激活
+	StatusPublished = 10
 )

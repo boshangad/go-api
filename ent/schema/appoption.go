@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	cannotations "github.com/boshangad/v1/app/model/annotations"
 	"github.com/boshangad/v1/app/model/mixins"
 )
 
@@ -42,7 +43,32 @@ func (AppOption) Fields() []ent.Field {
 		field.String("name").Default("").Comment("键").MaxLen(128),
 		field.String("value").Default("").Comment("值").MaxLen(255),
 		field.Int64("expire_time").Default(0).Comment("失效时间"),
-		field.Uint("edit_type").Default(0).Comment("编辑类型"),
+		field.Uint("edit_type").Default(0).Comment("编辑类型").Annotations(
+			cannotations.ConstAnnotation{
+				Values: []cannotations.ConstData{
+					{
+						Name:       "EditTypeOnlyRead",
+						Value:      0,
+						Annotation: "只读",
+					},
+					{
+						Name:       "EditTypeNumberInput",
+						Value:      1,
+						Annotation: "数值输入框",
+					},
+					{
+						Name:       "EditTypeTextInput",
+						Value:      2,
+						Annotation: "文本输入框",
+					},
+					{
+						Name:       "EditTypeTextarea",
+						Value:      3,
+						Annotation: "多行文本框",
+					},
+				},
+			},
+		),
 	}
 }
 

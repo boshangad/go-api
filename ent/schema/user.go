@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	cannotations "github.com/boshangad/v1/app/model/annotations"
 	"github.com/boshangad/v1/app/model/mixins"
 	"github.com/google/uuid"
 )
@@ -52,7 +53,27 @@ func (User) Fields() []ent.Field {
 		field.Uint("age").Default(0).Comment("年龄"),
 		field.String("last_login_ip").Default("127.0.0.1").Comment("最后登录IP").MaxLen(16),
 		field.Uint64("last_login_time").Default(0).Comment("最后登录时间"),
-		field.Uint("status").Default(0).Comment("状态"),
+		field.Uint("status").Default(0).Comment("状态").Annotations(
+			cannotations.ConstAnnotation{
+				Values: []cannotations.ConstData{
+					{
+						Name:       "StatusDisabled",
+						Value:      0,
+						Annotation: "禁用",
+					},
+					{
+						Name:       "StatusWaitPublish",
+						Value:      1,
+						Annotation: "待激活",
+					},
+					{
+						Name:       "StatusPublished",
+						Value:      10,
+						Annotation: "激活",
+					},
+				},
+			},
+		),
 	}
 }
 

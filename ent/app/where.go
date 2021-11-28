@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/boshangad/v1/ent/internal"
 	"github.com/boshangad/v1/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
@@ -127,10 +128,10 @@ func UpdateBy(v uint64) predicate.App {
 	})
 }
 
-// Alias applies equality check predicate on the "alias" field. It's identical to AliasEQ.
-func Alias(v string) predicate.App {
+// UUID applies equality check predicate on the "uuid" field. It's identical to UUIDEQ.
+func UUID(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAlias), v))
+		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
 }
 
@@ -577,22 +578,22 @@ func UpdateByLTE(v uint64) predicate.App {
 	})
 }
 
-// AliasEQ applies the EQ predicate on the "alias" field.
-func AliasEQ(v string) predicate.App {
+// UUIDEQ applies the EQ predicate on the "uuid" field.
+func UUIDEQ(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAlias), v))
+		s.Where(sql.EQ(s.C(FieldUUID), v))
 	})
 }
 
-// AliasNEQ applies the NEQ predicate on the "alias" field.
-func AliasNEQ(v string) predicate.App {
+// UUIDNEQ applies the NEQ predicate on the "uuid" field.
+func UUIDNEQ(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAlias), v))
+		s.Where(sql.NEQ(s.C(FieldUUID), v))
 	})
 }
 
-// AliasIn applies the In predicate on the "alias" field.
-func AliasIn(vs ...string) predicate.App {
+// UUIDIn applies the In predicate on the "uuid" field.
+func UUIDIn(vs ...*uuid.UUID) predicate.App {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -604,12 +605,12 @@ func AliasIn(vs ...string) predicate.App {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldAlias), v...))
+		s.Where(sql.In(s.C(FieldUUID), v...))
 	})
 }
 
-// AliasNotIn applies the NotIn predicate on the "alias" field.
-func AliasNotIn(vs ...string) predicate.App {
+// UUIDNotIn applies the NotIn predicate on the "uuid" field.
+func UUIDNotIn(vs ...*uuid.UUID) predicate.App {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -621,70 +622,35 @@ func AliasNotIn(vs ...string) predicate.App {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldAlias), v...))
+		s.Where(sql.NotIn(s.C(FieldUUID), v...))
 	})
 }
 
-// AliasGT applies the GT predicate on the "alias" field.
-func AliasGT(v string) predicate.App {
+// UUIDGT applies the GT predicate on the "uuid" field.
+func UUIDGT(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAlias), v))
+		s.Where(sql.GT(s.C(FieldUUID), v))
 	})
 }
 
-// AliasGTE applies the GTE predicate on the "alias" field.
-func AliasGTE(v string) predicate.App {
+// UUIDGTE applies the GTE predicate on the "uuid" field.
+func UUIDGTE(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAlias), v))
+		s.Where(sql.GTE(s.C(FieldUUID), v))
 	})
 }
 
-// AliasLT applies the LT predicate on the "alias" field.
-func AliasLT(v string) predicate.App {
+// UUIDLT applies the LT predicate on the "uuid" field.
+func UUIDLT(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAlias), v))
+		s.Where(sql.LT(s.C(FieldUUID), v))
 	})
 }
 
-// AliasLTE applies the LTE predicate on the "alias" field.
-func AliasLTE(v string) predicate.App {
+// UUIDLTE applies the LTE predicate on the "uuid" field.
+func UUIDLTE(v *uuid.UUID) predicate.App {
 	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAlias), v))
-	})
-}
-
-// AliasContains applies the Contains predicate on the "alias" field.
-func AliasContains(v string) predicate.App {
-	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAlias), v))
-	})
-}
-
-// AliasHasPrefix applies the HasPrefix predicate on the "alias" field.
-func AliasHasPrefix(v string) predicate.App {
-	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAlias), v))
-	})
-}
-
-// AliasHasSuffix applies the HasSuffix predicate on the "alias" field.
-func AliasHasSuffix(v string) predicate.App {
-	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAlias), v))
-	})
-}
-
-// AliasEqualFold applies the EqualFold predicate on the "alias" field.
-func AliasEqualFold(v string) predicate.App {
-	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAlias), v))
-	})
-}
-
-// AliasContainsFold applies the ContainsFold predicate on the "alias" field.
-func AliasContainsFold(v string) predicate.App {
-	return predicate.App(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAlias), v))
+		s.Where(sql.LTE(s.C(FieldUUID), v))
 	})
 }
 

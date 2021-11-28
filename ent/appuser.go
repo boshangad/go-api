@@ -80,10 +80,10 @@ type AppUser struct {
 	Watermark string `json:"watermark,omitempty"`
 	// LoadUserProfileTime holds the value of the "load_user_profile_time" field.
 	// 加载用户信息时间
-	LoadUserProfileTime uint64 `json:"load_user_profile_time,omitempty"`
+	LoadUserProfileTime int64 `json:"load_user_profile_time,omitempty"`
 	// LastLoginTime holds the value of the "last_login_time" field.
 	// 最后登录时间
-	LastLoginTime uint64 `json:"last_login_time,omitempty"`
+	LastLoginTime int64 `json:"last_login_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AppUserQuery when eager-loading is set.
 	Edges AppUserEdges `json:"edges"`
@@ -284,13 +284,13 @@ func (au *AppUser) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field load_user_profile_time", values[i])
 			} else if value.Valid {
-				au.LoadUserProfileTime = uint64(value.Int64)
+				au.LoadUserProfileTime = value.Int64
 			}
 		case appuser.FieldLastLoginTime:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field last_login_time", values[i])
 			} else if value.Valid {
-				au.LastLoginTime = uint64(value.Int64)
+				au.LastLoginTime = value.Int64
 			}
 		}
 	}

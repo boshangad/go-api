@@ -1,46 +1,51 @@
 package middlewares
 
 import (
-	"net/http"
-	"strings"
-
+	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/app/global"
-	"github.com/boshangad/v1/app/helpers"
-	"github.com/gin-gonic/gin"
+	"github.com/boshangad/v1/ent"
+	"github.com/boshangad/v1/services/appService"
+	"github.com/google/uuid"
 )
 
-func AppMiddleware(c *gin.Context) {
-	appModel := helpers.GetGinApp(c)
-	if appModel == nil {
-		var data map[string]string
-		var appAlias string = strings.TrimSpace(c.GetHeader(global.Config.App.Name))
-		if appAlias == "" && c.Request.Method != http.MethodGet {
-			_ = c.ShouldBind(&data)
-			if v, ok := data[global.Config.App.Name]; ok {
-				appAlias = strings.TrimSpace(v)
-			}
-		}
-		if appAlias == "" {
-			appAlias = strings.TrimSpace(c.DefaultQuery(global.Config.App.Name, ""))
-		}
-		// 如果用户没有传入token 或 没有 传入参数
-		if appAlias == "" {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error": http.StatusBadRequest,
-				"msg":   "Access failed, please check whether the application authentication parameters exist",
-			})
-			return
-		}
-		// 如果应用不存在则需要查找应用
-		// appModel = services.GetAppModelByAlias(appAlias)
-		// if appModel == nil {
-		// 	c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
-		// 		"error": http.StatusNotAcceptable,
-		// 		"msg":   fmt.Sprintf("Access failed, #%s application not found.", appAlias),
-		// 	})
-		// 	return
-		// }
-		helpers.SetGinApp(c, appModel)
+// 应用中间件
+func AppMiddleware(c *controller.Context) {
+	var (
+		err       error
+		app       *ent.App = c.GetApp()
+		appAlias  string
+		appStruct = appService.App{}
+	)
+	if app != nil {
 		return
 	}
+	appAlias = c.GetString("appAlias")
+	if appAlias == "" {
+		appAlias = c.GetHeader("appAlias")
+		if appAlias == "" {
+			_ = c.ShouldBind(&appStruct)
+		}
+	}
+	uuid, err := uuid.Parse(appAlias)
+	if err != nil {
+		c.JsonOut(global.ErrNotice, "application access ID is failed", nil)
+		return
+	}
+	appStruct.UUID = uuid
+	app, err = appStruct.GetApp()
+	if err != nil {
+		c.JsonOut(global.ErrNotice, "invalid application access ID: "+appAlias, nil)
+		return
+	}
+	// 应用已被删除
+	if app.DeleteTime > 0 {
+		c.JsonOut(global.ErrNotice, "invalid application access ID: "+appAlias, nil)
+		return
+	}
+	// 应用状态异常
+	if app.Status != 1 {
+		c.JsonOut(global.ErrNotice, "application is not activated, please contact management activation", nil)
+		return
+	}
+	c.SetApp(app)
 }

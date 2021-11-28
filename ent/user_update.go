@@ -55,14 +55,6 @@ func (uu *UserUpdate) SetUpdateTime(i int64) *UserUpdate {
 	return uu
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableUpdateTime(i *int64) *UserUpdate {
-	if i != nil {
-		uu.SetUpdateTime(*i)
-	}
-	return uu
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (uu *UserUpdate) AddUpdateTime(i int64) *UserUpdate {
 	uu.mutation.AddUpdateTime(i)
@@ -360,6 +352,7 @@ func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	uu.defaults()
 	if len(uu.hooks) == 0 {
 		if err = uu.check(); err != nil {
 			return 0, err
@@ -411,6 +404,14 @@ func (uu *UserUpdate) Exec(ctx context.Context) error {
 func (uu *UserUpdate) ExecX(ctx context.Context) {
 	if err := uu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (uu *UserUpdate) defaults() {
+	if _, ok := uu.mutation.UpdateTime(); !ok {
+		v := user.UpdateDefaultUpdateTime()
+		uu.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -735,14 +736,6 @@ func (uuo *UserUpdateOne) SetUpdateTime(i int64) *UserUpdateOne {
 	return uuo
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableUpdateTime(i *int64) *UserUpdateOne {
-	if i != nil {
-		uuo.SetUpdateTime(*i)
-	}
-	return uuo
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (uuo *UserUpdateOne) AddUpdateTime(i int64) *UserUpdateOne {
 	uuo.mutation.AddUpdateTime(i)
@@ -1047,6 +1040,7 @@ func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
 		err  error
 		node *User
 	)
+	uuo.defaults()
 	if len(uuo.hooks) == 0 {
 		if err = uuo.check(); err != nil {
 			return nil, err
@@ -1098,6 +1092,14 @@ func (uuo *UserUpdateOne) Exec(ctx context.Context) error {
 func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 	if err := uuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (uuo *UserUpdateOne) defaults() {
+	if _, ok := uuo.mutation.UpdateTime(); !ok {
+		v := user.UpdateDefaultUpdateTime()
+		uuo.mutation.SetUpdateTime(v)
 	}
 }
 

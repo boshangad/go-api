@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	cannotations "github.com/boshangad/v1/app/model/annotations"
 	"github.com/boshangad/v1/app/model/mixins"
 )
 
@@ -36,10 +37,50 @@ func (AppUserLoginLog) Fields() []ent.Field {
 		field.Uint64("app_id").Default(0).Comment("应用"),
 		field.Uint64("app_user_id").Default(0).Comment("应用用户"),
 		field.Uint64("user_id").Default(0).Comment("用户"),
-		field.Uint("login_type_id").Default(0).Comment("登录方案"),
+		field.Uint("login_type_id").Default(0).Comment("登录方案").Annotations(
+			cannotations.ConstAnnotation{
+				Values: []cannotations.ConstData{
+					{
+						Name:       "LoginTypeUnknow",
+						Value:      0,
+						Annotation: "未知的登录方式",
+					}, {
+						Name:       "LoginTypeUsername",
+						Value:      1,
+						Annotation: "使用用户名登录",
+					}, {
+						Name:       "LoginTypeMobile",
+						Value:      2,
+						Annotation: "使用手机号登录",
+					}, {
+						Name:       "LoginTypeEmail",
+						Value:      3,
+						Annotation: "使用邮箱登录",
+					}, {
+						Name:       "LoginTypeThired",
+						Value:      4,
+						Annotation: "第三方快捷登录",
+					},
+				},
+			},
+		),
 		field.String("ip").Default("127.0.0.1").Comment("登录IP").MaxLen(16),
 		field.String("content").Comment("内容").Optional(),
-		field.Uint("status").Default(0).Comment("状态"),
+		field.Uint("status").Default(0).Comment("状态").Annotations(
+			cannotations.ConstAnnotation{
+				Values: []cannotations.ConstData{
+					{
+						Name:       "StatusWaitConfirm",
+						Value:      0,
+						Annotation: "待确认",
+					}, {
+						Name:       "StatusSuccess",
+						Value:      1,
+						Annotation: "成功",
+					},
+				},
+			},
+		),
 	}
 }
 

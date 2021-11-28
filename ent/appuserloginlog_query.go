@@ -672,6 +672,12 @@ func (aullq *AppUserLoginLogQuery) ForShare(opts ...sql.LockOption) *AppUserLogi
 	return aullq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aullq *AppUserLoginLogQuery) Modify(modifiers ...func(s *sql.Selector)) *AppUserLoginLogSelect {
+	aullq.modifiers = append(aullq.modifiers, modifiers...)
+	return aullq.Select()
+}
+
 // AppUserLoginLogGroupBy is the group-by builder for AppUserLoginLog entities.
 type AppUserLoginLogGroupBy struct {
 	config
@@ -1160,4 +1166,10 @@ func (aulls *AppUserLoginLogSelect) sqlScan(ctx context.Context, v interface{}) 
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aulls *AppUserLoginLogSelect) Modify(modifiers ...func(s *sql.Selector)) *AppUserLoginLogSelect {
+	aulls.modifiers = append(aulls.modifiers, modifiers...)
+	return aulls
 }

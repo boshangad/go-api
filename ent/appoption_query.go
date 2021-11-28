@@ -540,6 +540,12 @@ func (aoq *AppOptionQuery) ForShare(opts ...sql.LockOption) *AppOptionQuery {
 	return aoq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aoq *AppOptionQuery) Modify(modifiers ...func(s *sql.Selector)) *AppOptionSelect {
+	aoq.modifiers = append(aoq.modifiers, modifiers...)
+	return aoq.Select()
+}
+
 // AppOptionGroupBy is the group-by builder for AppOption entities.
 type AppOptionGroupBy struct {
 	config
@@ -1028,4 +1034,10 @@ func (aos *AppOptionSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (aos *AppOptionSelect) Modify(modifiers ...func(s *sql.Selector)) *AppOptionSelect {
+	aos.modifiers = append(aos.modifiers, modifiers...)
+	return aos
 }

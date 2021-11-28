@@ -540,6 +540,12 @@ func (elq *EmailLogQuery) ForShare(opts ...sql.LockOption) *EmailLogQuery {
 	return elq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (elq *EmailLogQuery) Modify(modifiers ...func(s *sql.Selector)) *EmailLogSelect {
+	elq.modifiers = append(elq.modifiers, modifiers...)
+	return elq.Select()
+}
+
 // EmailLogGroupBy is the group-by builder for EmailLog entities.
 type EmailLogGroupBy struct {
 	config
@@ -1028,4 +1034,10 @@ func (els *EmailLogSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (els *EmailLogSelect) Modify(modifiers ...func(s *sql.Selector)) *EmailLogSelect {
+	els.modifiers = append(els.modifiers, modifiers...)
+	return els
 }

@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/boshangad/v1/ent/app"
+	"github.com/google/uuid"
 )
 
 // App is the model entity for the App schema.
@@ -31,9 +32,9 @@ type App struct {
 	// UpdateBy holds the value of the "update_by" field.
 	// 更新人
 	UpdateBy uint64 `json:"update_by,omitempty"`
-	// Alias holds the value of the "alias" field.
-	// 别名
-	Alias string `json:"alias,omitempty"`
+	// UUID holds the value of the "uuid" field.
+	// UUID
+	UUID *uuid.UUID `json:"uuid,omitempty"`
 	// TypeID holds the value of the "type_id" field.
 	// 类型
 	TypeID uint64 `json:"type_id,omitempty"`
@@ -93,8 +94,10 @@ func (*App) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case app.FieldID, app.FieldDeleteTime, app.FieldCreateTime, app.FieldCreateBy, app.FieldUpdateTime, app.FieldUpdateBy, app.FieldTypeID, app.FieldRegisterUserNumber, app.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case app.FieldAlias, app.FieldTitle, app.FieldIntro, app.FieldMpOriginID, app.FieldAppID, app.FieldAppSecret:
+		case app.FieldTitle, app.FieldIntro, app.FieldMpOriginID, app.FieldAppID, app.FieldAppSecret:
 			values[i] = new(sql.NullString)
+		case app.FieldUUID:
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type App", columns[i])
 		}
@@ -146,11 +149,11 @@ func (a *App) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				a.UpdateBy = uint64(value.Int64)
 			}
-		case app.FieldAlias:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field alias", values[i])
-			} else if value.Valid {
-				a.Alias = value.String
+		case app.FieldUUID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+			} else if value != nil {
+				a.UUID = value
 			}
 		case app.FieldTypeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -249,8 +252,8 @@ func (a *App) String() string {
 	builder.WriteString(fmt.Sprintf("%v", a.UpdateTime))
 	builder.WriteString(", update_by=")
 	builder.WriteString(fmt.Sprintf("%v", a.UpdateBy))
-	builder.WriteString(", alias=")
-	builder.WriteString(a.Alias)
+	builder.WriteString(", uuid=")
+	builder.WriteString(fmt.Sprintf("%v", a.UUID))
 	builder.WriteString(", type_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.TypeID))
 	builder.WriteString(", title=")

@@ -36,14 +36,6 @@ func (slu *SmsLogUpdate) SetUpdateTime(i int64) *SmsLogUpdate {
 	return slu
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (slu *SmsLogUpdate) SetNillableUpdateTime(i *int64) *SmsLogUpdate {
-	if i != nil {
-		slu.SetUpdateTime(*i)
-	}
-	return slu
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (slu *SmsLogUpdate) AddUpdateTime(i int64) *SmsLogUpdate {
 	slu.mutation.AddUpdateTime(i)
@@ -296,6 +288,7 @@ func (slu *SmsLogUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	slu.defaults()
 	if len(slu.hooks) == 0 {
 		if err = slu.check(); err != nil {
 			return 0, err
@@ -347,6 +340,14 @@ func (slu *SmsLogUpdate) Exec(ctx context.Context) error {
 func (slu *SmsLogUpdate) ExecX(ctx context.Context) {
 	if err := slu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (slu *SmsLogUpdate) defaults() {
+	if _, ok := slu.mutation.UpdateTime(); !ok {
+		v := smslog.UpdateDefaultUpdateTime()
+		slu.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -619,14 +620,6 @@ func (sluo *SmsLogUpdateOne) SetUpdateTime(i int64) *SmsLogUpdateOne {
 	return sluo
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (sluo *SmsLogUpdateOne) SetNillableUpdateTime(i *int64) *SmsLogUpdateOne {
-	if i != nil {
-		sluo.SetUpdateTime(*i)
-	}
-	return sluo
-}
-
 // AddUpdateTime adds i to the "update_time" field.
 func (sluo *SmsLogUpdateOne) AddUpdateTime(i int64) *SmsLogUpdateOne {
 	sluo.mutation.AddUpdateTime(i)
@@ -886,6 +879,7 @@ func (sluo *SmsLogUpdateOne) Save(ctx context.Context) (*SmsLog, error) {
 		err  error
 		node *SmsLog
 	)
+	sluo.defaults()
 	if len(sluo.hooks) == 0 {
 		if err = sluo.check(); err != nil {
 			return nil, err
@@ -937,6 +931,14 @@ func (sluo *SmsLogUpdateOne) Exec(ctx context.Context) error {
 func (sluo *SmsLogUpdateOne) ExecX(ctx context.Context) {
 	if err := sluo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (sluo *SmsLogUpdateOne) defaults() {
+	if _, ok := sluo.mutation.UpdateTime(); !ok {
+		v := smslog.UpdateDefaultUpdateTime()
+		sluo.mutation.SetUpdateTime(v)
 	}
 }
 

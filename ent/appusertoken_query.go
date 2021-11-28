@@ -672,6 +672,12 @@ func (autq *AppUserTokenQuery) ForShare(opts ...sql.LockOption) *AppUserTokenQue
 	return autq
 }
 
+// Modify adds a query modifier for attaching custom logic to queries.
+func (autq *AppUserTokenQuery) Modify(modifiers ...func(s *sql.Selector)) *AppUserTokenSelect {
+	autq.modifiers = append(autq.modifiers, modifiers...)
+	return autq.Select()
+}
+
 // AppUserTokenGroupBy is the group-by builder for AppUserToken entities.
 type AppUserTokenGroupBy struct {
 	config
@@ -1160,4 +1166,10 @@ func (auts *AppUserTokenSelect) sqlScan(ctx context.Context, v interface{}) erro
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (auts *AppUserTokenSelect) Modify(modifiers ...func(s *sql.Selector)) *AppUserTokenSelect {
+	auts.modifiers = append(auts.modifiers, modifiers...)
+	return auts
 }

@@ -43,14 +43,6 @@ func (auc *AppUserCreate) SetUpdateTime(i int64) *AppUserCreate {
 	return auc
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (auc *AppUserCreate) SetNillableUpdateTime(i *int64) *AppUserCreate {
-	if i != nil {
-		auc.SetUpdateTime(*i)
-	}
-	return auc
-}
-
 // SetAppID sets the "app_id" field.
 func (auc *AppUserCreate) SetAppID(u uint64) *AppUserCreate {
 	auc.mutation.SetAppID(u)
@@ -304,29 +296,29 @@ func (auc *AppUserCreate) SetNillableWatermark(s *string) *AppUserCreate {
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (auc *AppUserCreate) SetLoadUserProfileTime(u uint64) *AppUserCreate {
-	auc.mutation.SetLoadUserProfileTime(u)
+func (auc *AppUserCreate) SetLoadUserProfileTime(i int64) *AppUserCreate {
+	auc.mutation.SetLoadUserProfileTime(i)
 	return auc
 }
 
 // SetNillableLoadUserProfileTime sets the "load_user_profile_time" field if the given value is not nil.
-func (auc *AppUserCreate) SetNillableLoadUserProfileTime(u *uint64) *AppUserCreate {
-	if u != nil {
-		auc.SetLoadUserProfileTime(*u)
+func (auc *AppUserCreate) SetNillableLoadUserProfileTime(i *int64) *AppUserCreate {
+	if i != nil {
+		auc.SetLoadUserProfileTime(*i)
 	}
 	return auc
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (auc *AppUserCreate) SetLastLoginTime(u uint64) *AppUserCreate {
-	auc.mutation.SetLastLoginTime(u)
+func (auc *AppUserCreate) SetLastLoginTime(i int64) *AppUserCreate {
+	auc.mutation.SetLastLoginTime(i)
 	return auc
 }
 
 // SetNillableLastLoginTime sets the "last_login_time" field if the given value is not nil.
-func (auc *AppUserCreate) SetNillableLastLoginTime(u *uint64) *AppUserCreate {
-	if u != nil {
-		auc.SetLastLoginTime(*u)
+func (auc *AppUserCreate) SetNillableLastLoginTime(i *int64) *AppUserCreate {
+	if i != nil {
+		auc.SetLastLoginTime(*i)
 	}
 	return auc
 }
@@ -419,12 +411,8 @@ func (auc *AppUserCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (auc *AppUserCreate) defaults() {
 	if _, ok := auc.mutation.CreateTime(); !ok {
-		v := appuser.DefaultCreateTime
+		v := appuser.DefaultCreateTime()
 		auc.mutation.SetCreateTime(v)
-	}
-	if _, ok := auc.mutation.UpdateTime(); !ok {
-		v := appuser.DefaultUpdateTime
-		auc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := auc.mutation.AppID(); !ok {
 		v := appuser.DefaultAppID
@@ -838,7 +826,7 @@ func (auc *AppUserCreate) createSpec() (*AppUser, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := auc.mutation.LoadUserProfileTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLoadUserProfileTime,
 		})
@@ -846,7 +834,7 @@ func (auc *AppUserCreate) createSpec() (*AppUser, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := auc.mutation.LastLoginTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: appuser.FieldLastLoginTime,
 		})
@@ -1189,7 +1177,7 @@ func (u *AppUserUpsert) UpdateWatermark() *AppUserUpsert {
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (u *AppUserUpsert) SetLoadUserProfileTime(v uint64) *AppUserUpsert {
+func (u *AppUserUpsert) SetLoadUserProfileTime(v int64) *AppUserUpsert {
 	u.Set(appuser.FieldLoadUserProfileTime, v)
 	return u
 }
@@ -1201,7 +1189,7 @@ func (u *AppUserUpsert) UpdateLoadUserProfileTime() *AppUserUpsert {
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (u *AppUserUpsert) SetLastLoginTime(v uint64) *AppUserUpsert {
+func (u *AppUserUpsert) SetLastLoginTime(v int64) *AppUserUpsert {
 	u.Set(appuser.FieldLastLoginTime, v)
 	return u
 }
@@ -1543,7 +1531,7 @@ func (u *AppUserUpsertOne) UpdateWatermark() *AppUserUpsertOne {
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (u *AppUserUpsertOne) SetLoadUserProfileTime(v uint64) *AppUserUpsertOne {
+func (u *AppUserUpsertOne) SetLoadUserProfileTime(v int64) *AppUserUpsertOne {
 	return u.Update(func(s *AppUserUpsert) {
 		s.SetLoadUserProfileTime(v)
 	})
@@ -1557,7 +1545,7 @@ func (u *AppUserUpsertOne) UpdateLoadUserProfileTime() *AppUserUpsertOne {
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (u *AppUserUpsertOne) SetLastLoginTime(v uint64) *AppUserUpsertOne {
+func (u *AppUserUpsertOne) SetLastLoginTime(v int64) *AppUserUpsertOne {
 	return u.Update(func(s *AppUserUpsert) {
 		s.SetLastLoginTime(v)
 	})
@@ -2066,7 +2054,7 @@ func (u *AppUserUpsertBulk) UpdateWatermark() *AppUserUpsertBulk {
 }
 
 // SetLoadUserProfileTime sets the "load_user_profile_time" field.
-func (u *AppUserUpsertBulk) SetLoadUserProfileTime(v uint64) *AppUserUpsertBulk {
+func (u *AppUserUpsertBulk) SetLoadUserProfileTime(v int64) *AppUserUpsertBulk {
 	return u.Update(func(s *AppUserUpsert) {
 		s.SetLoadUserProfileTime(v)
 	})
@@ -2080,7 +2068,7 @@ func (u *AppUserUpsertBulk) UpdateLoadUserProfileTime() *AppUserUpsertBulk {
 }
 
 // SetLastLoginTime sets the "last_login_time" field.
-func (u *AppUserUpsertBulk) SetLastLoginTime(v uint64) *AppUserUpsertBulk {
+func (u *AppUserUpsertBulk) SetLastLoginTime(v int64) *AppUserUpsertBulk {
 	return u.Update(func(s *AppUserUpsert) {
 		s.SetLastLoginTime(v)
 	})

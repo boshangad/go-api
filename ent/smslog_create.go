@@ -56,14 +56,6 @@ func (slc *SmsLogCreate) SetUpdateTime(i int64) *SmsLogCreate {
 	return slc
 }
 
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (slc *SmsLogCreate) SetNillableUpdateTime(i *int64) *SmsLogCreate {
-	if i != nil {
-		slc.SetUpdateTime(*i)
-	}
-	return slc
-}
-
 // SetUpdateBy sets the "update_by" field.
 func (slc *SmsLogCreate) SetUpdateBy(u uint64) *SmsLogCreate {
 	slc.mutation.SetUpdateBy(u)
@@ -343,16 +335,12 @@ func (slc *SmsLogCreate) ExecX(ctx context.Context) {
 // defaults sets the default values of the builder before save.
 func (slc *SmsLogCreate) defaults() {
 	if _, ok := slc.mutation.CreateTime(); !ok {
-		v := smslog.DefaultCreateTime
+		v := smslog.DefaultCreateTime()
 		slc.mutation.SetCreateTime(v)
 	}
 	if _, ok := slc.mutation.CreateBy(); !ok {
 		v := smslog.DefaultCreateBy
 		slc.mutation.SetCreateBy(v)
-	}
-	if _, ok := slc.mutation.UpdateTime(); !ok {
-		v := smslog.DefaultUpdateTime
-		slc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := slc.mutation.UpdateBy(); !ok {
 		v := smslog.DefaultUpdateBy
