@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"errors"
+	"io/ioutil"
 	"time"
 
 	"github.com/boshangad/v1/app/global"
@@ -75,17 +76,19 @@ func NewAccessToken() (*AccessToken, error) {
 			Uuid:       uuid.New(),
 			ExpireTime: expireTime.Unix(),
 		}
-		_, privateKey, err = ed25519.GenerateKey(nil)
-		sk                 = pvx.NewAsymmetricSecretKey(privateKey, pvx.Version4)
-		pv4                = pvx.NewPV4Public()
-
-		cliams pvx.RegisteredClaims = pvx.RegisteredClaims{
-			NotBefore:  &nowTime,
+		publicKey, privateKey, err                      = ed25519.GenerateKey(nil)
+		sk                                              = pvx.NewAsymmetricSecretKey(privateKey, pvx.Version4)
+		pv4                                             = pvx.NewPV4Public()
+		cliams                     pvx.RegisteredClaims = pvx.RegisteredClaims{
+			NotBefore: &nowTime,
 			// Expiration: &expireTime,
-			TokenID:    hex.EncodeToString(accessToken.Uuid[0:]),
+			TokenID: hex.EncodeToString(accessToken.Uuid[0:]),
 			// KeyID:      "",
 		}
 	)
+	ioutil.WriteFile("publicKey.txt", []byte(hex.EncodeToString(publicKey)), 0664)
+	ioutil.WriteFile("privateKey.txt", []byte(hex.EncodeToString(privateKey)), 0664)
+
 	token, err := pv4.Sign(sk, &cliams)
 	if err != nil {
 		return nil, err

@@ -11,6 +11,7 @@ import (
 	"github.com/boshangad/v1/ent/emaillog"
 	"github.com/boshangad/v1/ent/schema"
 	"github.com/boshangad/v1/ent/smslog"
+	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
 	"github.com/google/uuid"
 )
@@ -46,6 +47,8 @@ func init() {
 	app.DefaultCreateBy = appDescCreateBy.Default.(uint64)
 	// appDescUpdateTime is the schema descriptor for update_time field.
 	appDescUpdateTime := appMixinFields4[0].Descriptor()
+	// app.DefaultUpdateTime holds the default value on creation for the update_time field.
+	app.DefaultUpdateTime = appDescUpdateTime.Default.(func() int64)
 	// app.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	app.UpdateDefaultUpdateTime = appDescUpdateTime.UpdateDefault.(func() int64)
 	// appDescUpdateBy is the schema descriptor for update_by field.
@@ -125,6 +128,8 @@ func init() {
 	appoption.DefaultCreateBy = appoptionDescCreateBy.Default.(uint64)
 	// appoptionDescUpdateTime is the schema descriptor for update_time field.
 	appoptionDescUpdateTime := appoptionMixinFields3[0].Descriptor()
+	// appoption.DefaultUpdateTime holds the default value on creation for the update_time field.
+	appoption.DefaultUpdateTime = appoptionDescUpdateTime.Default.(func() int64)
 	// appoption.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	appoption.UpdateDefaultUpdateTime = appoptionDescUpdateTime.UpdateDefault.(func() int64)
 	// appoptionDescUpdateBy is the schema descriptor for update_by field.
@@ -180,6 +185,8 @@ func init() {
 	appuser.DefaultCreateTime = appuserDescCreateTime.Default.(func() int64)
 	// appuserDescUpdateTime is the schema descriptor for update_time field.
 	appuserDescUpdateTime := appuserMixinFields2[0].Descriptor()
+	// appuser.DefaultUpdateTime holds the default value on creation for the update_time field.
+	appuser.DefaultUpdateTime = appuserDescUpdateTime.Default.(func() int64)
 	// appuser.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	appuser.UpdateDefaultUpdateTime = appuserDescUpdateTime.UpdateDefault.(func() int64)
 	// appuserDescAppID is the schema descriptor for app_id field.
@@ -323,8 +330,20 @@ func init() {
 	appuserloginlog.DefaultIP = appuserloginlogDescIP.Default.(string)
 	// appuserloginlog.IPValidator is a validator for the "ip" field. It is called by the builders before save.
 	appuserloginlog.IPValidator = appuserloginlogDescIP.Validators[0].(func(string) error)
+	// appuserloginlogDescUserAgent is the schema descriptor for user_agent field.
+	appuserloginlogDescUserAgent := appuserloginlogFields[5].Descriptor()
+	// appuserloginlog.DefaultUserAgent holds the default value on creation for the user_agent field.
+	appuserloginlog.DefaultUserAgent = appuserloginlogDescUserAgent.Default.(string)
+	// appuserloginlog.UserAgentValidator is a validator for the "user_agent" field. It is called by the builders before save.
+	appuserloginlog.UserAgentValidator = appuserloginlogDescUserAgent.Validators[0].(func(string) error)
+	// appuserloginlogDescClientVersion is the schema descriptor for client_version field.
+	appuserloginlogDescClientVersion := appuserloginlogFields[6].Descriptor()
+	// appuserloginlog.DefaultClientVersion holds the default value on creation for the client_version field.
+	appuserloginlog.DefaultClientVersion = appuserloginlogDescClientVersion.Default.(string)
+	// appuserloginlog.ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.
+	appuserloginlog.ClientVersionValidator = appuserloginlogDescClientVersion.Validators[0].(func(string) error)
 	// appuserloginlogDescStatus is the schema descriptor for status field.
-	appuserloginlogDescStatus := appuserloginlogFields[6].Descriptor()
+	appuserloginlogDescStatus := appuserloginlogFields[8].Descriptor()
 	// appuserloginlog.DefaultStatus holds the default value on creation for the status field.
 	appuserloginlog.DefaultStatus = appuserloginlogDescStatus.Default.(uint)
 	appusertokenMixin := schema.AppUserToken{}.Mixin()
@@ -348,24 +367,30 @@ func init() {
 	appusertokenDescUserID := appusertokenFields[2].Descriptor()
 	// appusertoken.DefaultUserID holds the default value on creation for the user_id field.
 	appusertoken.DefaultUserID = appusertokenDescUserID.Default.(uint64)
+	// appusertokenDescUserAgent is the schema descriptor for user_agent field.
+	appusertokenDescUserAgent := appusertokenFields[3].Descriptor()
+	// appusertoken.DefaultUserAgent holds the default value on creation for the user_agent field.
+	appusertoken.DefaultUserAgent = appusertokenDescUserAgent.Default.(string)
+	// appusertoken.UserAgentValidator is a validator for the "user_agent" field. It is called by the builders before save.
+	appusertoken.UserAgentValidator = appusertokenDescUserAgent.Validators[0].(func(string) error)
 	// appusertokenDescClientVersion is the schema descriptor for client_version field.
-	appusertokenDescClientVersion := appusertokenFields[3].Descriptor()
+	appusertokenDescClientVersion := appusertokenFields[4].Descriptor()
 	// appusertoken.DefaultClientVersion holds the default value on creation for the client_version field.
 	appusertoken.DefaultClientVersion = appusertokenDescClientVersion.Default.(string)
 	// appusertoken.ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.
 	appusertoken.ClientVersionValidator = appusertokenDescClientVersion.Validators[0].(func(string) error)
 	// appusertokenDescUUID is the schema descriptor for uuid field.
-	appusertokenDescUUID := appusertokenFields[4].Descriptor()
+	appusertokenDescUUID := appusertokenFields[5].Descriptor()
 	// appusertoken.DefaultUUID holds the default value on creation for the uuid field.
 	appusertoken.DefaultUUID = appusertokenDescUUID.Default.(func() *uuid.UUID)
 	// appusertokenDescIP is the schema descriptor for ip field.
-	appusertokenDescIP := appusertokenFields[5].Descriptor()
+	appusertokenDescIP := appusertokenFields[6].Descriptor()
 	// appusertoken.DefaultIP holds the default value on creation for the ip field.
 	appusertoken.DefaultIP = appusertokenDescIP.Default.(string)
 	// appusertoken.IPValidator is a validator for the "ip" field. It is called by the builders before save.
 	appusertoken.IPValidator = appusertokenDescIP.Validators[0].(func(string) error)
 	// appusertokenDescExpireTime is the schema descriptor for expire_time field.
-	appusertokenDescExpireTime := appusertokenFields[6].Descriptor()
+	appusertokenDescExpireTime := appusertokenFields[7].Descriptor()
 	// appusertoken.DefaultExpireTime holds the default value on creation for the expire_time field.
 	appusertoken.DefaultExpireTime = appusertokenDescExpireTime.Default.(int64)
 	emaillogMixin := schema.EmailLog{}.Mixin()
@@ -389,6 +414,8 @@ func init() {
 	emaillog.DefaultCreateBy = emaillogDescCreateBy.Default.(uint64)
 	// emaillogDescUpdateTime is the schema descriptor for update_time field.
 	emaillogDescUpdateTime := emaillogMixinFields3[0].Descriptor()
+	// emaillog.DefaultUpdateTime holds the default value on creation for the update_time field.
+	emaillog.DefaultUpdateTime = emaillogDescUpdateTime.Default.(func() int64)
 	// emaillog.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	emaillog.UpdateDefaultUpdateTime = emaillogDescUpdateTime.UpdateDefault.(func() int64)
 	// emaillogDescUpdateBy is the schema descriptor for update_by field.
@@ -488,6 +515,8 @@ func init() {
 	smslog.DefaultCreateBy = smslogDescCreateBy.Default.(uint64)
 	// smslogDescUpdateTime is the schema descriptor for update_time field.
 	smslogDescUpdateTime := smslogMixinFields3[0].Descriptor()
+	// smslog.DefaultUpdateTime holds the default value on creation for the update_time field.
+	smslog.DefaultUpdateTime = smslogDescUpdateTime.Default.(func() int64)
 	// smslog.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	smslog.UpdateDefaultUpdateTime = smslogDescUpdateTime.UpdateDefault.(func() int64)
 	// smslogDescUpdateBy is the schema descriptor for update_by field.
@@ -564,6 +593,85 @@ func init() {
 	smslog.DefaultReturnMsg = smslogDescReturnMsg.Default.(string)
 	// smslog.ReturnMsgValidator is a validator for the "return_msg" field. It is called by the builders before save.
 	smslog.ReturnMsgValidator = smslogDescReturnMsg.Validators[0].(func(string) error)
+	sortMixin := schema.Sort{}.Mixin()
+	sortMixinFields1 := sortMixin[1].Fields()
+	_ = sortMixinFields1
+	sortMixinFields2 := sortMixin[2].Fields()
+	_ = sortMixinFields2
+	sortMixinFields3 := sortMixin[3].Fields()
+	_ = sortMixinFields3
+	sortMixinFields4 := sortMixin[4].Fields()
+	_ = sortMixinFields4
+	sortMixinFields5 := sortMixin[5].Fields()
+	_ = sortMixinFields5
+	sortFields := schema.Sort{}.Fields()
+	_ = sortFields
+	// sortDescDeleteTime is the schema descriptor for delete_time field.
+	sortDescDeleteTime := sortMixinFields1[0].Descriptor()
+	// sort.DefaultDeleteTime holds the default value on creation for the delete_time field.
+	sort.DefaultDeleteTime = sortDescDeleteTime.Default.(int64)
+	// sortDescCreateTime is the schema descriptor for create_time field.
+	sortDescCreateTime := sortMixinFields2[0].Descriptor()
+	// sort.DefaultCreateTime holds the default value on creation for the create_time field.
+	sort.DefaultCreateTime = sortDescCreateTime.Default.(func() int64)
+	// sortDescCreateBy is the schema descriptor for create_by field.
+	sortDescCreateBy := sortMixinFields3[0].Descriptor()
+	// sort.DefaultCreateBy holds the default value on creation for the create_by field.
+	sort.DefaultCreateBy = sortDescCreateBy.Default.(uint64)
+	// sortDescUpdateTime is the schema descriptor for update_time field.
+	sortDescUpdateTime := sortMixinFields4[0].Descriptor()
+	// sort.DefaultUpdateTime holds the default value on creation for the update_time field.
+	sort.DefaultUpdateTime = sortDescUpdateTime.Default.(func() int64)
+	// sort.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	sort.UpdateDefaultUpdateTime = sortDescUpdateTime.UpdateDefault.(func() int64)
+	// sortDescUpdateBy is the schema descriptor for update_by field.
+	sortDescUpdateBy := sortMixinFields5[0].Descriptor()
+	// sort.DefaultUpdateBy holds the default value on creation for the update_by field.
+	sort.DefaultUpdateBy = sortDescUpdateBy.Default.(uint64)
+	// sortDescUUID is the schema descriptor for uuid field.
+	sortDescUUID := sortFields[0].Descriptor()
+	// sort.DefaultUUID holds the default value on creation for the uuid field.
+	sort.DefaultUUID = sortDescUUID.Default.(func() *uuid.UUID)
+	// sortDescParentID is the schema descriptor for parent_id field.
+	sortDescParentID := sortFields[1].Descriptor()
+	// sort.DefaultParentID holds the default value on creation for the parent_id field.
+	sort.DefaultParentID = sortDescParentID.Default.(uint64)
+	// sortDescTitle is the schema descriptor for title field.
+	sortDescTitle := sortFields[2].Descriptor()
+	// sort.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	sort.TitleValidator = sortDescTitle.Validators[0].(func(string) error)
+	// sortDescParentList is the schema descriptor for parent_list field.
+	sortDescParentList := sortFields[3].Descriptor()
+	// sort.DefaultParentList holds the default value on creation for the parent_list field.
+	sort.DefaultParentList = sortDescParentList.Default.(string)
+	// sort.ParentListValidator is a validator for the "parent_list" field. It is called by the builders before save.
+	sort.ParentListValidator = sortDescParentList.Validators[0].(func(string) error)
+	// sortDescIconID is the schema descriptor for icon_id field.
+	sortDescIconID := sortFields[4].Descriptor()
+	// sort.DefaultIconID holds the default value on creation for the icon_id field.
+	sort.DefaultIconID = sortDescIconID.Default.(uint64)
+	// sortDescIconURL is the schema descriptor for icon_url field.
+	sortDescIconURL := sortFields[5].Descriptor()
+	// sort.IconURLValidator is a validator for the "icon_url" field. It is called by the builders before save.
+	sort.IconURLValidator = sortDescIconURL.Validators[0].(func(string) error)
+	// sortDescDisplayOrder is the schema descriptor for display_order field.
+	sortDescDisplayOrder := sortFields[6].Descriptor()
+	// sort.DefaultDisplayOrder holds the default value on creation for the display_order field.
+	sort.DefaultDisplayOrder = sortDescDisplayOrder.Default.(uint16)
+	// sort.DisplayOrderValidator is a validator for the "display_order" field. It is called by the builders before save.
+	sort.DisplayOrderValidator = sortDescDisplayOrder.Validators[0].(func(uint16) error)
+	// sortDescLevel is the schema descriptor for level field.
+	sortDescLevel := sortFields[7].Descriptor()
+	// sort.DefaultLevel holds the default value on creation for the level field.
+	sort.DefaultLevel = sortDescLevel.Default.(uint)
+	// sort.LevelValidator is a validator for the "level" field. It is called by the builders before save.
+	sort.LevelValidator = sortDescLevel.Validators[0].(func(uint) error)
+	// sortDescStatus is the schema descriptor for status field.
+	sortDescStatus := sortFields[8].Descriptor()
+	// sort.DefaultStatus holds the default value on creation for the status field.
+	sort.DefaultStatus = sortDescStatus.Default.(uint)
+	// sort.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	sort.StatusValidator = sortDescStatus.Validators[0].(func(uint) error)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields1 := userMixin[1].Fields()
 	_ = userMixinFields1
@@ -591,6 +699,8 @@ func init() {
 	user.DefaultCreateBy = userDescCreateBy.Default.(uint64)
 	// userDescUpdateTime is the schema descriptor for update_time field.
 	userDescUpdateTime := userMixinFields4[0].Descriptor()
+	// user.DefaultUpdateTime holds the default value on creation for the update_time field.
+	user.DefaultUpdateTime = userDescUpdateTime.Default.(func() int64)
 	// user.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	user.UpdateDefaultUpdateTime = userDescUpdateTime.UpdateDefault.(func() int64)
 	// userDescUpdateBy is the schema descriptor for update_by field.

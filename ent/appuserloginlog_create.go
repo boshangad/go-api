@@ -108,6 +108,34 @@ func (aullc *AppUserLoginLogCreate) SetNillableIP(s *string) *AppUserLoginLogCre
 	return aullc
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (aullc *AppUserLoginLogCreate) SetUserAgent(s string) *AppUserLoginLogCreate {
+	aullc.mutation.SetUserAgent(s)
+	return aullc
+}
+
+// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+func (aullc *AppUserLoginLogCreate) SetNillableUserAgent(s *string) *AppUserLoginLogCreate {
+	if s != nil {
+		aullc.SetUserAgent(*s)
+	}
+	return aullc
+}
+
+// SetClientVersion sets the "client_version" field.
+func (aullc *AppUserLoginLogCreate) SetClientVersion(s string) *AppUserLoginLogCreate {
+	aullc.mutation.SetClientVersion(s)
+	return aullc
+}
+
+// SetNillableClientVersion sets the "client_version" field if the given value is not nil.
+func (aullc *AppUserLoginLogCreate) SetNillableClientVersion(s *string) *AppUserLoginLogCreate {
+	if s != nil {
+		aullc.SetClientVersion(*s)
+	}
+	return aullc
+}
+
 // SetContent sets the "content" field.
 func (aullc *AppUserLoginLogCreate) SetContent(s string) *AppUserLoginLogCreate {
 	aullc.mutation.SetContent(s)
@@ -252,6 +280,14 @@ func (aullc *AppUserLoginLogCreate) defaults() {
 		v := appuserloginlog.DefaultIP
 		aullc.mutation.SetIP(v)
 	}
+	if _, ok := aullc.mutation.UserAgent(); !ok {
+		v := appuserloginlog.DefaultUserAgent
+		aullc.mutation.SetUserAgent(v)
+	}
+	if _, ok := aullc.mutation.ClientVersion(); !ok {
+		v := appuserloginlog.DefaultClientVersion
+		aullc.mutation.SetClientVersion(v)
+	}
 	if _, ok := aullc.mutation.Status(); !ok {
 		v := appuserloginlog.DefaultStatus
 		aullc.mutation.SetStatus(v)
@@ -281,6 +317,22 @@ func (aullc *AppUserLoginLogCreate) check() error {
 	if v, ok := aullc.mutation.IP(); ok {
 		if err := appuserloginlog.IPValidator(v); err != nil {
 			return &ValidationError{Name: "ip", err: fmt.Errorf(`ent: validator failed for field "ip": %w`, err)}
+		}
+	}
+	if _, ok := aullc.mutation.UserAgent(); !ok {
+		return &ValidationError{Name: "user_agent", err: errors.New(`ent: missing required field "user_agent"`)}
+	}
+	if v, ok := aullc.mutation.UserAgent(); ok {
+		if err := appuserloginlog.UserAgentValidator(v); err != nil {
+			return &ValidationError{Name: "user_agent", err: fmt.Errorf(`ent: validator failed for field "user_agent": %w`, err)}
+		}
+	}
+	if _, ok := aullc.mutation.ClientVersion(); !ok {
+		return &ValidationError{Name: "client_version", err: errors.New(`ent: missing required field "client_version"`)}
+	}
+	if v, ok := aullc.mutation.ClientVersion(); ok {
+		if err := appuserloginlog.ClientVersionValidator(v); err != nil {
+			return &ValidationError{Name: "client_version", err: fmt.Errorf(`ent: validator failed for field "client_version": %w`, err)}
 		}
 	}
 	if _, ok := aullc.mutation.Status(); !ok {
@@ -353,6 +405,22 @@ func (aullc *AppUserLoginLogCreate) createSpec() (*AppUserLoginLog, *sqlgraph.Cr
 			Column: appuserloginlog.FieldIP,
 		})
 		_node.IP = value
+	}
+	if value, ok := aullc.mutation.UserAgent(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appuserloginlog.FieldUserAgent,
+		})
+		_node.UserAgent = value
+	}
+	if value, ok := aullc.mutation.ClientVersion(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appuserloginlog.FieldClientVersion,
+		})
+		_node.ClientVersion = value
 	}
 	if value, ok := aullc.mutation.Content(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -559,6 +627,30 @@ func (u *AppUserLoginLogUpsert) UpdateIP() *AppUserLoginLogUpsert {
 	return u
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (u *AppUserLoginLogUpsert) SetUserAgent(v string) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldUserAgent, v)
+	return u
+}
+
+// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateUserAgent() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldUserAgent)
+	return u
+}
+
+// SetClientVersion sets the "client_version" field.
+func (u *AppUserLoginLogUpsert) SetClientVersion(v string) *AppUserLoginLogUpsert {
+	u.Set(appuserloginlog.FieldClientVersion, v)
+	return u
+}
+
+// UpdateClientVersion sets the "client_version" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsert) UpdateClientVersion() *AppUserLoginLogUpsert {
+	u.SetExcluded(appuserloginlog.FieldClientVersion)
+	return u
+}
+
 // SetContent sets the "content" field.
 func (u *AppUserLoginLogUpsert) SetContent(v string) *AppUserLoginLogUpsert {
 	u.Set(appuserloginlog.FieldContent, v)
@@ -720,6 +812,34 @@ func (u *AppUserLoginLogUpsertOne) SetIP(v string) *AppUserLoginLogUpsertOne {
 func (u *AppUserLoginLogUpsertOne) UpdateIP() *AppUserLoginLogUpsertOne {
 	return u.Update(func(s *AppUserLoginLogUpsert) {
 		s.UpdateIP()
+	})
+}
+
+// SetUserAgent sets the "user_agent" field.
+func (u *AppUserLoginLogUpsertOne) SetUserAgent(v string) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetUserAgent(v)
+	})
+}
+
+// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateUserAgent() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateUserAgent()
+	})
+}
+
+// SetClientVersion sets the "client_version" field.
+func (u *AppUserLoginLogUpsertOne) SetClientVersion(v string) *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetClientVersion(v)
+	})
+}
+
+// UpdateClientVersion sets the "client_version" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertOne) UpdateClientVersion() *AppUserLoginLogUpsertOne {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateClientVersion()
 	})
 }
 
@@ -1054,6 +1174,34 @@ func (u *AppUserLoginLogUpsertBulk) SetIP(v string) *AppUserLoginLogUpsertBulk {
 func (u *AppUserLoginLogUpsertBulk) UpdateIP() *AppUserLoginLogUpsertBulk {
 	return u.Update(func(s *AppUserLoginLogUpsert) {
 		s.UpdateIP()
+	})
+}
+
+// SetUserAgent sets the "user_agent" field.
+func (u *AppUserLoginLogUpsertBulk) SetUserAgent(v string) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetUserAgent(v)
+	})
+}
+
+// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateUserAgent() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateUserAgent()
+	})
+}
+
+// SetClientVersion sets the "client_version" field.
+func (u *AppUserLoginLogUpsertBulk) SetClientVersion(v string) *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.SetClientVersion(v)
+	})
+}
+
+// UpdateClientVersion sets the "client_version" field to the value that was provided on create.
+func (u *AppUserLoginLogUpsertBulk) UpdateClientVersion() *AppUserLoginLogUpsertBulk {
+	return u.Update(func(s *AppUserLoginLogUpsert) {
+		s.UpdateClientVersion()
 	})
 }
 

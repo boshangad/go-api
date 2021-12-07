@@ -35,7 +35,7 @@ type Config struct {
 	// Redis 服务器
 	Redis map[string]interface{} `json:"redis,omitempty" yaml:"redis"`
 	// 短信网关
-	Sms map[string]interface{} `json:"sms,omitempty" yaml:"sms"`
+	Sms Sms `json:"sms,omitempty" yaml:"sms"`
 	// 邮件网关
 	Email map[string]interface{} `json:"email,omitempty" yaml:"email"`
 	// 验证码配置

@@ -39,5 +39,4 @@ func AppUserMiddleware(c *controller.Context) {
 	c.SetApp(appUserToken.Edges.App)
 	c.SetAppUser(appUserToken.Edges.AppUser)
 	c.SetUser(appUserToken.Edges.User)
-	return
 }

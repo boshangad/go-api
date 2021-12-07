@@ -65,6 +65,8 @@ func (AppUserLoginLog) Fields() []ent.Field {
 			},
 		),
 		field.String("ip").Default("127.0.0.1").Comment("登录IP").MaxLen(16),
+		field.String("user_agent").Default("").Comment("用户代理").MaxLen(255),
+		field.String("client_version").Default("").Comment("客户端版本").MaxLen(255),
 		field.String("content").Comment("内容").Optional(),
 		field.Uint("status").Default(0).Comment("状态").Annotations(
 			cannotations.ConstAnnotation{
@@ -77,6 +79,14 @@ func (AppUserLoginLog) Fields() []ent.Field {
 						Name:       "StatusSuccess",
 						Value:      1,
 						Annotation: "成功",
+					}, {
+						Name:       "StatusFailed",
+						Value:      2,
+						Annotation: "失败",
+					}, {
+						Name:       "StatusServerFailed",
+						Value:      3,
+						Annotation: "服务异常失败",
 					},
 				},
 			},

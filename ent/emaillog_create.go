@@ -56,6 +56,14 @@ func (elc *EmailLogCreate) SetUpdateTime(i int64) *EmailLogCreate {
 	return elc
 }
 
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (elc *EmailLogCreate) SetNillableUpdateTime(i *int64) *EmailLogCreate {
+	if i != nil {
+		elc.SetUpdateTime(*i)
+	}
+	return elc
+}
+
 // SetUpdateBy sets the "update_by" field.
 func (elc *EmailLogCreate) SetUpdateBy(u uint64) *EmailLogCreate {
 	elc.mutation.SetUpdateBy(u)
@@ -347,6 +355,10 @@ func (elc *EmailLogCreate) defaults() {
 	if _, ok := elc.mutation.CreateBy(); !ok {
 		v := emaillog.DefaultCreateBy
 		elc.mutation.SetCreateBy(v)
+	}
+	if _, ok := elc.mutation.UpdateTime(); !ok {
+		v := emaillog.DefaultUpdateTime()
+		elc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := elc.mutation.UpdateBy(); !ok {
 		v := emaillog.DefaultUpdateBy

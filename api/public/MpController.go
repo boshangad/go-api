@@ -11,16 +11,12 @@ type MpController struct {
 }
 
 // Login 微信code登录
-// @route login [POST]
 func (that MpController) Login(c *controller.Context) {
-	var data = appUserService.MiniProgram{}
-	if err := c.ShouldBind(&data); err != nil {
-		c.JsonOut(global.ErrNotice, "missing parameter #code", nil)
+	var data = appUserService.MiniProgramLogin{}
+	if err := c.ShouldBindValue(&data); err != nil {
+		c.JsonOutError(err)
 		return
 	}
-	c.JsonOut(1000, "d", nil)
-
-	return
 	if err := data.Login(c); err != nil {
 		c.JsonOut(global.ErrNotice, err.Error(), nil)
 		return
@@ -28,9 +24,18 @@ func (that MpController) Login(c *controller.Context) {
 	c.JsonOut(global.ErrSuccess, "success", nil)
 }
 
+// 绑定用户
+func (that MpController) BindUser() {
+
+}
+
+// 绑定微信手机号
+func (that MpController) BindMpMobile() {
+
+}
+
 // SetUserProfile 设置用户信息
-// @route user-profile [POST]
-func (that MpController) SetUserProfile(c *controller.Context) {
+func (that MpController) Profile(c *controller.Context) {
 	// var data = mpService.Profile{}
 	// err := that.ShouldBind(&data)
 	// if err != nil {

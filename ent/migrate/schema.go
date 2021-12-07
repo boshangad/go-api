@@ -156,6 +156,8 @@ var (
 		{Name: "create_time", Type: field.TypeInt64},
 		{Name: "login_type_id", Type: field.TypeUint, Default: 0},
 		{Name: "ip", Type: field.TypeString, Size: 16, Default: "127.0.0.1"},
+		{Name: "user_agent", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "client_version", Type: field.TypeString, Size: 255, Default: ""},
 		{Name: "content", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeUint, Default: 0},
 		{Name: "app_id", Type: field.TypeUint64, Nullable: true},
@@ -170,19 +172,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "app_user_login_log_app_app",
-				Columns:    []*schema.Column{AppUserLoginLogColumns[6]},
+				Columns:    []*schema.Column{AppUserLoginLogColumns[8]},
 				RefColumns: []*schema.Column{AppColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "app_user_login_log_app_user_appUser",
-				Columns:    []*schema.Column{AppUserLoginLogColumns[7]},
+				Columns:    []*schema.Column{AppUserLoginLogColumns[9]},
 				RefColumns: []*schema.Column{AppUserColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "app_user_login_log_user_user",
-				Columns:    []*schema.Column{AppUserLoginLogColumns[8]},
+				Columns:    []*schema.Column{AppUserLoginLogColumns[10]},
 				RefColumns: []*schema.Column{UserColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -191,7 +193,7 @@ var (
 			{
 				Name:    "appuserloginlog_app_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{AppUserLoginLogColumns[7]},
+				Columns: []*schema.Column{AppUserLoginLogColumns[9]},
 			},
 		},
 	}
@@ -199,6 +201,7 @@ var (
 	AppUserTokenColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "create_time", Type: field.TypeInt64},
+		{Name: "user_agent", Type: field.TypeString, Size: 255, Default: ""},
 		{Name: "client_version", Type: field.TypeString, Size: 255, Default: ""},
 		{Name: "uuid", Type: field.TypeBytes},
 		{Name: "ip", Type: field.TypeString, Size: 16, Default: "127.0.0.1"},
@@ -215,19 +218,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "app_user_token_app_app",
-				Columns:    []*schema.Column{AppUserTokenColumns[6]},
+				Columns:    []*schema.Column{AppUserTokenColumns[7]},
 				RefColumns: []*schema.Column{AppColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "app_user_token_app_user_appUser",
-				Columns:    []*schema.Column{AppUserTokenColumns[7]},
+				Columns:    []*schema.Column{AppUserTokenColumns[8]},
 				RefColumns: []*schema.Column{AppUserColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "app_user_token_user_user",
-				Columns:    []*schema.Column{AppUserTokenColumns[8]},
+				Columns:    []*schema.Column{AppUserTokenColumns[9]},
 				RefColumns: []*schema.Column{UserColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -236,19 +239,29 @@ var (
 			{
 				Name:    "appusertoken_app_id",
 				Unique:  false,
-				Columns: []*schema.Column{AppUserTokenColumns[6]},
+				Columns: []*schema.Column{AppUserTokenColumns[7]},
 			},
 			{
 				Name:    "appusertoken_app_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{AppUserTokenColumns[7]},
+				Columns: []*schema.Column{AppUserTokenColumns[8]},
 			},
 			{
 				Name:    "appusertoken_uuid",
 				Unique:  false,
-				Columns: []*schema.Column{AppUserTokenColumns[3]},
+				Columns: []*schema.Column{AppUserTokenColumns[4]},
 			},
 		},
+	}
+	// ArticlesColumns holds the columns for the "articles" table.
+	ArticlesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// ArticlesTable holds the schema information for the "articles" table.
+	ArticlesTable = &schema.Table{
+		Name:       "articles",
+		Columns:    ArticlesColumns,
+		PrimaryKey: []*schema.Column{ArticlesColumns[0]},
 	}
 	// AuthAssgimentsColumns holds the columns for the "auth_assgiments" table.
 	AuthAssgimentsColumns = []*schema.Column{
@@ -385,6 +398,30 @@ var (
 			},
 		},
 	}
+	// SortsColumns holds the columns for the "sorts" table.
+	SortsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64},
+		{Name: "create_by", Type: field.TypeUint64, Default: 0},
+		{Name: "update_time", Type: field.TypeInt64},
+		{Name: "update_by", Type: field.TypeUint64, Default: 0},
+		{Name: "uuid", Type: field.TypeBytes, Size: 16},
+		{Name: "parent_id", Type: field.TypeUint64, Default: 0},
+		{Name: "title", Type: field.TypeString, Size: 128},
+		{Name: "parent_list", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "icon_id", Type: field.TypeUint64, Default: 0},
+		{Name: "icon_url", Type: field.TypeString, Size: 128},
+		{Name: "display_order", Type: field.TypeUint16, Default: 0},
+		{Name: "level", Type: field.TypeUint, Default: 0},
+		{Name: "status", Type: field.TypeUint, Default: 0},
+	}
+	// SortsTable holds the schema information for the "sorts" table.
+	SortsTable = &schema.Table{
+		Name:       "sorts",
+		Columns:    SortsColumns,
+		PrimaryKey: []*schema.Column{SortsColumns[0]},
+	}
 	// UserColumns holds the columns for the "user" table.
 	UserColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -424,6 +461,7 @@ var (
 		AppUserTable,
 		AppUserLoginLogTable,
 		AppUserTokenTable,
+		ArticlesTable,
 		AuthAssgimentsTable,
 		AuthItemsTable,
 		AuthItemChildsTable,
@@ -431,6 +469,7 @@ var (
 		AuthRulesTable,
 		EmailLogTable,
 		SmsLogTable,
+		SortsTable,
 		UserTable,
 	}
 )

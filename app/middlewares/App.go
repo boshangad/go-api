@@ -1,12 +1,32 @@
 package middlewares
 
 import (
+	"context"
+	"time"
+
 	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/app/helpers"
 	"github.com/boshangad/v1/ent"
 	"github.com/boshangad/v1/services/appService"
 	"github.com/google/uuid"
 )
+
+// 获取应用缓存键名
+func getAppCacheKey(uuid uuid.UUID) string {
+	return "@entApp:" + uuid.String()
+}
+
+// 缓存应用
+func cacheApp() {
+	var (
+		ctx  = context.Background()
+		apps = global.Db.App.Query().AllX(ctx)
+	)
+	for _, app := range apps {
+		global.Memoey.Set(getAppCacheKey(*app.UUID), app, time.Duration(helpers.RandomRange64(1, 30)))
+	}
+}
 
 // 应用中间件
 func AppMiddleware(c *controller.Context) {
@@ -31,12 +51,18 @@ func AppMiddleware(c *controller.Context) {
 		c.JsonOut(global.ErrNotice, "application access ID is failed", nil)
 		return
 	}
-	appStruct.UUID = uuid
-	app, err = appStruct.GetApp()
-	if err != nil {
-		c.JsonOut(global.ErrNotice, "invalid application access ID: "+appAlias, nil)
+	if !global.Memoey.Exists(getAppCacheKey(uuid)) {
+		// 测验缓存
+		_, _, _ = global.ConcurrencyControl.Do("@entCacheInit", func() (v interface{}, err error) {
+			cacheApp()
+			return
+		})
+	}
+	if !global.Memoey.Exists(getAppCacheKey(uuid)) {
+		c.JsonOut(global.ErrNotice, "application access ID is failed", nil)
 		return
 	}
+	app = global.Memoey.Get(getAppCacheKey(uuid)).(*ent.App)
 	// 应用已被删除
 	if app.DeleteTime > 0 {
 		c.JsonOut(global.ErrNotice, "invalid application access ID: "+appAlias, nil)

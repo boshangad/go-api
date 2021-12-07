@@ -32,6 +32,7 @@ type hooks struct {
 	AppUser         []ent.Hook
 	AppUserLoginLog []ent.Hook
 	AppUserToken    []ent.Hook
+	Article         []ent.Hook
 	AuthAssgiment   []ent.Hook
 	AuthItem        []ent.Hook
 	AuthItemChild   []ent.Hook
@@ -39,6 +40,7 @@ type hooks struct {
 	AuthRule        []ent.Hook
 	EmailLog        []ent.Hook
 	SmsLog          []ent.Hook
+	Sort            []ent.Hook
 	User            []ent.Hook
 }
 

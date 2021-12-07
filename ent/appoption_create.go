@@ -56,6 +56,14 @@ func (aoc *AppOptionCreate) SetUpdateTime(i int64) *AppOptionCreate {
 	return aoc
 }
 
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (aoc *AppOptionCreate) SetNillableUpdateTime(i *int64) *AppOptionCreate {
+	if i != nil {
+		aoc.SetUpdateTime(*i)
+	}
+	return aoc
+}
+
 // SetUpdateBy sets the "update_by" field.
 func (aoc *AppOptionCreate) SetUpdateBy(u uint64) *AppOptionCreate {
 	aoc.mutation.SetUpdateBy(u)
@@ -257,6 +265,10 @@ func (aoc *AppOptionCreate) defaults() {
 	if _, ok := aoc.mutation.CreateBy(); !ok {
 		v := appoption.DefaultCreateBy
 		aoc.mutation.SetCreateBy(v)
+	}
+	if _, ok := aoc.mutation.UpdateTime(); !ok {
+		v := appoption.DefaultUpdateTime()
+		aoc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := aoc.mutation.UpdateBy(); !ok {
 		v := appoption.DefaultUpdateBy

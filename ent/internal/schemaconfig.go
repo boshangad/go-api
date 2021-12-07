@@ -12,6 +12,7 @@ type SchemaConfig struct {
 	AppUser         string // AppUser table.
 	AppUserLoginLog string // AppUserLoginLog table.
 	AppUserToken    string // AppUserToken table.
+	Article         string // Article table.
 	AuthAssgiment   string // AuthAssgiment table.
 	AuthItem        string // AuthItem table.
 	AuthItemChild   string // AuthItemChild table.
@@ -19,6 +20,7 @@ type SchemaConfig struct {
 	AuthRule        string // AuthRule table.
 	EmailLog        string // EmailLog table.
 	SmsLog          string // SmsLog table.
+	Sort            string // Sort table.
 	User            string // User table.
 }
 

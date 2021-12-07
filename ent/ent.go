@@ -13,6 +13,7 @@ import (
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appuserloginlog"
 	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/ent/article"
 	"github.com/boshangad/v1/ent/authassgiment"
 	"github.com/boshangad/v1/ent/authitem"
 	"github.com/boshangad/v1/ent/authitemchild"
@@ -20,6 +21,7 @@ import (
 	"github.com/boshangad/v1/ent/authrule"
 	"github.com/boshangad/v1/ent/emaillog"
 	"github.com/boshangad/v1/ent/smslog"
+	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
 )
 
@@ -46,6 +48,7 @@ func columnChecker(table string) func(string) error {
 		appuser.Table:         appuser.ValidColumn,
 		appuserloginlog.Table: appuserloginlog.ValidColumn,
 		appusertoken.Table:    appusertoken.ValidColumn,
+		article.Table:         article.ValidColumn,
 		authassgiment.Table:   authassgiment.ValidColumn,
 		authitem.Table:        authitem.ValidColumn,
 		authitemchild.Table:   authitemchild.ValidColumn,
@@ -53,6 +56,7 @@ func columnChecker(table string) func(string) error {
 		authrule.Table:        authrule.ValidColumn,
 		emaillog.Table:        emaillog.ValidColumn,
 		smslog.Table:          smslog.ValidColumn,
+		sort.Table:            sort.ValidColumn,
 		user.Table:            user.ValidColumn,
 	}
 	check, ok := checks[table]

@@ -81,6 +81,20 @@ func (autc *AppUserTokenCreate) SetNillableUserID(u *uint64) *AppUserTokenCreate
 	return autc
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (autc *AppUserTokenCreate) SetUserAgent(s string) *AppUserTokenCreate {
+	autc.mutation.SetUserAgent(s)
+	return autc
+}
+
+// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+func (autc *AppUserTokenCreate) SetNillableUserAgent(s *string) *AppUserTokenCreate {
+	if s != nil {
+		autc.SetUserAgent(*s)
+	}
+	return autc
+}
+
 // SetClientVersion sets the "client_version" field.
 func (autc *AppUserTokenCreate) SetClientVersion(s string) *AppUserTokenCreate {
 	autc.mutation.SetClientVersion(s)
@@ -237,6 +251,10 @@ func (autc *AppUserTokenCreate) defaults() {
 		v := appusertoken.DefaultUserID
 		autc.mutation.SetUserID(v)
 	}
+	if _, ok := autc.mutation.UserAgent(); !ok {
+		v := appusertoken.DefaultUserAgent
+		autc.mutation.SetUserAgent(v)
+	}
 	if _, ok := autc.mutation.ClientVersion(); !ok {
 		v := appusertoken.DefaultClientVersion
 		autc.mutation.SetClientVersion(v)
@@ -268,6 +286,14 @@ func (autc *AppUserTokenCreate) check() error {
 	}
 	if _, ok := autc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "user_id"`)}
+	}
+	if _, ok := autc.mutation.UserAgent(); !ok {
+		return &ValidationError{Name: "user_agent", err: errors.New(`ent: missing required field "user_agent"`)}
+	}
+	if v, ok := autc.mutation.UserAgent(); ok {
+		if err := appusertoken.UserAgentValidator(v); err != nil {
+			return &ValidationError{Name: "user_agent", err: fmt.Errorf(`ent: validator failed for field "user_agent": %w`, err)}
+		}
 	}
 	if _, ok := autc.mutation.ClientVersion(); !ok {
 		return &ValidationError{Name: "client_version", err: errors.New(`ent: missing required field "client_version"`)}
@@ -342,6 +368,14 @@ func (autc *AppUserTokenCreate) createSpec() (*AppUserToken, *sqlgraph.CreateSpe
 			Column: appusertoken.FieldCreateTime,
 		})
 		_node.CreateTime = value
+	}
+	if value, ok := autc.mutation.UserAgent(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appusertoken.FieldUserAgent,
+		})
+		_node.UserAgent = value
 	}
 	if value, ok := autc.mutation.ClientVersion(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -540,6 +574,18 @@ func (u *AppUserTokenUpsert) UpdateUserID() *AppUserTokenUpsert {
 	return u
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (u *AppUserTokenUpsert) SetUserAgent(v string) *AppUserTokenUpsert {
+	u.Set(appusertoken.FieldUserAgent, v)
+	return u
+}
+
+// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
+func (u *AppUserTokenUpsert) UpdateUserAgent() *AppUserTokenUpsert {
+	u.SetExcluded(appusertoken.FieldUserAgent)
+	return u
+}
+
 // SetClientVersion sets the "client_version" field.
 func (u *AppUserTokenUpsert) SetClientVersion(v string) *AppUserTokenUpsert {
 	u.Set(appusertoken.FieldClientVersion, v)
@@ -691,6 +737,20 @@ func (u *AppUserTokenUpsertOne) SetUserID(v uint64) *AppUserTokenUpsertOne {
 func (u *AppUserTokenUpsertOne) UpdateUserID() *AppUserTokenUpsertOne {
 	return u.Update(func(s *AppUserTokenUpsert) {
 		s.UpdateUserID()
+	})
+}
+
+// SetUserAgent sets the "user_agent" field.
+func (u *AppUserTokenUpsertOne) SetUserAgent(v string) *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetUserAgent(v)
+	})
+}
+
+// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
+func (u *AppUserTokenUpsertOne) UpdateUserAgent() *AppUserTokenUpsertOne {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateUserAgent()
 	})
 }
 
@@ -1018,6 +1078,20 @@ func (u *AppUserTokenUpsertBulk) SetUserID(v uint64) *AppUserTokenUpsertBulk {
 func (u *AppUserTokenUpsertBulk) UpdateUserID() *AppUserTokenUpsertBulk {
 	return u.Update(func(s *AppUserTokenUpsert) {
 		s.UpdateUserID()
+	})
+}
+
+// SetUserAgent sets the "user_agent" field.
+func (u *AppUserTokenUpsertBulk) SetUserAgent(v string) *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.SetUserAgent(v)
+	})
+}
+
+// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
+func (u *AppUserTokenUpsertBulk) UpdateUserAgent() *AppUserTokenUpsertBulk {
+	return u.Update(func(s *AppUserTokenUpsert) {
+		s.UpdateUserAgent()
 	})
 }
 

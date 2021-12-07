@@ -15,6 +15,7 @@ import (
 	"github.com/boshangad/v1/ent/emaillog"
 	"github.com/boshangad/v1/ent/predicate"
 	"github.com/boshangad/v1/ent/smslog"
+	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
 	"github.com/google/uuid"
 
@@ -35,6 +36,7 @@ const (
 	TypeAppUser         = "AppUser"
 	TypeAppUserLoginLog = "AppUserLoginLog"
 	TypeAppUserToken    = "AppUserToken"
+	TypeArticle         = "Article"
 	TypeAuthAssgiment   = "AuthAssgiment"
 	TypeAuthItem        = "AuthItem"
 	TypeAuthItemChild   = "AuthItemChild"
@@ -42,6 +44,7 @@ const (
 	TypeAuthRule        = "AuthRule"
 	TypeEmailLog        = "EmailLog"
 	TypeSmsLog          = "SmsLog"
+	TypeSort            = "Sort"
 	TypeUser            = "User"
 )
 
@@ -4264,6 +4267,8 @@ type AppUserLoginLogMutation struct {
 	login_type_id    *uint
 	addlogin_type_id *uint
 	ip               *string
+	user_agent       *string
+	client_version   *string
 	content          *string
 	status           *uint
 	addstatus        *uint
@@ -4620,6 +4625,78 @@ func (m *AppUserLoginLogMutation) ResetIP() {
 	m.ip = nil
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (m *AppUserLoginLogMutation) SetUserAgent(s string) {
+	m.user_agent = &s
+}
+
+// UserAgent returns the value of the "user_agent" field in the mutation.
+func (m *AppUserLoginLogMutation) UserAgent() (r string, exists bool) {
+	v := m.user_agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserAgent returns the old "user_agent" field's value of the AppUserLoginLog entity.
+// If the AppUserLoginLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppUserLoginLogMutation) OldUserAgent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserAgent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserAgent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserAgent: %w", err)
+	}
+	return oldValue.UserAgent, nil
+}
+
+// ResetUserAgent resets all changes to the "user_agent" field.
+func (m *AppUserLoginLogMutation) ResetUserAgent() {
+	m.user_agent = nil
+}
+
+// SetClientVersion sets the "client_version" field.
+func (m *AppUserLoginLogMutation) SetClientVersion(s string) {
+	m.client_version = &s
+}
+
+// ClientVersion returns the value of the "client_version" field in the mutation.
+func (m *AppUserLoginLogMutation) ClientVersion() (r string, exists bool) {
+	v := m.client_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClientVersion returns the old "client_version" field's value of the AppUserLoginLog entity.
+// If the AppUserLoginLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppUserLoginLogMutation) OldClientVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldClientVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldClientVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClientVersion: %w", err)
+	}
+	return oldValue.ClientVersion, nil
+}
+
+// ResetClientVersion resets all changes to the "client_version" field.
+func (m *AppUserLoginLogMutation) ResetClientVersion() {
+	m.client_version = nil
+}
+
 // SetContent sets the "content" field.
 func (m *AppUserLoginLogMutation) SetContent(s string) {
 	m.content = &s
@@ -4822,7 +4899,7 @@ func (m *AppUserLoginLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AppUserLoginLogMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 10)
 	if m.create_time != nil {
 		fields = append(fields, appuserloginlog.FieldCreateTime)
 	}
@@ -4840,6 +4917,12 @@ func (m *AppUserLoginLogMutation) Fields() []string {
 	}
 	if m.ip != nil {
 		fields = append(fields, appuserloginlog.FieldIP)
+	}
+	if m.user_agent != nil {
+		fields = append(fields, appuserloginlog.FieldUserAgent)
+	}
+	if m.client_version != nil {
+		fields = append(fields, appuserloginlog.FieldClientVersion)
 	}
 	if m.content != nil {
 		fields = append(fields, appuserloginlog.FieldContent)
@@ -4867,6 +4950,10 @@ func (m *AppUserLoginLogMutation) Field(name string) (ent.Value, bool) {
 		return m.LoginTypeID()
 	case appuserloginlog.FieldIP:
 		return m.IP()
+	case appuserloginlog.FieldUserAgent:
+		return m.UserAgent()
+	case appuserloginlog.FieldClientVersion:
+		return m.ClientVersion()
 	case appuserloginlog.FieldContent:
 		return m.Content()
 	case appuserloginlog.FieldStatus:
@@ -4892,6 +4979,10 @@ func (m *AppUserLoginLogMutation) OldField(ctx context.Context, name string) (en
 		return m.OldLoginTypeID(ctx)
 	case appuserloginlog.FieldIP:
 		return m.OldIP(ctx)
+	case appuserloginlog.FieldUserAgent:
+		return m.OldUserAgent(ctx)
+	case appuserloginlog.FieldClientVersion:
+		return m.OldClientVersion(ctx)
 	case appuserloginlog.FieldContent:
 		return m.OldContent(ctx)
 	case appuserloginlog.FieldStatus:
@@ -4946,6 +5037,20 @@ func (m *AppUserLoginLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIP(v)
+		return nil
+	case appuserloginlog.FieldUserAgent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserAgent(v)
+		return nil
+	case appuserloginlog.FieldClientVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClientVersion(v)
 		return nil
 	case appuserloginlog.FieldContent:
 		v, ok := value.(string)
@@ -5075,6 +5180,12 @@ func (m *AppUserLoginLogMutation) ResetField(name string) error {
 		return nil
 	case appuserloginlog.FieldIP:
 		m.ResetIP()
+		return nil
+	case appuserloginlog.FieldUserAgent:
+		m.ResetUserAgent()
+		return nil
+	case appuserloginlog.FieldClientVersion:
+		m.ResetClientVersion()
 		return nil
 	case appuserloginlog.FieldContent:
 		m.ResetContent()
@@ -5206,6 +5317,7 @@ type AppUserTokenMutation struct {
 	id             *uint64
 	create_time    *int64
 	addcreate_time *int64
+	user_agent     *string
 	client_version *string
 	uuid           **uuid.UUID
 	ip             *string
@@ -5472,6 +5584,42 @@ func (m *AppUserTokenMutation) ResetUserID() {
 	m.user = nil
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (m *AppUserTokenMutation) SetUserAgent(s string) {
+	m.user_agent = &s
+}
+
+// UserAgent returns the value of the "user_agent" field in the mutation.
+func (m *AppUserTokenMutation) UserAgent() (r string, exists bool) {
+	v := m.user_agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserAgent returns the old "user_agent" field's value of the AppUserToken entity.
+// If the AppUserToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AppUserTokenMutation) OldUserAgent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUserAgent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUserAgent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserAgent: %w", err)
+	}
+	return oldValue.UserAgent, nil
+}
+
+// ResetUserAgent resets all changes to the "user_agent" field.
+func (m *AppUserTokenMutation) ResetUserAgent() {
+	m.user_agent = nil
+}
+
 // SetClientVersion sets the "client_version" field.
 func (m *AppUserTokenMutation) SetClientVersion(s string) {
 	m.client_version = &s
@@ -5733,7 +5881,7 @@ func (m *AppUserTokenMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AppUserTokenMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.create_time != nil {
 		fields = append(fields, appusertoken.FieldCreateTime)
 	}
@@ -5745,6 +5893,9 @@ func (m *AppUserTokenMutation) Fields() []string {
 	}
 	if m.user != nil {
 		fields = append(fields, appusertoken.FieldUserID)
+	}
+	if m.user_agent != nil {
+		fields = append(fields, appusertoken.FieldUserAgent)
 	}
 	if m.client_version != nil {
 		fields = append(fields, appusertoken.FieldClientVersion)
@@ -5774,6 +5925,8 @@ func (m *AppUserTokenMutation) Field(name string) (ent.Value, bool) {
 		return m.AppUserID()
 	case appusertoken.FieldUserID:
 		return m.UserID()
+	case appusertoken.FieldUserAgent:
+		return m.UserAgent()
 	case appusertoken.FieldClientVersion:
 		return m.ClientVersion()
 	case appusertoken.FieldUUID:
@@ -5799,6 +5952,8 @@ func (m *AppUserTokenMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldAppUserID(ctx)
 	case appusertoken.FieldUserID:
 		return m.OldUserID(ctx)
+	case appusertoken.FieldUserAgent:
+		return m.OldUserAgent(ctx)
 	case appusertoken.FieldClientVersion:
 		return m.OldClientVersion(ctx)
 	case appusertoken.FieldUUID:
@@ -5843,6 +5998,13 @@ func (m *AppUserTokenMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
+		return nil
+	case appusertoken.FieldUserAgent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserAgent(v)
 		return nil
 	case appusertoken.FieldClientVersion:
 		v, ok := value.(string)
@@ -5959,6 +6121,9 @@ func (m *AppUserTokenMutation) ResetField(name string) error {
 		return nil
 	case appusertoken.FieldUserID:
 		m.ResetUserID()
+		return nil
+	case appusertoken.FieldUserAgent:
+		m.ResetUserAgent()
 		return nil
 	case appusertoken.FieldClientVersion:
 		m.ResetClientVersion()
@@ -6086,6 +6251,236 @@ func (m *AppUserTokenMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown AppUserToken edge %s", name)
+}
+
+// ArticleMutation represents an operation that mutates the Article nodes in the graph.
+type ArticleMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Article, error)
+	predicates    []predicate.Article
+}
+
+var _ ent.Mutation = (*ArticleMutation)(nil)
+
+// articleOption allows management of the mutation configuration using functional options.
+type articleOption func(*ArticleMutation)
+
+// newArticleMutation creates new mutation for the Article entity.
+func newArticleMutation(c config, op Op, opts ...articleOption) *ArticleMutation {
+	m := &ArticleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeArticle,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withArticleID sets the ID field of the mutation.
+func withArticleID(id int) articleOption {
+	return func(m *ArticleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Article
+		)
+		m.oldValue = func(ctx context.Context) (*Article, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Article.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withArticle sets the old Article of the mutation.
+func withArticle(node *Article) articleOption {
+	return func(m *ArticleMutation) {
+		m.oldValue = func(context.Context) (*Article, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ArticleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ArticleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ArticleMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// Where appends a list predicates to the ArticleMutation builder.
+func (m *ArticleMutation) Where(ps ...predicate.Article) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ArticleMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Article).
+func (m *ArticleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ArticleMutation) Fields() []string {
+	fields := make([]string, 0, 0)
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ArticleMutation) Field(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ArticleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown Article field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ArticleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Article field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ArticleMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ArticleMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ArticleMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown Article numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ArticleMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ArticleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ArticleMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Article nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ArticleMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown Article field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ArticleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ArticleMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ArticleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ArticleMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ArticleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ArticleMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ArticleMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Article unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ArticleMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Article edge %s", name)
 }
 
 // AuthAssgimentMutation represents an operation that mutates the AuthAssgiment nodes in the graph.
@@ -10192,6 +10587,1339 @@ func (m *SmsLogMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown SmsLog edge %s", name)
+}
+
+// SortMutation represents an operation that mutates the Sort nodes in the graph.
+type SortMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uint64
+	delete_time      *int64
+	adddelete_time   *int64
+	create_time      *int64
+	addcreate_time   *int64
+	create_by        *uint64
+	addcreate_by     *uint64
+	update_time      *int64
+	addupdate_time   *int64
+	update_by        *uint64
+	addupdate_by     *uint64
+	uuid             **uuid.UUID
+	parent_id        *uint64
+	addparent_id     *uint64
+	title            *string
+	parent_list      *string
+	icon_id          *uint64
+	addicon_id       *uint64
+	icon_url         *string
+	display_order    *uint16
+	adddisplay_order *uint16
+	level            *uint
+	addlevel         *uint
+	status           *uint
+	addstatus        *uint
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*Sort, error)
+	predicates       []predicate.Sort
+}
+
+var _ ent.Mutation = (*SortMutation)(nil)
+
+// sortOption allows management of the mutation configuration using functional options.
+type sortOption func(*SortMutation)
+
+// newSortMutation creates new mutation for the Sort entity.
+func newSortMutation(c config, op Op, opts ...sortOption) *SortMutation {
+	m := &SortMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSort,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSortID sets the ID field of the mutation.
+func withSortID(id uint64) sortOption {
+	return func(m *SortMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Sort
+		)
+		m.oldValue = func(ctx context.Context) (*Sort, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Sort.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSort sets the old Sort of the mutation.
+func withSort(node *Sort) sortOption {
+	return func(m *SortMutation) {
+		m.oldValue = func(context.Context) (*Sort, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SortMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SortMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Sort entities.
+func (m *SortMutation) SetID(id uint64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SortMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetDeleteTime sets the "delete_time" field.
+func (m *SortMutation) SetDeleteTime(i int64) {
+	m.delete_time = &i
+	m.adddelete_time = nil
+}
+
+// DeleteTime returns the value of the "delete_time" field in the mutation.
+func (m *SortMutation) DeleteTime() (r int64, exists bool) {
+	v := m.delete_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeleteTime returns the old "delete_time" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldDeleteTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeleteTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeleteTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeleteTime: %w", err)
+	}
+	return oldValue.DeleteTime, nil
+}
+
+// AddDeleteTime adds i to the "delete_time" field.
+func (m *SortMutation) AddDeleteTime(i int64) {
+	if m.adddelete_time != nil {
+		*m.adddelete_time += i
+	} else {
+		m.adddelete_time = &i
+	}
+}
+
+// AddedDeleteTime returns the value that was added to the "delete_time" field in this mutation.
+func (m *SortMutation) AddedDeleteTime() (r int64, exists bool) {
+	v := m.adddelete_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeleteTime resets all changes to the "delete_time" field.
+func (m *SortMutation) ResetDeleteTime() {
+	m.delete_time = nil
+	m.adddelete_time = nil
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *SortMutation) SetCreateTime(i int64) {
+	m.create_time = &i
+	m.addcreate_time = nil
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *SortMutation) CreateTime() (r int64, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldCreateTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// AddCreateTime adds i to the "create_time" field.
+func (m *SortMutation) AddCreateTime(i int64) {
+	if m.addcreate_time != nil {
+		*m.addcreate_time += i
+	} else {
+		m.addcreate_time = &i
+	}
+}
+
+// AddedCreateTime returns the value that was added to the "create_time" field in this mutation.
+func (m *SortMutation) AddedCreateTime() (r int64, exists bool) {
+	v := m.addcreate_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *SortMutation) ResetCreateTime() {
+	m.create_time = nil
+	m.addcreate_time = nil
+}
+
+// SetCreateBy sets the "create_by" field.
+func (m *SortMutation) SetCreateBy(u uint64) {
+	m.create_by = &u
+	m.addcreate_by = nil
+}
+
+// CreateBy returns the value of the "create_by" field in the mutation.
+func (m *SortMutation) CreateBy() (r uint64, exists bool) {
+	v := m.create_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateBy returns the old "create_by" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldCreateBy(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreateBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreateBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateBy: %w", err)
+	}
+	return oldValue.CreateBy, nil
+}
+
+// AddCreateBy adds u to the "create_by" field.
+func (m *SortMutation) AddCreateBy(u uint64) {
+	if m.addcreate_by != nil {
+		*m.addcreate_by += u
+	} else {
+		m.addcreate_by = &u
+	}
+}
+
+// AddedCreateBy returns the value that was added to the "create_by" field in this mutation.
+func (m *SortMutation) AddedCreateBy() (r uint64, exists bool) {
+	v := m.addcreate_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreateBy resets all changes to the "create_by" field.
+func (m *SortMutation) ResetCreateBy() {
+	m.create_by = nil
+	m.addcreate_by = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *SortMutation) SetUpdateTime(i int64) {
+	m.update_time = &i
+	m.addupdate_time = nil
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *SortMutation) UpdateTime() (r int64, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldUpdateTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// AddUpdateTime adds i to the "update_time" field.
+func (m *SortMutation) AddUpdateTime(i int64) {
+	if m.addupdate_time != nil {
+		*m.addupdate_time += i
+	} else {
+		m.addupdate_time = &i
+	}
+}
+
+// AddedUpdateTime returns the value that was added to the "update_time" field in this mutation.
+func (m *SortMutation) AddedUpdateTime() (r int64, exists bool) {
+	v := m.addupdate_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *SortMutation) ResetUpdateTime() {
+	m.update_time = nil
+	m.addupdate_time = nil
+}
+
+// SetUpdateBy sets the "update_by" field.
+func (m *SortMutation) SetUpdateBy(u uint64) {
+	m.update_by = &u
+	m.addupdate_by = nil
+}
+
+// UpdateBy returns the value of the "update_by" field in the mutation.
+func (m *SortMutation) UpdateBy() (r uint64, exists bool) {
+	v := m.update_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateBy returns the old "update_by" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldUpdateBy(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdateBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdateBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateBy: %w", err)
+	}
+	return oldValue.UpdateBy, nil
+}
+
+// AddUpdateBy adds u to the "update_by" field.
+func (m *SortMutation) AddUpdateBy(u uint64) {
+	if m.addupdate_by != nil {
+		*m.addupdate_by += u
+	} else {
+		m.addupdate_by = &u
+	}
+}
+
+// AddedUpdateBy returns the value that was added to the "update_by" field in this mutation.
+func (m *SortMutation) AddedUpdateBy() (r uint64, exists bool) {
+	v := m.addupdate_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdateBy resets all changes to the "update_by" field.
+func (m *SortMutation) ResetUpdateBy() {
+	m.update_by = nil
+	m.addupdate_by = nil
+}
+
+// SetUUID sets the "uuid" field.
+func (m *SortMutation) SetUUID(u *uuid.UUID) {
+	m.uuid = &u
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *SortMutation) UUID() (r *uuid.UUID, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldUUID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *SortMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *SortMutation) SetParentID(u uint64) {
+	m.parent_id = &u
+	m.addparent_id = nil
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *SortMutation) ParentID() (r uint64, exists bool) {
+	v := m.parent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldParentID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// AddParentID adds u to the "parent_id" field.
+func (m *SortMutation) AddParentID(u uint64) {
+	if m.addparent_id != nil {
+		*m.addparent_id += u
+	} else {
+		m.addparent_id = &u
+	}
+}
+
+// AddedParentID returns the value that was added to the "parent_id" field in this mutation.
+func (m *SortMutation) AddedParentID() (r uint64, exists bool) {
+	v := m.addparent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *SortMutation) ResetParentID() {
+	m.parent_id = nil
+	m.addparent_id = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *SortMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *SortMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *SortMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetParentList sets the "parent_list" field.
+func (m *SortMutation) SetParentList(s string) {
+	m.parent_list = &s
+}
+
+// ParentList returns the value of the "parent_list" field in the mutation.
+func (m *SortMutation) ParentList() (r string, exists bool) {
+	v := m.parent_list
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentList returns the old "parent_list" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldParentList(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldParentList is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldParentList requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentList: %w", err)
+	}
+	return oldValue.ParentList, nil
+}
+
+// ResetParentList resets all changes to the "parent_list" field.
+func (m *SortMutation) ResetParentList() {
+	m.parent_list = nil
+}
+
+// SetIconID sets the "icon_id" field.
+func (m *SortMutation) SetIconID(u uint64) {
+	m.icon_id = &u
+	m.addicon_id = nil
+}
+
+// IconID returns the value of the "icon_id" field in the mutation.
+func (m *SortMutation) IconID() (r uint64, exists bool) {
+	v := m.icon_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconID returns the old "icon_id" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldIconID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIconID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIconID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconID: %w", err)
+	}
+	return oldValue.IconID, nil
+}
+
+// AddIconID adds u to the "icon_id" field.
+func (m *SortMutation) AddIconID(u uint64) {
+	if m.addicon_id != nil {
+		*m.addicon_id += u
+	} else {
+		m.addicon_id = &u
+	}
+}
+
+// AddedIconID returns the value that was added to the "icon_id" field in this mutation.
+func (m *SortMutation) AddedIconID() (r uint64, exists bool) {
+	v := m.addicon_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetIconID resets all changes to the "icon_id" field.
+func (m *SortMutation) ResetIconID() {
+	m.icon_id = nil
+	m.addicon_id = nil
+}
+
+// SetIconURL sets the "icon_url" field.
+func (m *SortMutation) SetIconURL(s string) {
+	m.icon_url = &s
+}
+
+// IconURL returns the value of the "icon_url" field in the mutation.
+func (m *SortMutation) IconURL() (r string, exists bool) {
+	v := m.icon_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconURL returns the old "icon_url" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldIconURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIconURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIconURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconURL: %w", err)
+	}
+	return oldValue.IconURL, nil
+}
+
+// ResetIconURL resets all changes to the "icon_url" field.
+func (m *SortMutation) ResetIconURL() {
+	m.icon_url = nil
+}
+
+// SetDisplayOrder sets the "display_order" field.
+func (m *SortMutation) SetDisplayOrder(u uint16) {
+	m.display_order = &u
+	m.adddisplay_order = nil
+}
+
+// DisplayOrder returns the value of the "display_order" field in the mutation.
+func (m *SortMutation) DisplayOrder() (r uint16, exists bool) {
+	v := m.display_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisplayOrder returns the old "display_order" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldDisplayOrder(ctx context.Context) (v uint16, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDisplayOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDisplayOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisplayOrder: %w", err)
+	}
+	return oldValue.DisplayOrder, nil
+}
+
+// AddDisplayOrder adds u to the "display_order" field.
+func (m *SortMutation) AddDisplayOrder(u uint16) {
+	if m.adddisplay_order != nil {
+		*m.adddisplay_order += u
+	} else {
+		m.adddisplay_order = &u
+	}
+}
+
+// AddedDisplayOrder returns the value that was added to the "display_order" field in this mutation.
+func (m *SortMutation) AddedDisplayOrder() (r uint16, exists bool) {
+	v := m.adddisplay_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDisplayOrder resets all changes to the "display_order" field.
+func (m *SortMutation) ResetDisplayOrder() {
+	m.display_order = nil
+	m.adddisplay_order = nil
+}
+
+// SetLevel sets the "level" field.
+func (m *SortMutation) SetLevel(u uint) {
+	m.level = &u
+	m.addlevel = nil
+}
+
+// Level returns the value of the "level" field in the mutation.
+func (m *SortMutation) Level() (r uint, exists bool) {
+	v := m.level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLevel returns the old "level" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldLevel(ctx context.Context) (v uint, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLevel: %w", err)
+	}
+	return oldValue.Level, nil
+}
+
+// AddLevel adds u to the "level" field.
+func (m *SortMutation) AddLevel(u uint) {
+	if m.addlevel != nil {
+		*m.addlevel += u
+	} else {
+		m.addlevel = &u
+	}
+}
+
+// AddedLevel returns the value that was added to the "level" field in this mutation.
+func (m *SortMutation) AddedLevel() (r uint, exists bool) {
+	v := m.addlevel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLevel resets all changes to the "level" field.
+func (m *SortMutation) ResetLevel() {
+	m.level = nil
+	m.addlevel = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *SortMutation) SetStatus(u uint) {
+	m.status = &u
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *SortMutation) Status() (r uint, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Sort entity.
+// If the Sort object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SortMutation) OldStatus(ctx context.Context) (v uint, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds u to the "status" field.
+func (m *SortMutation) AddStatus(u uint) {
+	if m.addstatus != nil {
+		*m.addstatus += u
+	} else {
+		m.addstatus = &u
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *SortMutation) AddedStatus() (r uint, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *SortMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// Where appends a list predicates to the SortMutation builder.
+func (m *SortMutation) Where(ps ...predicate.Sort) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *SortMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Sort).
+func (m *SortMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SortMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.delete_time != nil {
+		fields = append(fields, sort.FieldDeleteTime)
+	}
+	if m.create_time != nil {
+		fields = append(fields, sort.FieldCreateTime)
+	}
+	if m.create_by != nil {
+		fields = append(fields, sort.FieldCreateBy)
+	}
+	if m.update_time != nil {
+		fields = append(fields, sort.FieldUpdateTime)
+	}
+	if m.update_by != nil {
+		fields = append(fields, sort.FieldUpdateBy)
+	}
+	if m.uuid != nil {
+		fields = append(fields, sort.FieldUUID)
+	}
+	if m.parent_id != nil {
+		fields = append(fields, sort.FieldParentID)
+	}
+	if m.title != nil {
+		fields = append(fields, sort.FieldTitle)
+	}
+	if m.parent_list != nil {
+		fields = append(fields, sort.FieldParentList)
+	}
+	if m.icon_id != nil {
+		fields = append(fields, sort.FieldIconID)
+	}
+	if m.icon_url != nil {
+		fields = append(fields, sort.FieldIconURL)
+	}
+	if m.display_order != nil {
+		fields = append(fields, sort.FieldDisplayOrder)
+	}
+	if m.level != nil {
+		fields = append(fields, sort.FieldLevel)
+	}
+	if m.status != nil {
+		fields = append(fields, sort.FieldStatus)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SortMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sort.FieldDeleteTime:
+		return m.DeleteTime()
+	case sort.FieldCreateTime:
+		return m.CreateTime()
+	case sort.FieldCreateBy:
+		return m.CreateBy()
+	case sort.FieldUpdateTime:
+		return m.UpdateTime()
+	case sort.FieldUpdateBy:
+		return m.UpdateBy()
+	case sort.FieldUUID:
+		return m.UUID()
+	case sort.FieldParentID:
+		return m.ParentID()
+	case sort.FieldTitle:
+		return m.Title()
+	case sort.FieldParentList:
+		return m.ParentList()
+	case sort.FieldIconID:
+		return m.IconID()
+	case sort.FieldIconURL:
+		return m.IconURL()
+	case sort.FieldDisplayOrder:
+		return m.DisplayOrder()
+	case sort.FieldLevel:
+		return m.Level()
+	case sort.FieldStatus:
+		return m.Status()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SortMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sort.FieldDeleteTime:
+		return m.OldDeleteTime(ctx)
+	case sort.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case sort.FieldCreateBy:
+		return m.OldCreateBy(ctx)
+	case sort.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case sort.FieldUpdateBy:
+		return m.OldUpdateBy(ctx)
+	case sort.FieldUUID:
+		return m.OldUUID(ctx)
+	case sort.FieldParentID:
+		return m.OldParentID(ctx)
+	case sort.FieldTitle:
+		return m.OldTitle(ctx)
+	case sort.FieldParentList:
+		return m.OldParentList(ctx)
+	case sort.FieldIconID:
+		return m.OldIconID(ctx)
+	case sort.FieldIconURL:
+		return m.OldIconURL(ctx)
+	case sort.FieldDisplayOrder:
+		return m.OldDisplayOrder(ctx)
+	case sort.FieldLevel:
+		return m.OldLevel(ctx)
+	case sort.FieldStatus:
+		return m.OldStatus(ctx)
+	}
+	return nil, fmt.Errorf("unknown Sort field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SortMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sort.FieldDeleteTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeleteTime(v)
+		return nil
+	case sort.FieldCreateTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case sort.FieldCreateBy:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateBy(v)
+		return nil
+	case sort.FieldUpdateTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case sort.FieldUpdateBy:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateBy(v)
+		return nil
+	case sort.FieldUUID:
+		v, ok := value.(*uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case sort.FieldParentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
+	case sort.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case sort.FieldParentList:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentList(v)
+		return nil
+	case sort.FieldIconID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconID(v)
+		return nil
+	case sort.FieldIconURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconURL(v)
+		return nil
+	case sort.FieldDisplayOrder:
+		v, ok := value.(uint16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisplayOrder(v)
+		return nil
+	case sort.FieldLevel:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLevel(v)
+		return nil
+	case sort.FieldStatus:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Sort field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SortMutation) AddedFields() []string {
+	var fields []string
+	if m.adddelete_time != nil {
+		fields = append(fields, sort.FieldDeleteTime)
+	}
+	if m.addcreate_time != nil {
+		fields = append(fields, sort.FieldCreateTime)
+	}
+	if m.addcreate_by != nil {
+		fields = append(fields, sort.FieldCreateBy)
+	}
+	if m.addupdate_time != nil {
+		fields = append(fields, sort.FieldUpdateTime)
+	}
+	if m.addupdate_by != nil {
+		fields = append(fields, sort.FieldUpdateBy)
+	}
+	if m.addparent_id != nil {
+		fields = append(fields, sort.FieldParentID)
+	}
+	if m.addicon_id != nil {
+		fields = append(fields, sort.FieldIconID)
+	}
+	if m.adddisplay_order != nil {
+		fields = append(fields, sort.FieldDisplayOrder)
+	}
+	if m.addlevel != nil {
+		fields = append(fields, sort.FieldLevel)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, sort.FieldStatus)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SortMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case sort.FieldDeleteTime:
+		return m.AddedDeleteTime()
+	case sort.FieldCreateTime:
+		return m.AddedCreateTime()
+	case sort.FieldCreateBy:
+		return m.AddedCreateBy()
+	case sort.FieldUpdateTime:
+		return m.AddedUpdateTime()
+	case sort.FieldUpdateBy:
+		return m.AddedUpdateBy()
+	case sort.FieldParentID:
+		return m.AddedParentID()
+	case sort.FieldIconID:
+		return m.AddedIconID()
+	case sort.FieldDisplayOrder:
+		return m.AddedDisplayOrder()
+	case sort.FieldLevel:
+		return m.AddedLevel()
+	case sort.FieldStatus:
+		return m.AddedStatus()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SortMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case sort.FieldDeleteTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeleteTime(v)
+		return nil
+	case sort.FieldCreateTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreateTime(v)
+		return nil
+	case sort.FieldCreateBy:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreateBy(v)
+		return nil
+	case sort.FieldUpdateTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdateTime(v)
+		return nil
+	case sort.FieldUpdateBy:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdateBy(v)
+		return nil
+	case sort.FieldParentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddParentID(v)
+		return nil
+	case sort.FieldIconID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddIconID(v)
+		return nil
+	case sort.FieldDisplayOrder:
+		v, ok := value.(uint16)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDisplayOrder(v)
+		return nil
+	case sort.FieldLevel:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLevel(v)
+		return nil
+	case sort.FieldStatus:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Sort numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SortMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SortMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SortMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Sort nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SortMutation) ResetField(name string) error {
+	switch name {
+	case sort.FieldDeleteTime:
+		m.ResetDeleteTime()
+		return nil
+	case sort.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case sort.FieldCreateBy:
+		m.ResetCreateBy()
+		return nil
+	case sort.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case sort.FieldUpdateBy:
+		m.ResetUpdateBy()
+		return nil
+	case sort.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case sort.FieldParentID:
+		m.ResetParentID()
+		return nil
+	case sort.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case sort.FieldParentList:
+		m.ResetParentList()
+		return nil
+	case sort.FieldIconID:
+		m.ResetIconID()
+		return nil
+	case sort.FieldIconURL:
+		m.ResetIconURL()
+		return nil
+	case sort.FieldDisplayOrder:
+		m.ResetDisplayOrder()
+		return nil
+	case sort.FieldLevel:
+		m.ResetLevel()
+		return nil
+	case sort.FieldStatus:
+		m.ResetStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown Sort field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SortMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SortMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SortMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SortMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SortMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SortMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SortMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Sort unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SortMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Sort edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

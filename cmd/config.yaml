@@ -35,6 +35,13 @@ cache:
   gcProbability: 0
   fileMode: 0644
   dirMode: 0744
+sms:
+  defaults: [aliyun,ucloud]
+  gateways:
+    -
+      type: aliyun
+      accessKeyId: 
+      accessKeySecret: 
 captcha:
   image:
     type: image

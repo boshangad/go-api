@@ -43,6 +43,14 @@ func (auc *AppUserCreate) SetUpdateTime(i int64) *AppUserCreate {
 	return auc
 }
 
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (auc *AppUserCreate) SetNillableUpdateTime(i *int64) *AppUserCreate {
+	if i != nil {
+		auc.SetUpdateTime(*i)
+	}
+	return auc
+}
+
 // SetAppID sets the "app_id" field.
 func (auc *AppUserCreate) SetAppID(u uint64) *AppUserCreate {
 	auc.mutation.SetAppID(u)
@@ -413,6 +421,10 @@ func (auc *AppUserCreate) defaults() {
 	if _, ok := auc.mutation.CreateTime(); !ok {
 		v := appuser.DefaultCreateTime()
 		auc.mutation.SetCreateTime(v)
+	}
+	if _, ok := auc.mutation.UpdateTime(); !ok {
+		v := appuser.DefaultUpdateTime()
+		auc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := auc.mutation.AppID(); !ok {
 		v := appuser.DefaultAppID

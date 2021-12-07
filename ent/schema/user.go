@@ -62,12 +62,12 @@ func (User) Fields() []ent.Field {
 						Annotation: "禁用",
 					},
 					{
-						Name:       "StatusWaitPublish",
+						Name:       "StatusWaitActive",
 						Value:      1,
 						Annotation: "待激活",
 					},
 					{
-						Name:       "StatusPublished",
+						Name:       "StatusActived",
 						Value:      10,
 						Annotation: "激活",
 					},

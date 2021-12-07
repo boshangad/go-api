@@ -108,6 +108,34 @@ func (aullu *AppUserLoginLogUpdate) SetNillableIP(s *string) *AppUserLoginLogUpd
 	return aullu
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (aullu *AppUserLoginLogUpdate) SetUserAgent(s string) *AppUserLoginLogUpdate {
+	aullu.mutation.SetUserAgent(s)
+	return aullu
+}
+
+// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+func (aullu *AppUserLoginLogUpdate) SetNillableUserAgent(s *string) *AppUserLoginLogUpdate {
+	if s != nil {
+		aullu.SetUserAgent(*s)
+	}
+	return aullu
+}
+
+// SetClientVersion sets the "client_version" field.
+func (aullu *AppUserLoginLogUpdate) SetClientVersion(s string) *AppUserLoginLogUpdate {
+	aullu.mutation.SetClientVersion(s)
+	return aullu
+}
+
+// SetNillableClientVersion sets the "client_version" field if the given value is not nil.
+func (aullu *AppUserLoginLogUpdate) SetNillableClientVersion(s *string) *AppUserLoginLogUpdate {
+	if s != nil {
+		aullu.SetClientVersion(*s)
+	}
+	return aullu
+}
+
 // SetContent sets the "content" field.
 func (aullu *AppUserLoginLogUpdate) SetContent(s string) *AppUserLoginLogUpdate {
 	aullu.mutation.SetContent(s)
@@ -254,6 +282,16 @@ func (aullu *AppUserLoginLogUpdate) check() error {
 			return &ValidationError{Name: "ip", err: fmt.Errorf("ent: validator failed for field \"ip\": %w", err)}
 		}
 	}
+	if v, ok := aullu.mutation.UserAgent(); ok {
+		if err := appuserloginlog.UserAgentValidator(v); err != nil {
+			return &ValidationError{Name: "user_agent", err: fmt.Errorf("ent: validator failed for field \"user_agent\": %w", err)}
+		}
+	}
+	if v, ok := aullu.mutation.ClientVersion(); ok {
+		if err := appuserloginlog.ClientVersionValidator(v); err != nil {
+			return &ValidationError{Name: "client_version", err: fmt.Errorf("ent: validator failed for field \"client_version\": %w", err)}
+		}
+	}
 	if _, ok := aullu.mutation.AppID(); aullu.mutation.AppCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"app\"")
 	}
@@ -303,6 +341,20 @@ func (aullu *AppUserLoginLogUpdate) sqlSave(ctx context.Context) (n int, err err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: appuserloginlog.FieldIP,
+		})
+	}
+	if value, ok := aullu.mutation.UserAgent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appuserloginlog.FieldUserAgent,
+		})
+	}
+	if value, ok := aullu.mutation.ClientVersion(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appuserloginlog.FieldClientVersion,
 		})
 	}
 	if value, ok := aullu.mutation.Content(); ok {
@@ -541,6 +593,34 @@ func (aulluo *AppUserLoginLogUpdateOne) SetNillableIP(s *string) *AppUserLoginLo
 	return aulluo
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (aulluo *AppUserLoginLogUpdateOne) SetUserAgent(s string) *AppUserLoginLogUpdateOne {
+	aulluo.mutation.SetUserAgent(s)
+	return aulluo
+}
+
+// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+func (aulluo *AppUserLoginLogUpdateOne) SetNillableUserAgent(s *string) *AppUserLoginLogUpdateOne {
+	if s != nil {
+		aulluo.SetUserAgent(*s)
+	}
+	return aulluo
+}
+
+// SetClientVersion sets the "client_version" field.
+func (aulluo *AppUserLoginLogUpdateOne) SetClientVersion(s string) *AppUserLoginLogUpdateOne {
+	aulluo.mutation.SetClientVersion(s)
+	return aulluo
+}
+
+// SetNillableClientVersion sets the "client_version" field if the given value is not nil.
+func (aulluo *AppUserLoginLogUpdateOne) SetNillableClientVersion(s *string) *AppUserLoginLogUpdateOne {
+	if s != nil {
+		aulluo.SetClientVersion(*s)
+	}
+	return aulluo
+}
+
 // SetContent sets the "content" field.
 func (aulluo *AppUserLoginLogUpdateOne) SetContent(s string) *AppUserLoginLogUpdateOne {
 	aulluo.mutation.SetContent(s)
@@ -694,6 +774,16 @@ func (aulluo *AppUserLoginLogUpdateOne) check() error {
 			return &ValidationError{Name: "ip", err: fmt.Errorf("ent: validator failed for field \"ip\": %w", err)}
 		}
 	}
+	if v, ok := aulluo.mutation.UserAgent(); ok {
+		if err := appuserloginlog.UserAgentValidator(v); err != nil {
+			return &ValidationError{Name: "user_agent", err: fmt.Errorf("ent: validator failed for field \"user_agent\": %w", err)}
+		}
+	}
+	if v, ok := aulluo.mutation.ClientVersion(); ok {
+		if err := appuserloginlog.ClientVersionValidator(v); err != nil {
+			return &ValidationError{Name: "client_version", err: fmt.Errorf("ent: validator failed for field \"client_version\": %w", err)}
+		}
+	}
 	if _, ok := aulluo.mutation.AppID(); aulluo.mutation.AppCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"app\"")
 	}
@@ -760,6 +850,20 @@ func (aulluo *AppUserLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *App
 			Type:   field.TypeString,
 			Value:  value,
 			Column: appuserloginlog.FieldIP,
+		})
+	}
+	if value, ok := aulluo.mutation.UserAgent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appuserloginlog.FieldUserAgent,
+		})
+	}
+	if value, ok := aulluo.mutation.ClientVersion(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appuserloginlog.FieldClientVersion,
 		})
 	}
 	if value, ok := aulluo.mutation.Content(); ok {

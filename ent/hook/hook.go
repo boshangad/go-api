@@ -74,6 +74,19 @@ func (f AppUserTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return f(ctx, mv)
 }
 
+// The ArticleFunc type is an adapter to allow the use of ordinary
+// function as Article mutator.
+type ArticleFunc func(context.Context, *ent.ArticleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArticleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ArticleMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The AuthAssgimentFunc type is an adapter to allow the use of ordinary
 // function as AuthAssgiment mutator.
 type AuthAssgimentFunc func(context.Context, *ent.AuthAssgimentMutation) (ent.Value, error)
@@ -161,6 +174,19 @@ func (f SmsLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	mv, ok := m.(*ent.SmsLogMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SmsLogMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SortFunc type is an adapter to allow the use of ordinary
+// function as Sort mutator.
+type SortFunc func(context.Context, *ent.SortMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SortFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SortMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SortMutation", m)
 	}
 	return f(ctx, mv)
 }

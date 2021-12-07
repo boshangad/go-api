@@ -121,6 +121,13 @@ func UserID(v uint64) predicate.AppUserToken {
 	})
 }
 
+// UserAgent applies equality check predicate on the "user_agent" field. It's identical to UserAgentEQ.
+func UserAgent(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUserAgent), v))
+	})
+}
+
 // ClientVersion applies equality check predicate on the "client_version" field. It's identical to ClientVersionEQ.
 func ClientVersion(v string) predicate.AppUserToken {
 	return predicate.AppUserToken(func(s *sql.Selector) {
@@ -366,6 +373,117 @@ func UserIDNotIn(vs ...uint64) predicate.AppUserToken {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldUserID), v...))
+	})
+}
+
+// UserAgentEQ applies the EQ predicate on the "user_agent" field.
+func UserAgentEQ(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentNEQ applies the NEQ predicate on the "user_agent" field.
+func UserAgentNEQ(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentIn applies the In predicate on the "user_agent" field.
+func UserAgentIn(vs ...string) predicate.AppUserToken {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldUserAgent), v...))
+	})
+}
+
+// UserAgentNotIn applies the NotIn predicate on the "user_agent" field.
+func UserAgentNotIn(vs ...string) predicate.AppUserToken {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldUserAgent), v...))
+	})
+}
+
+// UserAgentGT applies the GT predicate on the "user_agent" field.
+func UserAgentGT(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentGTE applies the GTE predicate on the "user_agent" field.
+func UserAgentGTE(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentLT applies the LT predicate on the "user_agent" field.
+func UserAgentLT(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentLTE applies the LTE predicate on the "user_agent" field.
+func UserAgentLTE(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentContains applies the Contains predicate on the "user_agent" field.
+func UserAgentContains(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentHasPrefix applies the HasPrefix predicate on the "user_agent" field.
+func UserAgentHasPrefix(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentHasSuffix applies the HasSuffix predicate on the "user_agent" field.
+func UserAgentHasSuffix(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentEqualFold applies the EqualFold predicate on the "user_agent" field.
+func UserAgentEqualFold(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentContainsFold applies the ContainsFold predicate on the "user_agent" field.
+func UserAgentContainsFold(v string) predicate.AppUserToken {
+	return predicate.AppUserToken(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldUserAgent), v))
 	})
 }
 

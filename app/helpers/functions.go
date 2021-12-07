@@ -7,6 +7,18 @@ import (
 	"strings"
 )
 
+// 判断字符串是否在数组内
+// @param string s 要验证的字符串
+// @param []string strs 字符串组
+func InArray(s string, strs []string) bool {
+	for _, str := range strs {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}
+
 // 获取应用执行文件路径
 func GetCurrentDirectory() string {
 	// 返回绝对路径 filepath.Dir(os.Args[0])去除最后一个元素的路径

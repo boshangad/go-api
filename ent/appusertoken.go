@@ -32,6 +32,9 @@ type AppUserToken struct {
 	// UserID holds the value of the "user_id" field.
 	// 用户
 	UserID uint64 `json:"user_id,omitempty"`
+	// UserAgent holds the value of the "user_agent" field.
+	// 用户代理
+	UserAgent string `json:"user_agent,omitempty"`
 	// ClientVersion holds the value of the "client_version" field.
 	// 客户端版本
 	ClientVersion string `json:"client_version,omitempty"`
@@ -111,7 +114,7 @@ func (*AppUserToken) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case appusertoken.FieldID, appusertoken.FieldCreateTime, appusertoken.FieldAppID, appusertoken.FieldAppUserID, appusertoken.FieldUserID, appusertoken.FieldExpireTime:
 			values[i] = new(sql.NullInt64)
-		case appusertoken.FieldClientVersion, appusertoken.FieldIP:
+		case appusertoken.FieldUserAgent, appusertoken.FieldClientVersion, appusertoken.FieldIP:
 			values[i] = new(sql.NullString)
 		case appusertoken.FieldUUID:
 			values[i] = new(uuid.UUID)
@@ -159,6 +162,12 @@ func (aut *AppUserToken) assignValues(columns []string, values []interface{}) er
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
 				aut.UserID = uint64(value.Int64)
+			}
+		case appusertoken.FieldUserAgent:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_agent", values[i])
+			} else if value.Valid {
+				aut.UserAgent = value.String
 			}
 		case appusertoken.FieldClientVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -235,6 +244,8 @@ func (aut *AppUserToken) String() string {
 	builder.WriteString(fmt.Sprintf("%v", aut.AppUserID))
 	builder.WriteString(", user_id=")
 	builder.WriteString(fmt.Sprintf("%v", aut.UserID))
+	builder.WriteString(", user_agent=")
+	builder.WriteString(aut.UserAgent)
 	builder.WriteString(", client_version=")
 	builder.WriteString(aut.ClientVersion)
 	builder.WriteString(", uuid=")

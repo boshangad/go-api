@@ -19,6 +19,8 @@ const (
 	FieldAppUserID = "app_user_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldUserAgent holds the string denoting the user_agent field in the database.
+	FieldUserAgent = "user_agent"
 	// FieldClientVersion holds the string denoting the client_version field in the database.
 	FieldClientVersion = "client_version"
 	// FieldUUID holds the string denoting the uuid field in the database.
@@ -65,6 +67,7 @@ var Columns = []string{
 	FieldAppID,
 	FieldAppUserID,
 	FieldUserID,
+	FieldUserAgent,
 	FieldClientVersion,
 	FieldUUID,
 	FieldIP,
@@ -90,6 +93,10 @@ var (
 	DefaultAppUserID uint64
 	// DefaultUserID holds the default value on creation for the "user_id" field.
 	DefaultUserID uint64
+	// DefaultUserAgent holds the default value on creation for the "user_agent" field.
+	DefaultUserAgent string
+	// UserAgentValidator is a validator for the "user_agent" field. It is called by the builders before save.
+	UserAgentValidator func(string) error
 	// DefaultClientVersion holds the default value on creation for the "client_version" field.
 	DefaultClientVersion string
 	// ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.

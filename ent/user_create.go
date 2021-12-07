@@ -70,6 +70,14 @@ func (uc *UserCreate) SetUpdateTime(i int64) *UserCreate {
 	return uc
 }
 
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUpdateTime(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetUpdateTime(*i)
+	}
+	return uc
+}
+
 // SetUpdateBy sets the "update_by" field.
 func (uc *UserCreate) SetUpdateBy(u uint64) *UserCreate {
 	uc.mutation.SetUpdateBy(u)
@@ -402,6 +410,10 @@ func (uc *UserCreate) defaults() {
 	if _, ok := uc.mutation.CreateBy(); !ok {
 		v := user.DefaultCreateBy
 		uc.mutation.SetCreateBy(v)
+	}
+	if _, ok := uc.mutation.UpdateTime(); !ok {
+		v := user.DefaultUpdateTime()
+		uc.mutation.SetUpdateTime(v)
 	}
 	if _, ok := uc.mutation.UpdateBy(); !ok {
 		v := user.DefaultUpdateBy

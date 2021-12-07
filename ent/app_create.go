@@ -71,6 +71,14 @@ func (ac *AppCreate) SetUpdateTime(i int64) *AppCreate {
 	return ac
 }
 
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (ac *AppCreate) SetNillableUpdateTime(i *int64) *AppCreate {
+	if i != nil {
+		ac.SetUpdateTime(*i)
+	}
+	return ac
+}
+
 // SetUpdateBy sets the "update_by" field.
 func (ac *AppCreate) SetUpdateBy(u uint64) *AppCreate {
 	ac.mutation.SetUpdateBy(u)
@@ -320,6 +328,10 @@ func (ac *AppCreate) defaults() {
 	if _, ok := ac.mutation.CreateBy(); !ok {
 		v := app.DefaultCreateBy
 		ac.mutation.SetCreateBy(v)
+	}
+	if _, ok := ac.mutation.UpdateTime(); !ok {
+		v := app.DefaultUpdateTime()
+		ac.mutation.SetUpdateTime(v)
 	}
 	if _, ok := ac.mutation.UpdateBy(); !ok {
 		v := app.DefaultUpdateBy

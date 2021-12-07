@@ -74,6 +74,20 @@ func (autu *AppUserTokenUpdate) SetNillableUserID(u *uint64) *AppUserTokenUpdate
 	return autu
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (autu *AppUserTokenUpdate) SetUserAgent(s string) *AppUserTokenUpdate {
+	autu.mutation.SetUserAgent(s)
+	return autu
+}
+
+// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+func (autu *AppUserTokenUpdate) SetNillableUserAgent(s *string) *AppUserTokenUpdate {
+	if s != nil {
+		autu.SetUserAgent(*s)
+	}
+	return autu
+}
+
 // SetClientVersion sets the "client_version" field.
 func (autu *AppUserTokenUpdate) SetClientVersion(s string) *AppUserTokenUpdate {
 	autu.mutation.SetClientVersion(s)
@@ -229,6 +243,11 @@ func (autu *AppUserTokenUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (autu *AppUserTokenUpdate) check() error {
+	if v, ok := autu.mutation.UserAgent(); ok {
+		if err := appusertoken.UserAgentValidator(v); err != nil {
+			return &ValidationError{Name: "user_agent", err: fmt.Errorf("ent: validator failed for field \"user_agent\": %w", err)}
+		}
+	}
 	if v, ok := autu.mutation.ClientVersion(); ok {
 		if err := appusertoken.ClientVersionValidator(v); err != nil {
 			return &ValidationError{Name: "client_version", err: fmt.Errorf("ent: validator failed for field \"client_version\": %w", err)}
@@ -268,6 +287,13 @@ func (autu *AppUserTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := autu.mutation.UserAgent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appusertoken.FieldUserAgent,
+		})
 	}
 	if value, ok := autu.mutation.ClientVersion(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -478,6 +504,20 @@ func (autuo *AppUserTokenUpdateOne) SetNillableUserID(u *uint64) *AppUserTokenUp
 	return autuo
 }
 
+// SetUserAgent sets the "user_agent" field.
+func (autuo *AppUserTokenUpdateOne) SetUserAgent(s string) *AppUserTokenUpdateOne {
+	autuo.mutation.SetUserAgent(s)
+	return autuo
+}
+
+// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+func (autuo *AppUserTokenUpdateOne) SetNillableUserAgent(s *string) *AppUserTokenUpdateOne {
+	if s != nil {
+		autuo.SetUserAgent(*s)
+	}
+	return autuo
+}
+
 // SetClientVersion sets the "client_version" field.
 func (autuo *AppUserTokenUpdateOne) SetClientVersion(s string) *AppUserTokenUpdateOne {
 	autuo.mutation.SetClientVersion(s)
@@ -640,6 +680,11 @@ func (autuo *AppUserTokenUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (autuo *AppUserTokenUpdateOne) check() error {
+	if v, ok := autuo.mutation.UserAgent(); ok {
+		if err := appusertoken.UserAgentValidator(v); err != nil {
+			return &ValidationError{Name: "user_agent", err: fmt.Errorf("ent: validator failed for field \"user_agent\": %w", err)}
+		}
+	}
 	if v, ok := autuo.mutation.ClientVersion(); ok {
 		if err := appusertoken.ClientVersionValidator(v); err != nil {
 			return &ValidationError{Name: "client_version", err: fmt.Errorf("ent: validator failed for field \"client_version\": %w", err)}
@@ -696,6 +741,13 @@ func (autuo *AppUserTokenUpdateOne) sqlSave(ctx context.Context) (_node *AppUser
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := autuo.mutation.UserAgent(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: appusertoken.FieldUserAgent,
+		})
 	}
 	if value, ok := autuo.mutation.ClientVersion(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

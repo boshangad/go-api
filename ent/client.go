@@ -14,6 +14,7 @@ import (
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appuserloginlog"
 	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/ent/article"
 	"github.com/boshangad/v1/ent/authassgiment"
 	"github.com/boshangad/v1/ent/authitem"
 	"github.com/boshangad/v1/ent/authitemchild"
@@ -21,6 +22,7 @@ import (
 	"github.com/boshangad/v1/ent/authrule"
 	"github.com/boshangad/v1/ent/emaillog"
 	"github.com/boshangad/v1/ent/smslog"
+	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -43,6 +45,8 @@ type Client struct {
 	AppUserLoginLog *AppUserLoginLogClient
 	// AppUserToken is the client for interacting with the AppUserToken builders.
 	AppUserToken *AppUserTokenClient
+	// Article is the client for interacting with the Article builders.
+	Article *ArticleClient
 	// AuthAssgiment is the client for interacting with the AuthAssgiment builders.
 	AuthAssgiment *AuthAssgimentClient
 	// AuthItem is the client for interacting with the AuthItem builders.
@@ -57,6 +61,8 @@ type Client struct {
 	EmailLog *EmailLogClient
 	// SmsLog is the client for interacting with the SmsLog builders.
 	SmsLog *SmsLogClient
+	// Sort is the client for interacting with the Sort builders.
+	Sort *SortClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -77,6 +83,7 @@ func (c *Client) init() {
 	c.AppUser = NewAppUserClient(c.config)
 	c.AppUserLoginLog = NewAppUserLoginLogClient(c.config)
 	c.AppUserToken = NewAppUserTokenClient(c.config)
+	c.Article = NewArticleClient(c.config)
 	c.AuthAssgiment = NewAuthAssgimentClient(c.config)
 	c.AuthItem = NewAuthItemClient(c.config)
 	c.AuthItemChild = NewAuthItemChildClient(c.config)
@@ -84,6 +91,7 @@ func (c *Client) init() {
 	c.AuthRule = NewAuthRuleClient(c.config)
 	c.EmailLog = NewEmailLogClient(c.config)
 	c.SmsLog = NewSmsLogClient(c.config)
+	c.Sort = NewSortClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -123,6 +131,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AppUser:         NewAppUserClient(cfg),
 		AppUserLoginLog: NewAppUserLoginLogClient(cfg),
 		AppUserToken:    NewAppUserTokenClient(cfg),
+		Article:         NewArticleClient(cfg),
 		AuthAssgiment:   NewAuthAssgimentClient(cfg),
 		AuthItem:        NewAuthItemClient(cfg),
 		AuthItemChild:   NewAuthItemChildClient(cfg),
@@ -130,6 +139,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthRule:        NewAuthRuleClient(cfg),
 		EmailLog:        NewEmailLogClient(cfg),
 		SmsLog:          NewSmsLogClient(cfg),
+		Sort:            NewSortClient(cfg),
 		User:            NewUserClient(cfg),
 	}, nil
 }
@@ -154,6 +164,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AppUser:         NewAppUserClient(cfg),
 		AppUserLoginLog: NewAppUserLoginLogClient(cfg),
 		AppUserToken:    NewAppUserTokenClient(cfg),
+		Article:         NewArticleClient(cfg),
 		AuthAssgiment:   NewAuthAssgimentClient(cfg),
 		AuthItem:        NewAuthItemClient(cfg),
 		AuthItemChild:   NewAuthItemChildClient(cfg),
@@ -161,6 +172,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthRule:        NewAuthRuleClient(cfg),
 		EmailLog:        NewEmailLogClient(cfg),
 		SmsLog:          NewSmsLogClient(cfg),
+		Sort:            NewSortClient(cfg),
 		User:            NewUserClient(cfg),
 	}, nil
 }
@@ -196,6 +208,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.AppUser.Use(hooks...)
 	c.AppUserLoginLog.Use(hooks...)
 	c.AppUserToken.Use(hooks...)
+	c.Article.Use(hooks...)
 	c.AuthAssgiment.Use(hooks...)
 	c.AuthItem.Use(hooks...)
 	c.AuthItemChild.Use(hooks...)
@@ -203,6 +216,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.AuthRule.Use(hooks...)
 	c.EmailLog.Use(hooks...)
 	c.SmsLog.Use(hooks...)
+	c.Sort.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -844,6 +858,96 @@ func (c *AppUserTokenClient) QueryUser(aut *AppUserToken) *UserQuery {
 // Hooks returns the client hooks.
 func (c *AppUserTokenClient) Hooks() []Hook {
 	return c.hooks.AppUserToken
+}
+
+// ArticleClient is a client for the Article schema.
+type ArticleClient struct {
+	config
+}
+
+// NewArticleClient returns a client for the Article from the given config.
+func NewArticleClient(c config) *ArticleClient {
+	return &ArticleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `article.Hooks(f(g(h())))`.
+func (c *ArticleClient) Use(hooks ...Hook) {
+	c.hooks.Article = append(c.hooks.Article, hooks...)
+}
+
+// Create returns a create builder for Article.
+func (c *ArticleClient) Create() *ArticleCreate {
+	mutation := newArticleMutation(c.config, OpCreate)
+	return &ArticleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Article entities.
+func (c *ArticleClient) CreateBulk(builders ...*ArticleCreate) *ArticleCreateBulk {
+	return &ArticleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Article.
+func (c *ArticleClient) Update() *ArticleUpdate {
+	mutation := newArticleMutation(c.config, OpUpdate)
+	return &ArticleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArticleClient) UpdateOne(a *Article) *ArticleUpdateOne {
+	mutation := newArticleMutation(c.config, OpUpdateOne, withArticle(a))
+	return &ArticleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArticleClient) UpdateOneID(id int) *ArticleUpdateOne {
+	mutation := newArticleMutation(c.config, OpUpdateOne, withArticleID(id))
+	return &ArticleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Article.
+func (c *ArticleClient) Delete() *ArticleDelete {
+	mutation := newArticleMutation(c.config, OpDelete)
+	return &ArticleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ArticleClient) DeleteOne(a *Article) *ArticleDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ArticleClient) DeleteOneID(id int) *ArticleDeleteOne {
+	builder := c.Delete().Where(article.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArticleDeleteOne{builder}
+}
+
+// Query returns a query builder for Article.
+func (c *ArticleClient) Query() *ArticleQuery {
+	return &ArticleQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Article entity by its id.
+func (c *ArticleClient) Get(ctx context.Context, id int) (*Article, error) {
+	return c.Query().Where(article.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArticleClient) GetX(ctx context.Context, id int) *Article {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ArticleClient) Hooks() []Hook {
+	return c.hooks.Article
 }
 
 // AuthAssgimentClient is a client for the AuthAssgiment schema.
@@ -1512,6 +1616,96 @@ func (c *SmsLogClient) QueryApp(sl *SmsLog) *AppQuery {
 // Hooks returns the client hooks.
 func (c *SmsLogClient) Hooks() []Hook {
 	return c.hooks.SmsLog
+}
+
+// SortClient is a client for the Sort schema.
+type SortClient struct {
+	config
+}
+
+// NewSortClient returns a client for the Sort from the given config.
+func NewSortClient(c config) *SortClient {
+	return &SortClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sort.Hooks(f(g(h())))`.
+func (c *SortClient) Use(hooks ...Hook) {
+	c.hooks.Sort = append(c.hooks.Sort, hooks...)
+}
+
+// Create returns a create builder for Sort.
+func (c *SortClient) Create() *SortCreate {
+	mutation := newSortMutation(c.config, OpCreate)
+	return &SortCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Sort entities.
+func (c *SortClient) CreateBulk(builders ...*SortCreate) *SortCreateBulk {
+	return &SortCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Sort.
+func (c *SortClient) Update() *SortUpdate {
+	mutation := newSortMutation(c.config, OpUpdate)
+	return &SortUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SortClient) UpdateOne(s *Sort) *SortUpdateOne {
+	mutation := newSortMutation(c.config, OpUpdateOne, withSort(s))
+	return &SortUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SortClient) UpdateOneID(id uint64) *SortUpdateOne {
+	mutation := newSortMutation(c.config, OpUpdateOne, withSortID(id))
+	return &SortUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Sort.
+func (c *SortClient) Delete() *SortDelete {
+	mutation := newSortMutation(c.config, OpDelete)
+	return &SortDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SortClient) DeleteOne(s *Sort) *SortDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SortClient) DeleteOneID(id uint64) *SortDeleteOne {
+	builder := c.Delete().Where(sort.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SortDeleteOne{builder}
+}
+
+// Query returns a query builder for Sort.
+func (c *SortClient) Query() *SortQuery {
+	return &SortQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Sort entity by its id.
+func (c *SortClient) Get(ctx context.Context, id uint64) (*Sort, error) {
+	return c.Query().Where(sort.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SortClient) GetX(ctx context.Context, id uint64) *Sort {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SortClient) Hooks() []Hook {
+	return c.hooks.Sort
 }
 
 // UserClient is a client for the User schema.

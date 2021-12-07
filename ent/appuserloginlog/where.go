@@ -134,6 +134,20 @@ func IP(v string) predicate.AppUserLoginLog {
 	})
 }
 
+// UserAgent applies equality check predicate on the "user_agent" field. It's identical to UserAgentEQ.
+func UserAgent(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUserAgent), v))
+	})
+}
+
+// ClientVersion applies equality check predicate on the "client_version" field. It's identical to ClientVersionEQ.
+func ClientVersion(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientVersion), v))
+	})
+}
+
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
 func Content(v string) predicate.AppUserLoginLog {
 	return predicate.AppUserLoginLog(func(s *sql.Selector) {
@@ -552,6 +566,228 @@ func IPEqualFold(v string) predicate.AppUserLoginLog {
 func IPContainsFold(v string) predicate.AppUserLoginLog {
 	return predicate.AppUserLoginLog(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldIP), v))
+	})
+}
+
+// UserAgentEQ applies the EQ predicate on the "user_agent" field.
+func UserAgentEQ(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentNEQ applies the NEQ predicate on the "user_agent" field.
+func UserAgentNEQ(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentIn applies the In predicate on the "user_agent" field.
+func UserAgentIn(vs ...string) predicate.AppUserLoginLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldUserAgent), v...))
+	})
+}
+
+// UserAgentNotIn applies the NotIn predicate on the "user_agent" field.
+func UserAgentNotIn(vs ...string) predicate.AppUserLoginLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldUserAgent), v...))
+	})
+}
+
+// UserAgentGT applies the GT predicate on the "user_agent" field.
+func UserAgentGT(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentGTE applies the GTE predicate on the "user_agent" field.
+func UserAgentGTE(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentLT applies the LT predicate on the "user_agent" field.
+func UserAgentLT(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentLTE applies the LTE predicate on the "user_agent" field.
+func UserAgentLTE(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentContains applies the Contains predicate on the "user_agent" field.
+func UserAgentContains(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentHasPrefix applies the HasPrefix predicate on the "user_agent" field.
+func UserAgentHasPrefix(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentHasSuffix applies the HasSuffix predicate on the "user_agent" field.
+func UserAgentHasSuffix(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentEqualFold applies the EqualFold predicate on the "user_agent" field.
+func UserAgentEqualFold(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldUserAgent), v))
+	})
+}
+
+// UserAgentContainsFold applies the ContainsFold predicate on the "user_agent" field.
+func UserAgentContainsFold(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldUserAgent), v))
+	})
+}
+
+// ClientVersionEQ applies the EQ predicate on the "client_version" field.
+func ClientVersionEQ(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionNEQ applies the NEQ predicate on the "client_version" field.
+func ClientVersionNEQ(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionIn applies the In predicate on the "client_version" field.
+func ClientVersionIn(vs ...string) predicate.AppUserLoginLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldClientVersion), v...))
+	})
+}
+
+// ClientVersionNotIn applies the NotIn predicate on the "client_version" field.
+func ClientVersionNotIn(vs ...string) predicate.AppUserLoginLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldClientVersion), v...))
+	})
+}
+
+// ClientVersionGT applies the GT predicate on the "client_version" field.
+func ClientVersionGT(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionGTE applies the GTE predicate on the "client_version" field.
+func ClientVersionGTE(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionLT applies the LT predicate on the "client_version" field.
+func ClientVersionLT(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionLTE applies the LTE predicate on the "client_version" field.
+func ClientVersionLTE(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionContains applies the Contains predicate on the "client_version" field.
+func ClientVersionContains(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionHasPrefix applies the HasPrefix predicate on the "client_version" field.
+func ClientVersionHasPrefix(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionHasSuffix applies the HasSuffix predicate on the "client_version" field.
+func ClientVersionHasSuffix(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionEqualFold applies the EqualFold predicate on the "client_version" field.
+func ClientVersionEqualFold(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldClientVersion), v))
+	})
+}
+
+// ClientVersionContainsFold applies the ContainsFold predicate on the "client_version" field.
+func ClientVersionContainsFold(v string) predicate.AppUserLoginLog {
+	return predicate.AppUserLoginLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldClientVersion), v))
 	})
 }
 

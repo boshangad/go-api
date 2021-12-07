@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/boshangad/v1/app/errors"
 	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 )
 
 const (
@@ -95,7 +98,8 @@ func (that *Context) ShouldBindValue(obj interface{}) (err error) {
 			return that.Context.ShouldBindBodyWith(obj, binding.MsgPack)
 		}
 	}
-	return that.Context.ShouldBind(obj)
+	err = that.Context.ShouldBind(obj)
+	return
 }
 
 // 输出json格式数据
@@ -117,9 +121,25 @@ func (that Context) JsonOutError(err error) {
 	if err == nil {
 		return
 	}
-	if e, ok := err.(ContextError); ok {
-		that.JsonOut(e.Code, e.Msg, e.Data)
-		return
+	switch e := err.(type) {
+	// case ContextError:
+	// 	that.JsonOut(e.Code, e.Msg, e.Data)
+	case validator.ValidationErrors:
+		invalidParam := errors.NewInvalidParam()
+		invalidParamData := errors.InvalidParamData{}
+		for _, validationErr := range e {
+			msg := ""
+			if validationErr.Param() != "" {
+				msg += ",the value is restricted to " + validationErr.Param() + "."
+			}
+			invalidParamData.Errors = append(invalidParamData.Errors, errors.InvalidError{
+				Field: validationErr.Field(),
+				Msg:   fmt.Sprintf("Field validation for '%s' failed on the '%s'%s", validationErr.Field(), validationErr.Tag(), msg),
+			})
+		}
+		invalidParam.Data = &invalidParamData
+		that.Context.AbortWithStatusJSON(invalidParam.GetStatus(), invalidParam)
+	default:
+		that.JsonOut(global.ErrNotice, err.Error(), nil)
 	}
-	that.JsonOut(global.ErrNotice, err.Error(), nil)
 }

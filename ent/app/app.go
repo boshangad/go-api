@@ -91,6 +91,8 @@ var (
 	DefaultCreateTime func() int64
 	// DefaultCreateBy holds the default value on creation for the "create_by" field.
 	DefaultCreateBy uint64
+	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
+	DefaultUpdateTime func() int64
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() int64
 	// DefaultUpdateBy holds the default value on creation for the "update_by" field.

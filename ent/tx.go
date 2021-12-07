@@ -22,6 +22,8 @@ type Tx struct {
 	AppUserLoginLog *AppUserLoginLogClient
 	// AppUserToken is the client for interacting with the AppUserToken builders.
 	AppUserToken *AppUserTokenClient
+	// Article is the client for interacting with the Article builders.
+	Article *ArticleClient
 	// AuthAssgiment is the client for interacting with the AuthAssgiment builders.
 	AuthAssgiment *AuthAssgimentClient
 	// AuthItem is the client for interacting with the AuthItem builders.
@@ -36,6 +38,8 @@ type Tx struct {
 	EmailLog *EmailLogClient
 	// SmsLog is the client for interacting with the SmsLog builders.
 	SmsLog *SmsLogClient
+	// Sort is the client for interacting with the Sort builders.
+	Sort *SortClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -178,6 +182,7 @@ func (tx *Tx) init() {
 	tx.AppUser = NewAppUserClient(tx.config)
 	tx.AppUserLoginLog = NewAppUserLoginLogClient(tx.config)
 	tx.AppUserToken = NewAppUserTokenClient(tx.config)
+	tx.Article = NewArticleClient(tx.config)
 	tx.AuthAssgiment = NewAuthAssgimentClient(tx.config)
 	tx.AuthItem = NewAuthItemClient(tx.config)
 	tx.AuthItemChild = NewAuthItemChildClient(tx.config)
@@ -185,6 +190,7 @@ func (tx *Tx) init() {
 	tx.AuthRule = NewAuthRuleClient(tx.config)
 	tx.EmailLog = NewEmailLogClient(tx.config)
 	tx.SmsLog = NewSmsLogClient(tx.config)
+	tx.Sort = NewSortClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

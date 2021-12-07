@@ -19,6 +19,10 @@ const (
 	FieldLoginTypeID = "login_type_id"
 	// FieldIP holds the string denoting the ip field in the database.
 	FieldIP = "ip"
+	// FieldUserAgent holds the string denoting the user_agent field in the database.
+	FieldUserAgent = "user_agent"
+	// FieldClientVersion holds the string denoting the client_version field in the database.
+	FieldClientVersion = "client_version"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -63,6 +67,8 @@ var Columns = []string{
 	FieldUserID,
 	FieldLoginTypeID,
 	FieldIP,
+	FieldUserAgent,
+	FieldClientVersion,
 	FieldContent,
 	FieldStatus,
 }
@@ -92,6 +98,14 @@ var (
 	DefaultIP string
 	// IPValidator is a validator for the "ip" field. It is called by the builders before save.
 	IPValidator func(string) error
+	// DefaultUserAgent holds the default value on creation for the "user_agent" field.
+	DefaultUserAgent string
+	// UserAgentValidator is a validator for the "user_agent" field. It is called by the builders before save.
+	UserAgentValidator func(string) error
+	// DefaultClientVersion holds the default value on creation for the "client_version" field.
+	DefaultClientVersion string
+	// ClientVersionValidator is a validator for the "client_version" field. It is called by the builders before save.
+	ClientVersionValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint
 )
@@ -114,4 +128,8 @@ const (
 	StatusWaitConfirm = 0
 	// StatusSuccess 成功
 	StatusSuccess = 1
+	// StatusFailed 失败
+	StatusFailed = 2
+	// StatusServerFailed 服务异常失败
+	StatusServerFailed = 3
 )

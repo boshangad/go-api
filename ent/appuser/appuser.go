@@ -113,6 +113,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.
 	DefaultCreateTime func() int64
+	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
+	DefaultUpdateTime func() int64
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() int64
 	// DefaultAppID holds the default value on creation for the "app_id" field.

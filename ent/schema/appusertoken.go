@@ -37,6 +37,7 @@ func (AppUserToken) Fields() []ent.Field {
 		field.Uint64("app_id").Default(0).Comment("应用"),
 		field.Uint64("app_user_id").Default(0).Comment("应用用户"),
 		field.Uint64("user_id").Default(0).Comment("用户"),
+		field.String("user_agent").Default("").Comment("用户代理").MaxLen(255),
 		field.String("client_version").Default("").Comment("客户端版本").MaxLen(255),
 		field.Bytes("uuid").GoType(&uuid.UUID{}).DefaultFunc(func() *uuid.UUID {
 			uuid, _ := uuid.NewUUID()

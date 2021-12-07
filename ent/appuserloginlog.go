@@ -37,6 +37,12 @@ type AppUserLoginLog struct {
 	// IP holds the value of the "ip" field.
 	// 登录IP
 	IP string `json:"ip,omitempty"`
+	// UserAgent holds the value of the "user_agent" field.
+	// 用户代理
+	UserAgent string `json:"user_agent,omitempty"`
+	// ClientVersion holds the value of the "client_version" field.
+	// 客户端版本
+	ClientVersion string `json:"client_version,omitempty"`
 	// Content holds the value of the "content" field.
 	// 内容
 	Content string `json:"content,omitempty"`
@@ -110,7 +116,7 @@ func (*AppUserLoginLog) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case appuserloginlog.FieldID, appuserloginlog.FieldCreateTime, appuserloginlog.FieldAppID, appuserloginlog.FieldAppUserID, appuserloginlog.FieldUserID, appuserloginlog.FieldLoginTypeID, appuserloginlog.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case appuserloginlog.FieldIP, appuserloginlog.FieldContent:
+		case appuserloginlog.FieldIP, appuserloginlog.FieldUserAgent, appuserloginlog.FieldClientVersion, appuserloginlog.FieldContent:
 			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type AppUserLoginLog", columns[i])
@@ -168,6 +174,18 @@ func (aull *AppUserLoginLog) assignValues(columns []string, values []interface{}
 				return fmt.Errorf("unexpected type %T for field ip", values[i])
 			} else if value.Valid {
 				aull.IP = value.String
+			}
+		case appuserloginlog.FieldUserAgent:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_agent", values[i])
+			} else if value.Valid {
+				aull.UserAgent = value.String
+			}
+		case appuserloginlog.FieldClientVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field client_version", values[i])
+			} else if value.Valid {
+				aull.ClientVersion = value.String
 			}
 		case appuserloginlog.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -236,6 +254,10 @@ func (aull *AppUserLoginLog) String() string {
 	builder.WriteString(fmt.Sprintf("%v", aull.LoginTypeID))
 	builder.WriteString(", ip=")
 	builder.WriteString(aull.IP)
+	builder.WriteString(", user_agent=")
+	builder.WriteString(aull.UserAgent)
+	builder.WriteString(", client_version=")
+	builder.WriteString(aull.ClientVersion)
 	builder.WriteString(", content=")
 	builder.WriteString(aull.Content)
 	builder.WriteString(", status=")

@@ -21,6 +21,9 @@ type AppUserLoginLog func(*sql.Selector)
 // AppUserToken is the predicate function for appusertoken builders.
 type AppUserToken func(*sql.Selector)
 
+// Article is the predicate function for article builders.
+type Article func(*sql.Selector)
+
 // AuthAssgiment is the predicate function for authassgiment builders.
 type AuthAssgiment func(*sql.Selector)
 
@@ -41,6 +44,9 @@ type EmailLog func(*sql.Selector)
 
 // SmsLog is the predicate function for smslog builders.
 type SmsLog func(*sql.Selector)
+
+// Sort is the predicate function for sort builders.
+type Sort func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

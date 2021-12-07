@@ -18,7 +18,9 @@ var (
 	// Db 数据库
 	Db *db.Db = db.NewDb(db.OpenDbByConfig(Config.Db), Log)
 	// Cache 缓存服务
-	Cache cache.CacheInterface = cache.NewCache(Config.Cache)
+	Cache cache.CacheInterface = cache.NewMemory(Config.Cache)
+	// 内存缓存
+	Memoey cache.CacheInterface = cache.NewMemory(Config.Cache)
 	// ConcurrencyControl 防止缓存击穿，并发控制
 	ConcurrencyControl = &singleflight.Group{}
 )
