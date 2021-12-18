@@ -1,14 +1,17 @@
 package db
 
 import (
+	"encoding/json"
+	"log"
+	"strings"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 
-	"entgo.io/ent/dialect"
+	"github.com/boshangad/v1/app/helpers"
 	"github.com/boshangad/v1/ent"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/mitchellh/mapstructure"
 )
 
 type Mysql struct {
@@ -28,19 +31,19 @@ type Mysql struct {
 	// 高级连接参数
 	Params string `json:"params,omitempty" yaml:"params"`
 	// 空闲中的最大连接数
-	MaxIdleConns int `json:"maxdleConns,omitempty" yaml:"maxIdleConns"`
+	MaxIdleConns helpers.Int `json:"maxIdleConns,omitempty" yaml:"maxIdleConns"`
 	// 打开到数据库的最大连接数
-	MaxOpenConns int `json:"maxOpenConns,omitempty" yaml:"maxOpenConns"`
+	MaxOpenConns helpers.Int `json:"maxOpenConns,omitempty" yaml:"maxOpenConns"`
 	// 可以重用连接的最长时间
-	ConnMaxLifetime int64 `json:"connMaxLifetime,omitempty" yaml:"connMaxLifetime"`
+	ConnMaxLifetime helpers.Int64 `json:"connMaxLifetime,omitempty" yaml:"connMaxLifetime"`
 	// 连接可能空闲的最长时间
-	ConnMaxIdleTime int64 `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime"`
+	ConnMaxIdleTime helpers.Int64 `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime"`
 }
 
 // 获取Dsn连接字符串
 func (that *Mysql) dsnStr() (dsnStr string) {
 	// dsn数据源格式 [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
-	if that.Dsn == "" {
+	if strings.TrimSpace(that.Dsn) == "" {
 		// 自己组装Dsn连接字符串
 		if that.Username != "" && that.Password != "" {
 			dsnStr += that.Username + ":" + that.Password + "@"
@@ -75,8 +78,8 @@ func (that *Mysql) Open() (*ent.Client, error) {
 	}
 	// 获取数据库驱动中的sql.DB对象。
 	db := drv.DB()
-	db.SetMaxIdleConns(that.MaxIdleConns)
-	db.SetMaxOpenConns(that.MaxOpenConns)
+	db.SetMaxIdleConns(int(that.MaxIdleConns))
+	db.SetMaxOpenConns(int(that.MaxOpenConns))
 	if that.ConnMaxLifetime != 0 {
 		db.SetConnMaxLifetime(time.Duration(that.ConnMaxLifetime))
 	}
@@ -87,13 +90,22 @@ func (that *Mysql) Open() (*ent.Client, error) {
 	return client, nil
 }
 
+func (that *Mysql) Close() error {
+	return nil
+}
+
 // 实例化Mysql配置项
 func NewMysql(data map[string]interface{}) *Mysql {
-	mysql := Mysql{}
-	err := mapstructure.Decode(data, &mysql)
-	mysql.Driver = dialect.MySQL
+	dataByte, err := json.Marshal(data)
 	if err != nil {
+		log.Println("failed to convert mysql configuration information to byte", err)
 		return nil
 	}
+	mysql := Mysql{}
+	if err = json.Unmarshal(dataByte, &mysql); err != nil {
+		log.Println("mysql configuration information transfer structure failed", err)
+		return nil
+	}
+	mysql.Driver = dialect.MySQL
 	return &mysql
 }

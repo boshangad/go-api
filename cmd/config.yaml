@@ -7,11 +7,11 @@ app:
 # DB数据库
 db:
   driver: mysql
-  host: 127.0.0.1
-  port: 3306
+  host: 127.0.0.1:3306
   username: root
   password: "xingyun"
   dbname: "ad_boshang"
+  maxIdleConns: "10"
 # 日志功能
 log:
   director: ""
@@ -36,12 +36,12 @@ cache:
   fileMode: 0644
   dirMode: 0744
 sms:
-  defaults: [aliyun,ucloud]
+  defaults: ["aliyun", "ucloud"]
   gateways:
-    -
-      type: aliyun
-      accessKeyId: 
-      accessKeySecret: 
+    aliyun:
+      gateway: aliyun
+      accessKeyId: cdervbhyjuhygtvf
+      accessKeySecret: jefjekcedc
 captcha:
   image:
     type: image

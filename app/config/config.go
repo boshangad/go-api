@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	smsConfig "github.com/boshangad/v1/app/sms/config"
+
 	"github.com/boshangad/v1/app/helpers"
 	zapLog "github.com/boshangad/v1/app/log"
 
@@ -35,7 +37,7 @@ type Config struct {
 	// Redis 服务器
 	Redis map[string]interface{} `json:"redis,omitempty" yaml:"redis"`
 	// 短信网关
-	Sms Sms `json:"sms,omitempty" yaml:"sms"`
+	Sms *smsConfig.Config `json:"sms,omitempty" yaml:"sms"`
 	// 邮件网关
 	Email map[string]interface{} `json:"email,omitempty" yaml:"email"`
 	// 验证码配置

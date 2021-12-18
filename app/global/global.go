@@ -4,6 +4,8 @@ import (
 	"github.com/boshangad/v1/app/cache"
 	"github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/db"
+	"github.com/boshangad/v1/app/sms"
+	"github.com/spf13/viper"
 
 	"github.com/boshangad/v1/app/log"
 	"go.uber.org/zap"
@@ -11,6 +13,7 @@ import (
 )
 
 var (
+	Viper *viper.Viper = nil
 	// Config 配置数据
 	Config *config.Config = config.DefaultConfig().Load()
 	// Log 日志配置
@@ -23,4 +26,6 @@ var (
 	Memoey cache.CacheInterface = cache.NewMemory(Config.Cache)
 	// ConcurrencyControl 防止缓存击穿，并发控制
 	ConcurrencyControl = &singleflight.Group{}
+	// Sms 短信推送网关
+	Sms = sms.NewSmsGateway(Config.Sms)
 )

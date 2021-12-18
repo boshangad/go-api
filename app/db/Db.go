@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 type Db struct {
 	// 继承ent的全部属性
 	*ent.Client
+	logger *zap.Logger
 }
 
 // 数据库执行事务
@@ -72,24 +74,32 @@ func NewDb(client *ent.Client, logger *zap.Logger) *Db {
 	// 返回实例
 	return &Db{
 		Client: client,
+		logger: logger,
 	}
 }
 
 // 实例化库通过配置文件
 func OpenDbByConfig(data map[string]interface{}) *ent.Client {
+	var db DbInterace
 	t, ok := data["driver"].(string)
 	if !ok {
-		panic("The instantiated DB class must have the `driver` field")
+		t = dialect.MySQL
 	}
 	t = strings.ToLower(strings.TrimSpace(t))
 	switch t {
+	case dialect.Postgres:
+		db = NewPostgreSql(data)
 	case dialect.MySQL:
-		fallthrough
+		db = NewMysql(data)
 	default:
-		client, err := NewMysql(data).Open()
-		if err != nil {
-			panic(err)
-		}
-		return client
+		db = NewMysql(data)
 	}
+	if db == nil {
+		log.Panicln("database configuration information conversion failed", data)
+	}
+	client, err := db.Open()
+	if err != nil {
+		log.Panicln("open db failed", err)
+	}
+	return client
 }
