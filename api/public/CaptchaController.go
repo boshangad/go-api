@@ -2,6 +2,7 @@ package public
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,13 +32,14 @@ func (CaptchaController) View(c *controller.Context) {
 		ok            = false
 	)
 	// 获取验证码配置
+	fmt.Println(global.Config.Captcha)
 	captcha, ok = global.Config.Captcha[name]
 	if !ok {
 		global.Log.Info("captcha is not configured.", zap.String("name", name))
 		c.JsonOut(global.ErrNotice, "captcha parameter configuration is abnormal, please contact the developer for processing.", nil)
 		return
 	}
-	if t != "" {
+	if captcha.Type == "" && t != "" {
 		captcha.Type = t
 	}
 	if width > 0 {

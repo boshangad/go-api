@@ -5,7 +5,6 @@ import (
 	"github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/db"
 	"github.com/boshangad/v1/app/sms"
-	"github.com/spf13/viper"
 
 	"github.com/boshangad/v1/app/log"
 	"go.uber.org/zap"
@@ -13,9 +12,9 @@ import (
 )
 
 var (
-	Viper *viper.Viper = nil
+	Viper *config.Viper = config.NewViper("config")
 	// Config 配置数据
-	Config *config.Config = config.DefaultConfig().Load()
+	Config *config.Config = config.NewConfig(Viper)
 	// Log 日志配置
 	Log *zap.Logger = log.NewLogger(Config.Log)
 	// Db 数据库

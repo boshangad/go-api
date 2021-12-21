@@ -46,3 +46,6 @@ captcha:
   image:
     type: image
     length: 6
+  audio:
+    type: audio
+    length: 6

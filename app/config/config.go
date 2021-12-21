@@ -2,30 +2,13 @@ package config
 
 import (
 	"log"
-	"os"
-	"path/filepath"
 
 	smsConfig "github.com/boshangad/v1/app/sms/config"
 
-	"github.com/boshangad/v1/app/helpers"
 	zapLog "github.com/boshangad/v1/app/log"
-
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
 )
 
 type Config struct {
-	// viper 配置器
-	viper *viper.Viper
-	// 配置监听观察者
-	notifyers map[string]Notifyer
-	// 配置文件完整名称
-	ConfigFile string
-	// 配置文件类型
-	ConfigType string
-	// 配置文件名称，不带后缀名和路径
-	ConfigName string
-	// ----------------------------------------------------------------
 	// 应用配置
 	App App `json:"app,omitempty" yaml:"app,omitempty"`
 	// 日志
@@ -44,90 +27,26 @@ type Config struct {
 	Captcha map[string]Captcha `json:"captcha,omitempty" yaml:"captcha"`
 }
 
-// 加载配置
-func (that *Config) Load() *Config {
-	// 加载配置文件
-	viperClient := viper.New()
-	if that.ConfigName != "" {
-		viperClient.SetConfigName(that.ConfigName)
-	}
-	if that.ConfigType != "" {
-		viperClient.SetConfigType(that.ConfigType)
-	}
-	if that.ConfigFile != "" {
-		viperClient.SetConfigFile(that.ConfigFile)
-	}
-	// 配置器
-	viperClient.AddConfigPath(".")
-	// 读取配置文件
-	err := viperClient.ReadInConfig()
-	if err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// 配置文件未找到错误；如果需要可以忽略
-			log.Println("config file not found: " + err.Error() + "\n")
-			// 设置观察者对象
-			that.viper = viperClient
-			return that
-		}
-		// 配置文件被找到，但产生了另外的错误
-		log.Panicln("Fatal error config file: " + err.Error() + "\n")
-	}
-	err = viperClient.Unmarshal(&that)
+// 刷新回调
+func (that *Config) Callback(v *Viper) {
+	// map 数据不会被清除，需要清除
+	that.Db = make(map[string]interface{})
+	that.Cache = make(map[string]interface{})
+	that.Redis = make(map[string]interface{})
+	that.Email = make(map[string]interface{})
+	that.Captcha = make(map[string]Captcha)
+	err := v.viper.Unmarshal(&that)
 	if err != nil {
 		log.Println("config file not found: " + err.Error() + "\n")
-		// 设置观察者对象
-		that.viper = viperClient
-		return that
-	}
-	// 移除字符串左右的空格
-	helpers.TrimSpace(that)
-	// 观察者监听
-	viperClient.OnConfigChange(func(e fsnotify.Event) {
-		log.Println("Config file changed:", e.Name)
-		if that.notifyers != nil {
-			for _, v := range that.notifyers {
-				v.Callback(that)
-			}
-		}
-	})
-	viperClient.WatchConfig()
-	// 设置观察者对象
-	that.viper = viperClient
-	return that
-}
-
-// 重新加载配置
-func (that *Config) Reload() {
-
-}
-
-// 添加观察者
-func (that *Config) AddObserver(k string, n Notifyer) {
-	that.notifyers[k] = n
-}
-
-// 获取配置器
-func (that Config) Viper() *viper.Viper {
-	return that.viper
-}
-
-// 默认配置
-func DefaultConfig() *Config {
-	return &Config{
-		notifyers: make(map[string]Notifyer),
-		App: App{
-			Debug:    false,
-			Name:     "",
-			Listen:   ":80",
-			RootPath: filepath.Dir(os.Args[0]),
-			BaseUrl:  "http://127.0.0.1",
-			Cors:     Cors{},
-		},
-		Log: zapLog.DefaultZapConfig(),
 	}
 }
 
-// 实例化配置
-func New() *Config {
-	return &Config{}
+func NewConfig(v *Viper) *Config {
+	config := Config{}
+	err := v.viper.Unmarshal(&config)
+	if err != nil {
+		log.Println("config file not found: " + err.Error() + "\n")
+	}
+	v.AddObserver("config", &config)
+	return &config
 }

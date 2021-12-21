@@ -94,6 +94,12 @@ func (that *Captcha) Driver() (driver base64Captcha.Driver) {
 			that.NoiseCount = helpers.RandomRangeInt(0, that.MaxNoiseCount)
 		}
 	}
+	if that.Language == "" {
+		that.Language = "en"
+	}
+	if that.Length < 1 {
+		that.Length = 6
+	}
 	// 生成验证码
 	switch strings.TrimSpace(that.Type) {
 	case "audio":

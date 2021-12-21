@@ -8,7 +8,6 @@ import (
 	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/app/helpers"
 	"github.com/boshangad/v1/ent"
-	"github.com/boshangad/v1/services/appService"
 	"github.com/google/uuid"
 )
 
@@ -31,10 +30,9 @@ func cacheApp() {
 // 应用中间件
 func AppMiddleware(c *controller.Context) {
 	var (
-		err       error
-		app       *ent.App = c.GetApp()
-		appAlias  string
-		appStruct = appService.App{}
+		err      error
+		app      *ent.App = c.GetApp()
+		appAlias string
 	)
 	if app != nil {
 		return
@@ -43,7 +41,7 @@ func AppMiddleware(c *controller.Context) {
 	if appAlias == "" {
 		appAlias = c.GetHeader("appAlias")
 		if appAlias == "" {
-			_ = c.ShouldBind(&appStruct)
+			appAlias = c.DefaultQuery("appAlias", "")
 		}
 	}
 	uuid, err := uuid.Parse(appAlias)
