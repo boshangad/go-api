@@ -43,6 +43,7 @@ func RandomRange64(min, max int64) int64 {
 
 // RandStringBytesMaskImpr 随机字符串
 func RandStringBytesMaskImpr(n int) string {
+	rand.Seed(time.Now().UnixNano())
 	b := make([]byte, n)
 	// A rand.Int63() generates 63 random bits, enough for letterIdxMax letters!
 	for i, cache, remain := n-1, rand.Int63(), letterIdxMax; i >= 0; {

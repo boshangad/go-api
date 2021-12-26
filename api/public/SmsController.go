@@ -21,5 +21,6 @@ func (that SmsController) Send(c *controller.Context) {
 	// 	c.JsonOutError(err)
 	// 	return
 	// }
+	global.Sms.Send("", nil, []string{""})
 	c.JsonOut(global.ErrSuccess, "success", nil)
 }

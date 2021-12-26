@@ -12,6 +12,4 @@ type Message interface {
 	GetData(gateway Gateway) url.Values
 	// 正文模板
 	GetTemplate(gateway Gateway) string
-	// 默认使用的网关
-	GetGateways() map[string]Gateway
 }

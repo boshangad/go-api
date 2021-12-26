@@ -1,5 +1,5 @@
 package config
 
-type Notifyer interface {
-	Callback(*Viper)
-}
+type NotifyerViperFunc func(*Viper)
+
+type NotifyerFunc func(*Config)

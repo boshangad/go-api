@@ -42,6 +42,13 @@ sms:
       gateway: aliyun
       accessKeyId: cdervbhyjuhygtvf
       accessKeySecret: jefjekcedc
+      signName: "14567"
+    ucloud:
+      gateway: ucloud
+      privateKey:
+      publicKey: hgkuytredfgh
+      signName: ""
+      projectId: org-575
 captcha:
   image:
     type: image

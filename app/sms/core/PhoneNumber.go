@@ -1,4 +1,4 @@
-package sms
+package core
 
 // 联系人
 type PhoneNumber struct {
@@ -28,10 +28,10 @@ func (that PhoneNumber) GetUniversalNumber() string {
 }
 
 // 实例化手机号
-func NewPhoneNumber(mobile interface{}) *PhoneNumber {
-	return &PhoneNumber{
+func NewPhoneNumber(mobile string) PhoneNumber {
+	return PhoneNumber{
 		Type:   "text",
 		IDD:    "86",
-		Mobile: mobile.(string),
+		Mobile: mobile,
 	}
 }

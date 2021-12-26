@@ -2,5 +2,6 @@ package interfaces
 
 type Result interface {
 	error
-	Code() int
+	IsSuccess() bool
+	Code() string
 }

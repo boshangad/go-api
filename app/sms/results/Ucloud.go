@@ -1,5 +1,7 @@
 package results
 
+import "strconv"
+
 // ucloud网关返还数据结构
 type Ucloud struct {
 	// 错误码
@@ -15,11 +17,15 @@ type Ucloud struct {
 }
 
 // 错误码
-func (that Ucloud) Code() int {
-	return that.RetCode
+func (that Ucloud) Code() string {
+	return strconv.Itoa(that.RetCode)
 }
 
 // 错误信息
 func (that Ucloud) Error() string {
 	return that.Message
+}
+
+func (that Ucloud) IsSuccess() bool {
+	return that.RetCode == 0
 }

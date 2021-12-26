@@ -1,14 +1,17 @@
 package config
 
 import (
-	"log"
+	"fmt"
 
 	smsConfig "github.com/boshangad/v1/app/sms/config"
+	"go.uber.org/zap"
 
 	zapLog "github.com/boshangad/v1/app/log"
 )
 
 type Config struct {
+	// 配置监听观察者
+	notifyers map[string]NotifyerFunc `json:"-" yaml:"-"`
 	// 应用配置
 	App App `json:"app,omitempty" yaml:"app,omitempty"`
 	// 日志
@@ -27,8 +30,13 @@ type Config struct {
 	Captcha map[string]Captcha `json:"captcha,omitempty" yaml:"captcha"`
 }
 
+// 添加观察者
+func (that *Config) AddObserver(k string, n NotifyerFunc) {
+	that.notifyers[k] = n
+}
+
 // 刷新回调
-func (that *Config) Callback(v *Viper) {
+func (that *Config) Reload(v *Viper) {
 	// map 数据不会被清除，需要清除
 	that.Db = make(map[string]interface{})
 	that.Cache = make(map[string]interface{})
@@ -37,16 +45,29 @@ func (that *Config) Callback(v *Viper) {
 	that.Captcha = make(map[string]Captcha)
 	err := v.viper.Unmarshal(&that)
 	if err != nil {
-		log.Println("config file not found: " + err.Error() + "\n")
+		v.logger.Error("config file not found", zap.Error(err))
+		return
+	}	
+	// 重新调用回调
+	if that.notifyers != nil {
+		for _, fn := range that.notifyers {
+			fn(that)
+		}
 	}
 }
 
+// 实例化配置
 func NewConfig(v *Viper) *Config {
-	config := Config{}
+	config := Config{
+		notifyers: make(map[string]NotifyerFunc),
+	}
 	err := v.viper.Unmarshal(&config)
 	if err != nil {
-		log.Println("config file not found: " + err.Error() + "\n")
+		v.logger.Fatal("config file not found", zap.Error(err))
+		return &config
 	}
-	v.AddObserver("config", &config)
+	v.AddObserver("config:"+fmt.Sprintf("%p", &config), func(v *Viper) {
+		config.Reload(v)
+	})
 	return &config
 }

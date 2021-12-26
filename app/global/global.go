@@ -1,10 +1,14 @@
 package global
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/boshangad/v1/app/cache"
 	"github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/db"
 	"github.com/boshangad/v1/app/sms"
+	"github.com/boshangad/v1/app/sms/interfaces"
 
 	"github.com/boshangad/v1/app/log"
 	"go.uber.org/zap"
@@ -28,3 +32,13 @@ var (
 	// Sms 短信推送网关
 	Sms = sms.NewSmsGateway(Config.Sms)
 )
+
+func init() {
+	results, err := Sms.Send("15079497355", url.Values{}, []string{})
+	if err != nil {
+		fmt.Println(err)
+	}
+	results.Each(func(k string, v interfaces.Result) {
+		fmt.Println(k, v)
+	})
+}

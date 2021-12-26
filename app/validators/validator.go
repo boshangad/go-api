@@ -15,3 +15,7 @@ func IsUrl(url string) bool {
 func IsUri(uri string) bool {
 	return DefaultValidate.Var(uri, "uri") == nil
 }
+
+func IsJson(data string) bool {
+	return DefaultValidate.Var(data, "json") == nil
+}

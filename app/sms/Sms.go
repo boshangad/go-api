@@ -2,11 +2,13 @@ package sms
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 	"sync"
 
-	// aconfig "github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/sms/config"
+	"github.com/boshangad/v1/app/sms/core"
+	"github.com/boshangad/v1/app/sms/gateways"
 	"github.com/boshangad/v1/app/sms/interfaces"
 )
 
@@ -17,15 +19,15 @@ type SmsGateway struct {
 	// 锁定
 	mu *sync.RWMutex
 	// 推送人
-	messager *Messager
+	messager *core.Messager
 	// 配置项
 	config *config.Config
 }
 
 // 网关操作人
-func (that *SmsGateway) GetMessager() *Messager {
+func (that *SmsGateway) GetMessager() *core.Messager {
 	if that.messager == nil {
-		that.messager = NewMessager(that.config)
+		that.messager = core.NewMessager(that.config)
 	}
 	return that.messager
 }
@@ -34,10 +36,15 @@ func (that *SmsGateway) GetMessager() *Messager {
 //
 func (that *SmsGateway) Gateway(name string) interfaces.Gateway {
 	if _, ok := that.gateways[name]; !ok {
-		if gc, ok := that.config.Gateways[name]; !ok {
-			switch strings.ToLower(gc.GetString("gateway")) {
+		if gc, ok := that.config.Gateways[name]; ok {
+			gatewayName := strings.TrimSpace(gc.GetString("gateway"))
+			if gatewayName == "" {
+				gatewayName = name
+			}
+			gatewayName = strings.ToLower(gatewayName)
+			switch gatewayName {
 			case "aliyun":
-				// that.gateways[name] = sgateways.NewAliyunGateway(gc)
+				that.gateways[name] = gateways.NewAliyunGateway(gc)
 			case "aliyunrest":
 			case "avatardata":
 			case "baidu":
@@ -60,6 +67,7 @@ func (that *SmsGateway) Gateway(name string) interfaces.Gateway {
 			case "tiniyo":
 			case "twilio":
 			case "ucloud":
+				that.gateways[name] = gateways.NewUcloudGateway(gc)
 			case "ue35":
 			case "yunpian":
 			case "yuntongyun":
@@ -88,10 +96,10 @@ func (that *SmsGateway) GetGateways(gs []string) map[string]interfaces.Gateway {
 }
 
 // 发出短信
-func (that SmsGateway) Send(to interface{}, data map[string]interface{}, gateways []string) (results interfaces.Result, err error) {
+func (that SmsGateway) Send(to string, data url.Values, gateways []string) (results core.Results, err error) {
 	var (
-		phoneNumber = NewPhoneNumber(to)
-		message     = NewMessage(data)
+		phoneNumber = core.NewPhoneNumber(to)
+		message     = core.NewMessage().SetData(data)
 	)
 	if gateways == nil || len(gateways) < 1 {
 		gateways = that.config.Defaults
@@ -103,10 +111,14 @@ func (that SmsGateway) Send(to interface{}, data map[string]interface{}, gateway
 			gateways = append(gateways, gateway)
 		}
 		if len(gateways) < 1 {
-			return nil, fmt.Errorf("SMS gateway not found")
+			return results, fmt.Errorf("SMS gateway not found")
 		}
 	}
-	return that.messager.Send(phoneNumber, message, that.GetGateways(gateways))
+	smsGateways := that.GetGateways(gateways)
+	if smsGateways == nil || len(smsGateways) < 1 {
+		return results, fmt.Errorf("can't found sms gateway")
+	}
+	return that.messager.Send(phoneNumber, message, smsGateways)
 }
 
 // 配置变更重启
@@ -116,7 +128,7 @@ func (that *SmsGateway) Reload(c *config.Config) {
 	defer that.mu.Unlock()
 	that.config = c
 	that.gateways = make(map[string]interfaces.Gateway)
-	that.messager = NewMessager(that.config)
+	that.messager = core.NewMessager(that.config)
 }
 
 // 实例化
@@ -125,8 +137,22 @@ func NewSmsGateway(c *config.Config) *SmsGateway {
 		config:   c,
 		mu:       &sync.RWMutex{},
 		gateways: make(map[string]interfaces.Gateway),
-		messager: NewMessager(c),
+		messager: core.NewMessager(c),
 	}
-	// 注册回调
 	return &g
+}
+
+// 实例化消息体
+func NewMessage() *core.Message {
+	return core.NewMessage()
+}
+
+// 实例化单个手机号
+func NewPhoneNumber(mobile string) core.PhoneNumber {
+	return core.NewPhoneNumber(mobile)
+}
+
+// 实例化多个手机号
+func NewPhoneNumbers(mobile ...string) core.PhoneNumber {
+	return core.NewPhoneNumber(mobile[0])
 }
