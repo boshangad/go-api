@@ -20,6 +20,7 @@ import (
 	"github.com/boshangad/v1/ent/authrole"
 	"github.com/boshangad/v1/ent/authrule"
 	"github.com/boshangad/v1/ent/emaillog"
+	"github.com/boshangad/v1/ent/resourcefile"
 	"github.com/boshangad/v1/ent/smslog"
 	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
@@ -55,6 +56,7 @@ func columnChecker(table string) func(string) error {
 		authrole.Table:        authrole.ValidColumn,
 		authrule.Table:        authrule.ValidColumn,
 		emaillog.Table:        emaillog.ValidColumn,
+		resourcefile.Table:    resourcefile.ValidColumn,
 		smslog.Table:          smslog.ValidColumn,
 		sort.Table:            sort.ValidColumn,
 		user.Table:            user.ValidColumn,

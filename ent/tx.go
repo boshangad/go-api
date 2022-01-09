@@ -36,6 +36,8 @@ type Tx struct {
 	AuthRule *AuthRuleClient
 	// EmailLog is the client for interacting with the EmailLog builders.
 	EmailLog *EmailLogClient
+	// ResourceFile is the client for interacting with the ResourceFile builders.
+	ResourceFile *ResourceFileClient
 	// SmsLog is the client for interacting with the SmsLog builders.
 	SmsLog *SmsLogClient
 	// Sort is the client for interacting with the Sort builders.
@@ -189,6 +191,7 @@ func (tx *Tx) init() {
 	tx.AuthRole = NewAuthRoleClient(tx.config)
 	tx.AuthRule = NewAuthRuleClient(tx.config)
 	tx.EmailLog = NewEmailLogClient(tx.config)
+	tx.ResourceFile = NewResourceFileClient(tx.config)
 	tx.SmsLog = NewSmsLogClient(tx.config)
 	tx.Sort = NewSortClient(tx.config)
 	tx.User = NewUserClient(tx.config)

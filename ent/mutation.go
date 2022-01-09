@@ -14,6 +14,7 @@ import (
 	"github.com/boshangad/v1/ent/appusertoken"
 	"github.com/boshangad/v1/ent/emaillog"
 	"github.com/boshangad/v1/ent/predicate"
+	"github.com/boshangad/v1/ent/resourcefile"
 	"github.com/boshangad/v1/ent/smslog"
 	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
@@ -43,6 +44,7 @@ const (
 	TypeAuthRole        = "AuthRole"
 	TypeAuthRule        = "AuthRule"
 	TypeEmailLog        = "EmailLog"
+	TypeResourceFile    = "ResourceFile"
 	TypeSmsLog          = "SmsLog"
 	TypeSort            = "Sort"
 	TypeUser            = "User"
@@ -9136,6 +9138,1114 @@ func (m *EmailLogMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown EmailLog edge %s", name)
+}
+
+// ResourceFileMutation represents an operation that mutates the ResourceFile nodes in the graph.
+type ResourceFileMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *int
+	delete_time    *int64
+	adddelete_time *int64
+	create_time    *int64
+	addcreate_time *int64
+	create_by      *uint64
+	addcreate_by   *uint64
+	uuid           **uuid.UUID
+	title          *string
+	ext            *string
+	mime           *string
+	size           *uint64
+	addsize        *uint64
+	_path          *string
+	url            *string
+	md5            *string
+	sha1           *string
+	status         *uint
+	addstatus      *uint
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*ResourceFile, error)
+	predicates     []predicate.ResourceFile
+}
+
+var _ ent.Mutation = (*ResourceFileMutation)(nil)
+
+// resourcefileOption allows management of the mutation configuration using functional options.
+type resourcefileOption func(*ResourceFileMutation)
+
+// newResourceFileMutation creates new mutation for the ResourceFile entity.
+func newResourceFileMutation(c config, op Op, opts ...resourcefileOption) *ResourceFileMutation {
+	m := &ResourceFileMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeResourceFile,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withResourceFileID sets the ID field of the mutation.
+func withResourceFileID(id int) resourcefileOption {
+	return func(m *ResourceFileMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ResourceFile
+		)
+		m.oldValue = func(ctx context.Context) (*ResourceFile, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ResourceFile.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withResourceFile sets the old ResourceFile of the mutation.
+func withResourceFile(node *ResourceFile) resourcefileOption {
+	return func(m *ResourceFileMutation) {
+		m.oldValue = func(context.Context) (*ResourceFile, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ResourceFileMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ResourceFileMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ResourceFileMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetDeleteTime sets the "delete_time" field.
+func (m *ResourceFileMutation) SetDeleteTime(i int64) {
+	m.delete_time = &i
+	m.adddelete_time = nil
+}
+
+// DeleteTime returns the value of the "delete_time" field in the mutation.
+func (m *ResourceFileMutation) DeleteTime() (r int64, exists bool) {
+	v := m.delete_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeleteTime returns the old "delete_time" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldDeleteTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeleteTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeleteTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeleteTime: %w", err)
+	}
+	return oldValue.DeleteTime, nil
+}
+
+// AddDeleteTime adds i to the "delete_time" field.
+func (m *ResourceFileMutation) AddDeleteTime(i int64) {
+	if m.adddelete_time != nil {
+		*m.adddelete_time += i
+	} else {
+		m.adddelete_time = &i
+	}
+}
+
+// AddedDeleteTime returns the value that was added to the "delete_time" field in this mutation.
+func (m *ResourceFileMutation) AddedDeleteTime() (r int64, exists bool) {
+	v := m.adddelete_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeleteTime resets all changes to the "delete_time" field.
+func (m *ResourceFileMutation) ResetDeleteTime() {
+	m.delete_time = nil
+	m.adddelete_time = nil
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *ResourceFileMutation) SetCreateTime(i int64) {
+	m.create_time = &i
+	m.addcreate_time = nil
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *ResourceFileMutation) CreateTime() (r int64, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldCreateTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// AddCreateTime adds i to the "create_time" field.
+func (m *ResourceFileMutation) AddCreateTime(i int64) {
+	if m.addcreate_time != nil {
+		*m.addcreate_time += i
+	} else {
+		m.addcreate_time = &i
+	}
+}
+
+// AddedCreateTime returns the value that was added to the "create_time" field in this mutation.
+func (m *ResourceFileMutation) AddedCreateTime() (r int64, exists bool) {
+	v := m.addcreate_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *ResourceFileMutation) ResetCreateTime() {
+	m.create_time = nil
+	m.addcreate_time = nil
+}
+
+// SetCreateBy sets the "create_by" field.
+func (m *ResourceFileMutation) SetCreateBy(u uint64) {
+	m.create_by = &u
+	m.addcreate_by = nil
+}
+
+// CreateBy returns the value of the "create_by" field in the mutation.
+func (m *ResourceFileMutation) CreateBy() (r uint64, exists bool) {
+	v := m.create_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateBy returns the old "create_by" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldCreateBy(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreateBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreateBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateBy: %w", err)
+	}
+	return oldValue.CreateBy, nil
+}
+
+// AddCreateBy adds u to the "create_by" field.
+func (m *ResourceFileMutation) AddCreateBy(u uint64) {
+	if m.addcreate_by != nil {
+		*m.addcreate_by += u
+	} else {
+		m.addcreate_by = &u
+	}
+}
+
+// AddedCreateBy returns the value that was added to the "create_by" field in this mutation.
+func (m *ResourceFileMutation) AddedCreateBy() (r uint64, exists bool) {
+	v := m.addcreate_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreateBy resets all changes to the "create_by" field.
+func (m *ResourceFileMutation) ResetCreateBy() {
+	m.create_by = nil
+	m.addcreate_by = nil
+}
+
+// SetUUID sets the "uuid" field.
+func (m *ResourceFileMutation) SetUUID(u *uuid.UUID) {
+	m.uuid = &u
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *ResourceFileMutation) UUID() (r *uuid.UUID, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldUUID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *ResourceFileMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *ResourceFileMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *ResourceFileMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *ResourceFileMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetExt sets the "ext" field.
+func (m *ResourceFileMutation) SetExt(s string) {
+	m.ext = &s
+}
+
+// Ext returns the value of the "ext" field in the mutation.
+func (m *ResourceFileMutation) Ext() (r string, exists bool) {
+	v := m.ext
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExt returns the old "ext" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldExt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldExt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldExt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExt: %w", err)
+	}
+	return oldValue.Ext, nil
+}
+
+// ResetExt resets all changes to the "ext" field.
+func (m *ResourceFileMutation) ResetExt() {
+	m.ext = nil
+}
+
+// SetMime sets the "mime" field.
+func (m *ResourceFileMutation) SetMime(s string) {
+	m.mime = &s
+}
+
+// Mime returns the value of the "mime" field in the mutation.
+func (m *ResourceFileMutation) Mime() (r string, exists bool) {
+	v := m.mime
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMime returns the old "mime" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldMime(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldMime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldMime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMime: %w", err)
+	}
+	return oldValue.Mime, nil
+}
+
+// ResetMime resets all changes to the "mime" field.
+func (m *ResourceFileMutation) ResetMime() {
+	m.mime = nil
+}
+
+// SetSize sets the "size" field.
+func (m *ResourceFileMutation) SetSize(u uint64) {
+	m.size = &u
+	m.addsize = nil
+}
+
+// Size returns the value of the "size" field in the mutation.
+func (m *ResourceFileMutation) Size() (r uint64, exists bool) {
+	v := m.size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSize returns the old "size" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldSize(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSize: %w", err)
+	}
+	return oldValue.Size, nil
+}
+
+// AddSize adds u to the "size" field.
+func (m *ResourceFileMutation) AddSize(u uint64) {
+	if m.addsize != nil {
+		*m.addsize += u
+	} else {
+		m.addsize = &u
+	}
+}
+
+// AddedSize returns the value that was added to the "size" field in this mutation.
+func (m *ResourceFileMutation) AddedSize() (r uint64, exists bool) {
+	v := m.addsize
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSize resets all changes to the "size" field.
+func (m *ResourceFileMutation) ResetSize() {
+	m.size = nil
+	m.addsize = nil
+}
+
+// SetPath sets the "path" field.
+func (m *ResourceFileMutation) SetPath(s string) {
+	m._path = &s
+}
+
+// Path returns the value of the "path" field in the mutation.
+func (m *ResourceFileMutation) Path() (r string, exists bool) {
+	v := m._path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPath returns the old "path" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPath: %w", err)
+	}
+	return oldValue.Path, nil
+}
+
+// ResetPath resets all changes to the "path" field.
+func (m *ResourceFileMutation) ResetPath() {
+	m._path = nil
+}
+
+// SetURL sets the "url" field.
+func (m *ResourceFileMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *ResourceFileMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *ResourceFileMutation) ResetURL() {
+	m.url = nil
+}
+
+// SetMd5 sets the "md5" field.
+func (m *ResourceFileMutation) SetMd5(s string) {
+	m.md5 = &s
+}
+
+// Md5 returns the value of the "md5" field in the mutation.
+func (m *ResourceFileMutation) Md5() (r string, exists bool) {
+	v := m.md5
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMd5 returns the old "md5" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldMd5(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldMd5 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldMd5 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMd5: %w", err)
+	}
+	return oldValue.Md5, nil
+}
+
+// ResetMd5 resets all changes to the "md5" field.
+func (m *ResourceFileMutation) ResetMd5() {
+	m.md5 = nil
+}
+
+// SetSha1 sets the "sha1" field.
+func (m *ResourceFileMutation) SetSha1(s string) {
+	m.sha1 = &s
+}
+
+// Sha1 returns the value of the "sha1" field in the mutation.
+func (m *ResourceFileMutation) Sha1() (r string, exists bool) {
+	v := m.sha1
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSha1 returns the old "sha1" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldSha1(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSha1 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSha1 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSha1: %w", err)
+	}
+	return oldValue.Sha1, nil
+}
+
+// ResetSha1 resets all changes to the "sha1" field.
+func (m *ResourceFileMutation) ResetSha1() {
+	m.sha1 = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *ResourceFileMutation) SetStatus(u uint) {
+	m.status = &u
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ResourceFileMutation) Status() (r uint, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the ResourceFile entity.
+// If the ResourceFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ResourceFileMutation) OldStatus(ctx context.Context) (v uint, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds u to the "status" field.
+func (m *ResourceFileMutation) AddStatus(u uint) {
+	if m.addstatus != nil {
+		*m.addstatus += u
+	} else {
+		m.addstatus = &u
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *ResourceFileMutation) AddedStatus() (r uint, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ResourceFileMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
+// Where appends a list predicates to the ResourceFileMutation builder.
+func (m *ResourceFileMutation) Where(ps ...predicate.ResourceFile) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ResourceFileMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ResourceFile).
+func (m *ResourceFileMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ResourceFileMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.delete_time != nil {
+		fields = append(fields, resourcefile.FieldDeleteTime)
+	}
+	if m.create_time != nil {
+		fields = append(fields, resourcefile.FieldCreateTime)
+	}
+	if m.create_by != nil {
+		fields = append(fields, resourcefile.FieldCreateBy)
+	}
+	if m.uuid != nil {
+		fields = append(fields, resourcefile.FieldUUID)
+	}
+	if m.title != nil {
+		fields = append(fields, resourcefile.FieldTitle)
+	}
+	if m.ext != nil {
+		fields = append(fields, resourcefile.FieldExt)
+	}
+	if m.mime != nil {
+		fields = append(fields, resourcefile.FieldMime)
+	}
+	if m.size != nil {
+		fields = append(fields, resourcefile.FieldSize)
+	}
+	if m._path != nil {
+		fields = append(fields, resourcefile.FieldPath)
+	}
+	if m.url != nil {
+		fields = append(fields, resourcefile.FieldURL)
+	}
+	if m.md5 != nil {
+		fields = append(fields, resourcefile.FieldMd5)
+	}
+	if m.sha1 != nil {
+		fields = append(fields, resourcefile.FieldSha1)
+	}
+	if m.status != nil {
+		fields = append(fields, resourcefile.FieldStatus)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ResourceFileMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case resourcefile.FieldDeleteTime:
+		return m.DeleteTime()
+	case resourcefile.FieldCreateTime:
+		return m.CreateTime()
+	case resourcefile.FieldCreateBy:
+		return m.CreateBy()
+	case resourcefile.FieldUUID:
+		return m.UUID()
+	case resourcefile.FieldTitle:
+		return m.Title()
+	case resourcefile.FieldExt:
+		return m.Ext()
+	case resourcefile.FieldMime:
+		return m.Mime()
+	case resourcefile.FieldSize:
+		return m.Size()
+	case resourcefile.FieldPath:
+		return m.Path()
+	case resourcefile.FieldURL:
+		return m.URL()
+	case resourcefile.FieldMd5:
+		return m.Md5()
+	case resourcefile.FieldSha1:
+		return m.Sha1()
+	case resourcefile.FieldStatus:
+		return m.Status()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ResourceFileMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case resourcefile.FieldDeleteTime:
+		return m.OldDeleteTime(ctx)
+	case resourcefile.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case resourcefile.FieldCreateBy:
+		return m.OldCreateBy(ctx)
+	case resourcefile.FieldUUID:
+		return m.OldUUID(ctx)
+	case resourcefile.FieldTitle:
+		return m.OldTitle(ctx)
+	case resourcefile.FieldExt:
+		return m.OldExt(ctx)
+	case resourcefile.FieldMime:
+		return m.OldMime(ctx)
+	case resourcefile.FieldSize:
+		return m.OldSize(ctx)
+	case resourcefile.FieldPath:
+		return m.OldPath(ctx)
+	case resourcefile.FieldURL:
+		return m.OldURL(ctx)
+	case resourcefile.FieldMd5:
+		return m.OldMd5(ctx)
+	case resourcefile.FieldSha1:
+		return m.OldSha1(ctx)
+	case resourcefile.FieldStatus:
+		return m.OldStatus(ctx)
+	}
+	return nil, fmt.Errorf("unknown ResourceFile field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ResourceFileMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case resourcefile.FieldDeleteTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeleteTime(v)
+		return nil
+	case resourcefile.FieldCreateTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case resourcefile.FieldCreateBy:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateBy(v)
+		return nil
+	case resourcefile.FieldUUID:
+		v, ok := value.(*uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case resourcefile.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case resourcefile.FieldExt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExt(v)
+		return nil
+	case resourcefile.FieldMime:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMime(v)
+		return nil
+	case resourcefile.FieldSize:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSize(v)
+		return nil
+	case resourcefile.FieldPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPath(v)
+		return nil
+	case resourcefile.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case resourcefile.FieldMd5:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMd5(v)
+		return nil
+	case resourcefile.FieldSha1:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSha1(v)
+		return nil
+	case resourcefile.FieldStatus:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ResourceFile field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ResourceFileMutation) AddedFields() []string {
+	var fields []string
+	if m.adddelete_time != nil {
+		fields = append(fields, resourcefile.FieldDeleteTime)
+	}
+	if m.addcreate_time != nil {
+		fields = append(fields, resourcefile.FieldCreateTime)
+	}
+	if m.addcreate_by != nil {
+		fields = append(fields, resourcefile.FieldCreateBy)
+	}
+	if m.addsize != nil {
+		fields = append(fields, resourcefile.FieldSize)
+	}
+	if m.addstatus != nil {
+		fields = append(fields, resourcefile.FieldStatus)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ResourceFileMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case resourcefile.FieldDeleteTime:
+		return m.AddedDeleteTime()
+	case resourcefile.FieldCreateTime:
+		return m.AddedCreateTime()
+	case resourcefile.FieldCreateBy:
+		return m.AddedCreateBy()
+	case resourcefile.FieldSize:
+		return m.AddedSize()
+	case resourcefile.FieldStatus:
+		return m.AddedStatus()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ResourceFileMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case resourcefile.FieldDeleteTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeleteTime(v)
+		return nil
+	case resourcefile.FieldCreateTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreateTime(v)
+		return nil
+	case resourcefile.FieldCreateBy:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreateBy(v)
+		return nil
+	case resourcefile.FieldSize:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSize(v)
+		return nil
+	case resourcefile.FieldStatus:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ResourceFile numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ResourceFileMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ResourceFileMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ResourceFileMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ResourceFile nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ResourceFileMutation) ResetField(name string) error {
+	switch name {
+	case resourcefile.FieldDeleteTime:
+		m.ResetDeleteTime()
+		return nil
+	case resourcefile.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case resourcefile.FieldCreateBy:
+		m.ResetCreateBy()
+		return nil
+	case resourcefile.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case resourcefile.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case resourcefile.FieldExt:
+		m.ResetExt()
+		return nil
+	case resourcefile.FieldMime:
+		m.ResetMime()
+		return nil
+	case resourcefile.FieldSize:
+		m.ResetSize()
+		return nil
+	case resourcefile.FieldPath:
+		m.ResetPath()
+		return nil
+	case resourcefile.FieldURL:
+		m.ResetURL()
+		return nil
+	case resourcefile.FieldMd5:
+		m.ResetMd5()
+		return nil
+	case resourcefile.FieldSha1:
+		m.ResetSha1()
+		return nil
+	case resourcefile.FieldStatus:
+		m.ResetStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown ResourceFile field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ResourceFileMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ResourceFileMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ResourceFileMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ResourceFileMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ResourceFileMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ResourceFileMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ResourceFileMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ResourceFile unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ResourceFileMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ResourceFile edge %s", name)
 }
 
 // SmsLogMutation represents an operation that mutates the SmsLog nodes in the graph.

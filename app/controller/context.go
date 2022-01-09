@@ -97,21 +97,26 @@ func (that *Context) ShouldBindValue(obj interface{}) (err error) {
 		case binding.MIMEMSGPACK, binding.MIMEMSGPACK2:
 			return that.Context.ShouldBindBodyWith(obj, binding.MsgPack)
 		}
+		err = that.Context.ShouldBind(obj)
+	} else {
+		err = that.Context.ShouldBindQuery(obj)
 	}
-	err = that.Context.ShouldBind(obj)
 	return
 }
 
 // 输出json格式数据
 func (that Context) JsonOut(error int64, msg string, data interface{}) {
-	response := gin.H{}
-	response["error"] = error
-	if msg == "" {
-		msg = "success"
+	response := struct {
+		Error int64       `json:"error"`
+		Msg   string      `json:"msg"`
+		Data  interface{} `json:"data,omitempty"`
+	}{}
+	response.Error = error
+	if msg != "" {
+		response.Msg = msg
 	}
-	response["msg"] = msg
 	if data != nil {
-		response["data"] = data
+		response.Data = data
 	}
 	that.Context.AbortWithStatusJSON(http.StatusOK, response)
 }

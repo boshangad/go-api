@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	logger *zap.Logger `json:"-" yaml:"-"`
 	// 配置监听观察者
 	notifyers map[string]NotifyerFunc `json:"-" yaml:"-"`
 	// 应用配置
@@ -18,6 +19,8 @@ type Config struct {
 	Log zapLog.Zap `json:"log,omitempty" yaml:"log"`
 	// 数据库连接配置
 	Db map[string]interface{} `json:"db,omitempty" yaml:"db"`
+	// 磁盘
+	Disk *Disk `json:"disks,omitempty" yaml:"db"`
 	// 缓存功能模块
 	Cache map[string]interface{} `json:"cache,omitempty" yaml:"cache"`
 	// Redis 服务器
@@ -47,7 +50,8 @@ func (that *Config) Reload(v *Viper) {
 	if err != nil {
 		v.logger.Error("config file not found", zap.Error(err))
 		return
-	}	
+	}
+	that.logger = v.GetLogger()
 	// 重新调用回调
 	if that.notifyers != nil {
 		for _, fn := range that.notifyers {
@@ -59,6 +63,7 @@ func (that *Config) Reload(v *Viper) {
 // 实例化配置
 func NewConfig(v *Viper) *Config {
 	config := Config{
+		logger:    v.logger,
 		notifyers: make(map[string]NotifyerFunc),
 	}
 	err := v.viper.Unmarshal(&config)

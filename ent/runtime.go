@@ -9,6 +9,7 @@ import (
 	"github.com/boshangad/v1/ent/appuserloginlog"
 	"github.com/boshangad/v1/ent/appusertoken"
 	"github.com/boshangad/v1/ent/emaillog"
+	"github.com/boshangad/v1/ent/resourcefile"
 	"github.com/boshangad/v1/ent/schema"
 	"github.com/boshangad/v1/ent/smslog"
 	"github.com/boshangad/v1/ent/sort"
@@ -494,6 +495,99 @@ func init() {
 	emaillog.DefaultReturnMsg = emaillogDescReturnMsg.Default.(string)
 	// emaillog.ReturnMsgValidator is a validator for the "return_msg" field. It is called by the builders before save.
 	emaillog.ReturnMsgValidator = emaillogDescReturnMsg.Validators[0].(func(string) error)
+	resourcefileMixin := schema.ResourceFile{}.Mixin()
+	resourcefileMixinFields0 := resourcefileMixin[0].Fields()
+	_ = resourcefileMixinFields0
+	resourcefileMixinFields1 := resourcefileMixin[1].Fields()
+	_ = resourcefileMixinFields1
+	resourcefileMixinFields2 := resourcefileMixin[2].Fields()
+	_ = resourcefileMixinFields2
+	resourcefileFields := schema.ResourceFile{}.Fields()
+	_ = resourcefileFields
+	// resourcefileDescDeleteTime is the schema descriptor for delete_time field.
+	resourcefileDescDeleteTime := resourcefileMixinFields0[0].Descriptor()
+	// resourcefile.DefaultDeleteTime holds the default value on creation for the delete_time field.
+	resourcefile.DefaultDeleteTime = resourcefileDescDeleteTime.Default.(int64)
+	// resourcefileDescCreateTime is the schema descriptor for create_time field.
+	resourcefileDescCreateTime := resourcefileMixinFields1[0].Descriptor()
+	// resourcefile.DefaultCreateTime holds the default value on creation for the create_time field.
+	resourcefile.DefaultCreateTime = resourcefileDescCreateTime.Default.(func() int64)
+	// resourcefileDescCreateBy is the schema descriptor for create_by field.
+	resourcefileDescCreateBy := resourcefileMixinFields2[0].Descriptor()
+	// resourcefile.DefaultCreateBy holds the default value on creation for the create_by field.
+	resourcefile.DefaultCreateBy = resourcefileDescCreateBy.Default.(uint64)
+	// resourcefileDescUUID is the schema descriptor for uuid field.
+	resourcefileDescUUID := resourcefileFields[0].Descriptor()
+	// resourcefile.DefaultUUID holds the default value on creation for the uuid field.
+	resourcefile.DefaultUUID = resourcefileDescUUID.Default.(func() *uuid.UUID)
+	// resourcefileDescTitle is the schema descriptor for title field.
+	resourcefileDescTitle := resourcefileFields[1].Descriptor()
+	// resourcefile.DefaultTitle holds the default value on creation for the title field.
+	resourcefile.DefaultTitle = resourcefileDescTitle.Default.(string)
+	// resourcefile.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	resourcefile.TitleValidator = resourcefileDescTitle.Validators[0].(func(string) error)
+	// resourcefileDescExt is the schema descriptor for ext field.
+	resourcefileDescExt := resourcefileFields[2].Descriptor()
+	// resourcefile.DefaultExt holds the default value on creation for the ext field.
+	resourcefile.DefaultExt = resourcefileDescExt.Default.(string)
+	// resourcefile.ExtValidator is a validator for the "ext" field. It is called by the builders before save.
+	resourcefile.ExtValidator = resourcefileDescExt.Validators[0].(func(string) error)
+	// resourcefileDescMime is the schema descriptor for mime field.
+	resourcefileDescMime := resourcefileFields[3].Descriptor()
+	// resourcefile.DefaultMime holds the default value on creation for the mime field.
+	resourcefile.DefaultMime = resourcefileDescMime.Default.(string)
+	// resourcefile.MimeValidator is a validator for the "mime" field. It is called by the builders before save.
+	resourcefile.MimeValidator = resourcefileDescMime.Validators[0].(func(string) error)
+	// resourcefileDescSize is the schema descriptor for size field.
+	resourcefileDescSize := resourcefileFields[4].Descriptor()
+	// resourcefile.DefaultSize holds the default value on creation for the size field.
+	resourcefile.DefaultSize = resourcefileDescSize.Default.(uint64)
+	// resourcefile.SizeValidator is a validator for the "size" field. It is called by the builders before save.
+	resourcefile.SizeValidator = resourcefileDescSize.Validators[0].(func(uint64) error)
+	// resourcefileDescPath is the schema descriptor for path field.
+	resourcefileDescPath := resourcefileFields[5].Descriptor()
+	// resourcefile.DefaultPath holds the default value on creation for the path field.
+	resourcefile.DefaultPath = resourcefileDescPath.Default.(string)
+	// resourcefile.PathValidator is a validator for the "path" field. It is called by the builders before save.
+	resourcefile.PathValidator = resourcefileDescPath.Validators[0].(func(string) error)
+	// resourcefileDescURL is the schema descriptor for url field.
+	resourcefileDescURL := resourcefileFields[6].Descriptor()
+	// resourcefile.DefaultURL holds the default value on creation for the url field.
+	resourcefile.DefaultURL = resourcefileDescURL.Default.(string)
+	// resourcefile.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	resourcefile.URLValidator = resourcefileDescURL.Validators[0].(func(string) error)
+	// resourcefileDescMd5 is the schema descriptor for md5 field.
+	resourcefileDescMd5 := resourcefileFields[7].Descriptor()
+	// resourcefile.DefaultMd5 holds the default value on creation for the md5 field.
+	resourcefile.DefaultMd5 = resourcefileDescMd5.Default.(string)
+	// resourcefile.Md5Validator is a validator for the "md5" field. It is called by the builders before save.
+	resourcefile.Md5Validator = resourcefileDescMd5.Validators[0].(func(string) error)
+	// resourcefileDescSha1 is the schema descriptor for sha1 field.
+	resourcefileDescSha1 := resourcefileFields[8].Descriptor()
+	// resourcefile.DefaultSha1 holds the default value on creation for the sha1 field.
+	resourcefile.DefaultSha1 = resourcefileDescSha1.Default.(string)
+	// resourcefile.Sha1Validator is a validator for the "sha1" field. It is called by the builders before save.
+	resourcefile.Sha1Validator = resourcefileDescSha1.Validators[0].(func(string) error)
+	// resourcefileDescStatus is the schema descriptor for status field.
+	resourcefileDescStatus := resourcefileFields[9].Descriptor()
+	// resourcefile.DefaultStatus holds the default value on creation for the status field.
+	resourcefile.DefaultStatus = resourcefileDescStatus.Default.(uint)
+	// resourcefile.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	resourcefile.StatusValidator = func() func(uint) error {
+		validators := resourcefileDescStatus.Validators
+		fns := [...]func(uint) error{
+			validators[0].(func(uint) error),
+			validators[1].(func(uint) error),
+		}
+		return func(status uint) error {
+			for _, fn := range fns {
+				if err := fn(status); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	smslogMixin := schema.SmsLog{}.Mixin()
 	smslogMixinFields1 := smslogMixin[1].Fields()
 	_ = smslogMixinFields1

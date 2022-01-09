@@ -356,6 +356,29 @@ var (
 			},
 		},
 	}
+	// ResourceFilesColumns holds the columns for the "resource_files" table.
+	ResourceFilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "delete_time", Type: field.TypeInt64, Default: 0},
+		{Name: "create_time", Type: field.TypeInt64},
+		{Name: "create_by", Type: field.TypeUint64, Default: 0},
+		{Name: "uuid", Type: field.TypeBytes, Size: 16},
+		{Name: "title", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "ext", Type: field.TypeString, Size: 64, Default: ""},
+		{Name: "mime", Type: field.TypeString, Size: 128, Default: ""},
+		{Name: "size", Type: field.TypeUint64, Default: 0},
+		{Name: "path", Type: field.TypeString, Size: 128, Default: ""},
+		{Name: "url", Type: field.TypeString, Size: 128, Default: ""},
+		{Name: "md5", Type: field.TypeString, Size: 32, Default: ""},
+		{Name: "sha1", Type: field.TypeString, Size: 40, Default: ""},
+		{Name: "status", Type: field.TypeUint, Default: 0},
+	}
+	// ResourceFilesTable holds the schema information for the "resource_files" table.
+	ResourceFilesTable = &schema.Table{
+		Name:       "resource_files",
+		Columns:    ResourceFilesColumns,
+		PrimaryKey: []*schema.Column{ResourceFilesColumns[0]},
+	}
 	// SmsLogColumns holds the columns for the "sms_log" table.
 	SmsLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -468,6 +491,7 @@ var (
 		AuthRolesTable,
 		AuthRulesTable,
 		EmailLogTable,
+		ResourceFilesTable,
 		SmsLogTable,
 		SortsTable,
 		UserTable,

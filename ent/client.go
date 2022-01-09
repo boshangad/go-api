@@ -21,6 +21,7 @@ import (
 	"github.com/boshangad/v1/ent/authrole"
 	"github.com/boshangad/v1/ent/authrule"
 	"github.com/boshangad/v1/ent/emaillog"
+	"github.com/boshangad/v1/ent/resourcefile"
 	"github.com/boshangad/v1/ent/smslog"
 	"github.com/boshangad/v1/ent/sort"
 	"github.com/boshangad/v1/ent/user"
@@ -59,6 +60,8 @@ type Client struct {
 	AuthRule *AuthRuleClient
 	// EmailLog is the client for interacting with the EmailLog builders.
 	EmailLog *EmailLogClient
+	// ResourceFile is the client for interacting with the ResourceFile builders.
+	ResourceFile *ResourceFileClient
 	// SmsLog is the client for interacting with the SmsLog builders.
 	SmsLog *SmsLogClient
 	// Sort is the client for interacting with the Sort builders.
@@ -90,6 +93,7 @@ func (c *Client) init() {
 	c.AuthRole = NewAuthRoleClient(c.config)
 	c.AuthRule = NewAuthRuleClient(c.config)
 	c.EmailLog = NewEmailLogClient(c.config)
+	c.ResourceFile = NewResourceFileClient(c.config)
 	c.SmsLog = NewSmsLogClient(c.config)
 	c.Sort = NewSortClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -138,6 +142,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthRole:        NewAuthRoleClient(cfg),
 		AuthRule:        NewAuthRuleClient(cfg),
 		EmailLog:        NewEmailLogClient(cfg),
+		ResourceFile:    NewResourceFileClient(cfg),
 		SmsLog:          NewSmsLogClient(cfg),
 		Sort:            NewSortClient(cfg),
 		User:            NewUserClient(cfg),
@@ -171,6 +176,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthRole:        NewAuthRoleClient(cfg),
 		AuthRule:        NewAuthRuleClient(cfg),
 		EmailLog:        NewEmailLogClient(cfg),
+		ResourceFile:    NewResourceFileClient(cfg),
 		SmsLog:          NewSmsLogClient(cfg),
 		Sort:            NewSortClient(cfg),
 		User:            NewUserClient(cfg),
@@ -215,6 +221,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.AuthRole.Use(hooks...)
 	c.AuthRule.Use(hooks...)
 	c.EmailLog.Use(hooks...)
+	c.ResourceFile.Use(hooks...)
 	c.SmsLog.Use(hooks...)
 	c.Sort.Use(hooks...)
 	c.User.Use(hooks...)
@@ -1507,6 +1514,96 @@ func (c *EmailLogClient) QueryApp(el *EmailLog) *AppQuery {
 // Hooks returns the client hooks.
 func (c *EmailLogClient) Hooks() []Hook {
 	return c.hooks.EmailLog
+}
+
+// ResourceFileClient is a client for the ResourceFile schema.
+type ResourceFileClient struct {
+	config
+}
+
+// NewResourceFileClient returns a client for the ResourceFile from the given config.
+func NewResourceFileClient(c config) *ResourceFileClient {
+	return &ResourceFileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `resourcefile.Hooks(f(g(h())))`.
+func (c *ResourceFileClient) Use(hooks ...Hook) {
+	c.hooks.ResourceFile = append(c.hooks.ResourceFile, hooks...)
+}
+
+// Create returns a create builder for ResourceFile.
+func (c *ResourceFileClient) Create() *ResourceFileCreate {
+	mutation := newResourceFileMutation(c.config, OpCreate)
+	return &ResourceFileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ResourceFile entities.
+func (c *ResourceFileClient) CreateBulk(builders ...*ResourceFileCreate) *ResourceFileCreateBulk {
+	return &ResourceFileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ResourceFile.
+func (c *ResourceFileClient) Update() *ResourceFileUpdate {
+	mutation := newResourceFileMutation(c.config, OpUpdate)
+	return &ResourceFileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ResourceFileClient) UpdateOne(rf *ResourceFile) *ResourceFileUpdateOne {
+	mutation := newResourceFileMutation(c.config, OpUpdateOne, withResourceFile(rf))
+	return &ResourceFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ResourceFileClient) UpdateOneID(id int) *ResourceFileUpdateOne {
+	mutation := newResourceFileMutation(c.config, OpUpdateOne, withResourceFileID(id))
+	return &ResourceFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ResourceFile.
+func (c *ResourceFileClient) Delete() *ResourceFileDelete {
+	mutation := newResourceFileMutation(c.config, OpDelete)
+	return &ResourceFileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ResourceFileClient) DeleteOne(rf *ResourceFile) *ResourceFileDeleteOne {
+	return c.DeleteOneID(rf.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ResourceFileClient) DeleteOneID(id int) *ResourceFileDeleteOne {
+	builder := c.Delete().Where(resourcefile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ResourceFileDeleteOne{builder}
+}
+
+// Query returns a query builder for ResourceFile.
+func (c *ResourceFileClient) Query() *ResourceFileQuery {
+	return &ResourceFileQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ResourceFile entity by its id.
+func (c *ResourceFileClient) Get(ctx context.Context, id int) (*ResourceFile, error) {
+	return c.Query().Where(resourcefile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ResourceFileClient) GetX(ctx context.Context, id int) *ResourceFile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ResourceFileClient) Hooks() []Hook {
+	return c.hooks.ResourceFile
 }
 
 // SmsLogClient is a client for the SmsLog schema.

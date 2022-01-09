@@ -1,8 +1,7 @@
 package disk
 
-type QiniuDisk struct {
-	// 磁盘类型
-	Type string `mapstructure:"type" json:"type" yaml:"type"`
+// Oss 阿里云对象存储
+type Oss struct {
 	// 磁盘保存路径
 	Path string `mapstructure:"path" json:"path" yaml:"path"`
 	// 磁盘访问URL
@@ -18,6 +17,6 @@ type QiniuDisk struct {
 	AccessKeySecret string `mapstructure:"accessKeySecret" json:"accessKeySecret" yaml:"accessKeySecret"`
 }
 
-func (that QiniuDisk) Upload(filename, path string) (err error) {
+func (that Oss) Upload(filename, path string) (err error) {
 	return nil
 }

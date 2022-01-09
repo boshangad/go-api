@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-type LocalDisk struct {
+type Local struct {
 	// 磁盘类型
 	Type string `mapstructure:"type" json:"type" yaml:"type"`
 	// 磁盘保存路径
@@ -15,7 +15,7 @@ type LocalDisk struct {
 }
 
 // 上传文件
-func (that LocalDisk) Upload(filename, path string) (err error) {
+func (that Local) Upload(filename, path string) (err error) {
 	src, err := os.Open(filename)
 	if err != nil {
 		return err

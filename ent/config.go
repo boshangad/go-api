@@ -39,6 +39,7 @@ type hooks struct {
 	AuthRole        []ent.Hook
 	AuthRule        []ent.Hook
 	EmailLog        []ent.Hook
+	ResourceFile    []ent.Hook
 	SmsLog          []ent.Hook
 	Sort            []ent.Hook
 	User            []ent.Hook

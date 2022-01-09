@@ -42,6 +42,9 @@ type AuthRule func(*sql.Selector)
 // EmailLog is the predicate function for emaillog builders.
 type EmailLog func(*sql.Selector)
 
+// ResourceFile is the predicate function for resourcefile builders.
+type ResourceFile func(*sql.Selector)
+
 // SmsLog is the predicate function for smslog builders.
 type SmsLog func(*sql.Selector)
 

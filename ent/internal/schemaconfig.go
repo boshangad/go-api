@@ -19,6 +19,7 @@ type SchemaConfig struct {
 	AuthRole        string // AuthRole table.
 	AuthRule        string // AuthRule table.
 	EmailLog        string // EmailLog table.
+	ResourceFile    string // ResourceFile table.
 	SmsLog          string // SmsLog table.
 	Sort            string // Sort table.
 	User            string // User table.

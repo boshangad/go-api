@@ -10,6 +10,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"golang.org/x/sync/singleflight"
 )
 
 type Viper struct {
@@ -19,6 +20,8 @@ type Viper struct {
 	// 配置监听观察者
 	notifyerFuncs map[string]NotifyerViperFunc
 	notifyersKeys []string
+	// 执行
+	s *singleflight.Group
 }
 
 // 重新加载配置
@@ -37,7 +40,7 @@ func (that *Viper) Reload() {
 			return
 		} else {
 			// 配置文件被找到，但产生了另外的错误
-			that.logger.Error("Fatal error config file", zap.String("filename", that.viper.ConfigFileUsed()), zap.Error(err))
+			that.logger.Error("reload fatal error config file", zap.String("filename", that.viper.ConfigFileUsed()), zap.Error(err))
 			return
 		}
 	}
@@ -79,6 +82,16 @@ func (that *Viper) DelObserver(k string) {
 	that.notifyersKeys = keys
 }
 
+// 设置日志服务
+func (that *Viper) SetLogger(logger *zap.Logger) {
+	that.logger = logger
+}
+
+// 获取日志服务
+func (that Viper) GetLogger() *zap.Logger {
+	return that.logger
+}
+
 // 获取配置器
 func (that *Viper) Viper() *viper.Viper {
 	return that.viper
@@ -92,6 +105,7 @@ func NewViper(filename string) *Viper {
 			notifyerFuncs: make(map[string]NotifyerViperFunc),
 			notifyersKeys: []string{},
 			logger:        zap.NewExample(),
+			s:             &singleflight.Group{},
 		}
 	)
 	// 设置默认值
@@ -130,7 +144,10 @@ func NewViper(filename string) *Viper {
 	}
 	// 观察者监听
 	vp.viper.OnConfigChange(func(e fsnotify.Event) {
-		vp.Reload()
+		_, _, _ = vp.s.Do("reload", func() (interface{}, error) {
+			vp.Reload()
+			return true, nil
+		})
 	})
 	vp.viper.WatchConfig()
 	return &vp

@@ -1,6 +1,8 @@
 package disk
 
-type UcloudDisk struct {
+// Kodo 七牛云对象存储
+// https://developer.qiniu.com/kodo/1731/api-overview
+type Kodo struct {
 	// 磁盘类型
 	Type string `mapstructure:"type" json:"type" yaml:"type"`
 	// 磁盘保存路径
@@ -18,6 +20,6 @@ type UcloudDisk struct {
 	AccessKeySecret string `mapstructure:"accessKeySecret" json:"accessKeySecret" yaml:"accessKeySecret"`
 }
 
-func (that UcloudDisk) Upload(filename, path string) (err error) {
+func (that Kodo) Upload(filename, path string) (err error) {
 	return nil
 }

@@ -165,6 +165,19 @@ func (f EmailLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The ResourceFileFunc type is an adapter to allow the use of ordinary
+// function as ResourceFile mutator.
+type ResourceFileFunc func(context.Context, *ent.ResourceFileMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ResourceFileFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ResourceFileMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ResourceFileMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The SmsLogFunc type is an adapter to allow the use of ordinary
 // function as SmsLog mutator.
 type SmsLogFunc func(context.Context, *ent.SmsLogMutation) (ent.Value, error)

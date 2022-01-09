@@ -19,6 +19,7 @@ func (that *GroupApi) Init(group *gin.RouterGroup) {
 	that.Mp.Init(group)
 	that.Sms.Init(group)
 	that.Email.Init(group)
+	that.Resource.Init(group)
 }
 
 var V1 = new(GroupApi)
