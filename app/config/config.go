@@ -20,7 +20,7 @@ type Config struct {
 	// 数据库连接配置
 	Db map[string]interface{} `json:"db,omitempty" yaml:"db"`
 	// 磁盘
-	Disk *Disk `json:"disks,omitempty" yaml:"db"`
+	Disk *Disk `json:"disk,omitempty" yaml:"disk"`
 	// 缓存功能模块
 	Cache map[string]interface{} `json:"cache,omitempty" yaml:"cache"`
 	// Redis 服务器

@@ -1,11 +1,5 @@
 package resourceFileService
 
-import (
-	"fmt"
-
-	"github.com/boshangad/v1/app/global"
-)
-
 type Us3Token struct {
 	DiskName    string `json:"diskName" form:"diskName"`
 	Filename    string `json:"filename" form:"filename"`
@@ -23,10 +17,6 @@ type Us3TokenResult struct {
 }
 
 func (that Us3Token) Build() (result Us3TokenResult, err error) {
-	_, ok := global.Config.Disk.Disks[that.DiskName]
-	if !ok {
-		return result, fmt.Errorf("c")
-	}
 
 	return result, nil
 }

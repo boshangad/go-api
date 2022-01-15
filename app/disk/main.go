@@ -3,9 +3,11 @@ package disk
 import (
 	"log"
 
-	"github.com/boshangad/v1/app/config"
 	"github.com/mitchellh/mapstructure"
 )
+
+// 磁盘
+type Disk map[string]interface{}
 
 // 区域域名
 type RegionDomain struct {
@@ -21,7 +23,7 @@ type UploadInterface interface {
 
 type DiskInterface interface{}
 
-func NewOssDisk(c config.Disk) *Oss {
+func NewOssDisk(c Disk) *Oss {
 	var (
 		o   = Oss{}
 		err = mapstructure.Decode(c, &o)
@@ -32,7 +34,7 @@ func NewOssDisk(c config.Disk) *Oss {
 	return &o
 }
 
-func NewUs3Disk(c config.Disk) *Us3 {
+func NewUs3Disk(c Disk) *Us3 {
 	var (
 		o   = Us3{}
 		err = mapstructure.Decode(c, &o)
@@ -43,7 +45,7 @@ func NewUs3Disk(c config.Disk) *Us3 {
 	return &o
 }
 
-func NeKodoDisk(c config.Disk) *Kodo {
+func NeKodoDisk(c Disk) *Kodo {
 	var (
 		o   = Kodo{}
 		err = mapstructure.Decode(c, &o)
@@ -54,7 +56,7 @@ func NeKodoDisk(c config.Disk) *Kodo {
 	return &o
 }
 
-func NewLocalDisk(c config.Disk) *Kodo {
+func NewLocalDisk(c Disk) *Kodo {
 	var (
 		o   = Kodo{}
 		err = mapstructure.Decode(c, &o)
@@ -66,7 +68,7 @@ func NewLocalDisk(c config.Disk) *Kodo {
 }
 
 // 实例化磁盘
-func NewDisk(c config.Disk) DiskInterface {
+func NewDisk(c Disk) DiskInterface {
 	var diskType = "local"
 	if t, ok := c["type"]; ok {
 		diskType = t.(string)

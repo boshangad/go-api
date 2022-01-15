@@ -26,6 +26,13 @@ log:
   maxBackups: 0
   maxAge: 0
   compress: true
+disk:
+  default: ucloud,
+  disks:
+    ucloud:
+      bucketName: boshang
+      accessKeyId: TOKEN_8e7f7467-4b29-4310-8d4d-796076d02322
+      accessKeySecret: 2f2e7896-d798-47a5-afd5-cedece95d777
 cache:
   type: "file"
   director: ""
@@ -56,6 +63,3 @@ captcha:
   audio:
     type: audio
     length: 6
-kdfghj:
-dfgfhgf:
-sdfghgfdewerfg:
