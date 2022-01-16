@@ -141,14 +141,27 @@ func (that Us3) Name() string {
 	return "us3"
 }
 
+// 获取请求地址
+func (that Us3) GetRequestUrl(path string, urlParams url.Values) string {
+	var urlPath = "https://" + that.getRegionBasicUrl() + "/"
+	if path != "" {
+		urlPath += strings.TrimLeft(path, "\\/")
+	}
+	if urlParams != nil && len(urlParams) > 0 {
+		urlPath += "?" + urlParams.Encode()
+	}
+	return urlPath
+}
+
 // 获取鉴权token
-func (that Us3) AuthToken(key string, request *http.Request) string {
+func (that Us3) AuthToken(request *http.Request) string {
 	var (
 		canonicalizedUCloudHeaders = ""
 		canonicalizedResource      = ""
 		stringToSign               = ""
 		signature                  = ""
 		authorization              = ""
+		key                        = request.URL.Path
 	)
 	if request.Header != nil {
 		var (
@@ -196,6 +209,7 @@ func (that Us3) AuthToken(key string, request *http.Request) string {
 	return authorization
 }
 
+// 上传政策
 func (that Us3) UploadPolicy() {
 
 }
@@ -456,7 +470,7 @@ func (that Us3) getRegionBasicUrl() string {
 
 // 发起请求
 func (that Us3) request(req *http.Request) (result *Us3Result, err error) {
-	req.Header.Add("Authorization", that.AuthToken(req.URL.Path, req))
+	req.Header.Add("Authorization", that.AuthToken(req))
 	r := Us3Result{
 		req: req,
 	}

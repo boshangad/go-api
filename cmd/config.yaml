@@ -27,7 +27,7 @@ log:
   maxAge: 0
   compress: true
 disk:
-  default: ucloud,
+  default: ucloud
   disks:
     ucloud:
       bucketName: boshang

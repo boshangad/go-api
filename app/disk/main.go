@@ -42,6 +42,12 @@ func NewUs3Disk(c Disk) *Us3 {
 	if err != nil {
 		log.Panicln("us3 disk initialization failed", err)
 	}
+	if o.AccessKeyId == "" || o.AccessKeySecret == "" {
+		log.Panicln("us3 disk initialization failed", "not find access parameter")
+	}
+	if o.BucketName == "" {
+		log.Panicln("us3 disk initialization failed", "bucket name required")
+	}
 	return &o
 }
 

@@ -1,10 +1,7 @@
 package public
 
 import (
-	"fmt"
-
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/disk"
 	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/services/resourceFileService"
 )
@@ -44,8 +41,6 @@ func (that ResourceController) Upload(c *controller.Context) {
 // Us3Token Ucloud的Us3对象存储上传token
 // https://docs.ucloud.cn/ufile/api/authorization
 func (that ResourceController) Us3Token(c *controller.Context) {
-	d := disk.NewUs3Disk(global.Config.Disk.Disks["ucloud"])
-	fmt.Println(d.Upload("C:\\Users\\huanghu\\Videos\\Captures\\小狗狗.mp4", "upload/video/20220112/4567893487tydeh.mp4"))
 	var (
 		us3Token = resourceFileService.Us3Token{}
 	)
