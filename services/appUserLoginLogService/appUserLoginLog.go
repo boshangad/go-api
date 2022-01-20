@@ -3,12 +3,12 @@ package appUserLoginLogService
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"net/http/httputil"
 
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/ent"
 	"github.com/boshangad/v1/ent/appuserloginlog"
+	"github.com/boshangad/v1/global"
 	"go.uber.org/zap"
 )
 
@@ -16,14 +16,15 @@ import (
 // @param uint64 $appId 登录的应用ID
 // @param string $ip 登录IP
 // @param *http.Request $httpRequest 请求
-func CheckAndCreateLoginLogByConfirm(appId uint64, ip string, httpRequest *http.Request) (*ent.AppUserLoginLog, error) {
+func CheckAndCreateLoginLogByConfirm(c *controller.Context) (*ent.AppUserLoginLog, error) {
 	var (
 		ctx                = context.Background()
+		httpRequest        = c.Request
 		httpDumpRequest, _ = httputil.DumpRequest(httpRequest, false)
 	)
 	appUserLoginLog, err := global.Db.AppUserLoginLog.Create().
-		SetAppID(appId).
-		SetIP(ip).
+		SetAppID(c.GetApp().ID).
+		SetIP(c.ClientIP()).
 		SetUserAgent(httpRequest.UserAgent()).
 		SetClientVersion(httpRequest.UserAgent()).
 		SetLoginTypeID(appuserloginlog.LoginTypeUnknow).

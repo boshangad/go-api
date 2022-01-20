@@ -21,13 +21,25 @@ func GetBasePath(mimeType, filename string) string {
 	if uploadBasic == "" {
 		ext := strings.TrimLeft(filepath.Ext(filename), ".")
 		switch strings.ToLower(ext) {
+		case "webm":
+			fallthrough
 		case "mp4":
 			uploadBasic = "video"
+		case "wav":
+			fallthrough
+		case "wma":
+			fallthrough
 		case "mp3":
 			uploadBasic = "audio"
 		case "xls":
 			fallthrough
+		case "xlsm":
+			fallthrough
 		case "xlsx":
+			fallthrough
+		case "wps":
+			fallthrough
+		case "wpt":
 			fallthrough
 		case "doc":
 			fallthrough

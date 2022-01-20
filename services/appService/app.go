@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
 	eapp "github.com/boshangad/v1/ent/app"
+	"github.com/boshangad/v1/global"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/boshangad/v1/app/disk"
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/global"
 	"github.com/google/uuid"
 )
 

@@ -3,7 +3,7 @@ package server
 import (
 	"time"
 
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/app/log"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -14,10 +14,10 @@ func Logger() gin.HandlerFunc {
 		start := time.Now()
 		c.Next()
 		cost := time.Since(start)
-		if global.Log != nil {
+		if log.Logger != nil {
 			path := c.Request.URL.Path
 			query := c.Request.URL.RawQuery
-			global.Log.Info(path,
+			log.Logger.Info(path,
 				zap.Int("status", c.Writer.Status()),
 				zap.String("method", c.Request.Method),
 				zap.String("path", path),

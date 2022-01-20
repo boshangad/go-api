@@ -4,6 +4,7 @@ import (
 	"github.com/boshangad/v1/app/cache"
 	"github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/db"
+	"github.com/boshangad/v1/app/redis"
 
 	"go.uber.org/zap"
 	"golang.org/x/sync/singleflight"
@@ -21,6 +22,8 @@ var (
 	Cache cache.CacheInterface = cache.NewMemory(Config.Cache)
 	// 内存缓存
 	Memoey cache.CacheInterface = cache.NewMemory(Config.Cache)
+	// redis缓存
+	Redis = redis.NewRedis(nil)
 	// ConcurrencyControl 防止缓存击穿，并发控制
 	ConcurrencyControl = &singleflight.Group{}
 )

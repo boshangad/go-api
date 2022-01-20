@@ -9,10 +9,10 @@ import (
 
 	"github.com/boshangad/v1/app/config"
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/app/sms"
 	"github.com/boshangad/v1/ent"
 	"github.com/boshangad/v1/ent/smslog"
+	"github.com/boshangad/v1/global"
 	"go.uber.org/zap"
 )
 

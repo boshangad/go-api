@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/boshangad/v1/app/cache"
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/global"
 )
 
 // 默认的小程序缓存

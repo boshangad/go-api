@@ -2,7 +2,7 @@ package public
 
 import (
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/global"
 	"github.com/boshangad/v1/services/smsLogService"
 )
 

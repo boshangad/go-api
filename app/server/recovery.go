@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/app/log"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -29,17 +29,17 @@ func Recovery(stack bool) gin.HandlerFunc {
 						}
 					}
 				}
-				if global.Log != nil {
+				if log.Logger != nil {
 					httpRequest, _ := httputil.DumpRequest(c.Request, false)
 					if stack {
-						global.Log.Error("[Recovery from panic]",
+						log.Logger.Error("[Recovery from panic]",
 							zap.Time("time", time.Now()),
 							zap.Any("error", err),
 							zap.String("request", string(httpRequest)),
 							zap.String("stack", string(debug.Stack())),
 						)
 					} else {
-						global.Log.Error("[Recovery from panic]",
+						log.Logger.Error("[Recovery from panic]",
 							zap.Time("time", time.Now()),
 							zap.Any("error", err),
 							zap.String("request", string(httpRequest)),

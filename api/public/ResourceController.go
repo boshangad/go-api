@@ -2,7 +2,7 @@ package public
 
 import (
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/global"
 	"github.com/boshangad/v1/services/resourceFileService"
 )
 
@@ -36,6 +36,11 @@ func (that ResourceController) Upload(c *controller.Context) {
 		Path string `json:"path"`
 		Url  string `json:"url"`
 	}{})
+}
+
+// 上传图片
+func (that ResourceController) UploadImage(c *controller.Context) {
+
 }
 
 // Us3Token Ucloud的Us3对象存储上传token

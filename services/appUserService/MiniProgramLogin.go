@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
 	"github.com/boshangad/v1/ent/appuser"
+	"github.com/boshangad/v1/global"
 	wechat "github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/miniprogram/config"
 	"go.uber.org/zap"

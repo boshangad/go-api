@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/boshangad/v1/app/errors"
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -145,6 +144,6 @@ func (that Context) JsonOutError(err error) {
 		invalidParam.Data = &invalidParamData
 		that.Context.AbortWithStatusJSON(invalidParam.GetStatus(), invalidParam)
 	default:
-		that.JsonOut(global.ErrNotice, err.Error(), nil)
+		that.JsonOut(http.StatusNotExtended, err.Error(), nil)
 	}
 }

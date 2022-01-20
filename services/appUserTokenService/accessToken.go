@@ -8,9 +8,9 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
 	"github.com/boshangad/v1/ent/appusertoken"
+	"github.com/boshangad/v1/global"
 	"github.com/google/uuid"
 	"github.com/vk-rv/pvx"
 )

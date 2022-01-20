@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/app/controller"
 	"github.com/boshangad/v1/app/helpers"
 	"github.com/boshangad/v1/ent"
 	"github.com/boshangad/v1/ent/appuser"
 	"github.com/boshangad/v1/ent/appuserloginlog"
 	"github.com/boshangad/v1/ent/appusertoken"
 	euser "github.com/boshangad/v1/ent/user"
+	"github.com/boshangad/v1/global"
+	"github.com/boshangad/v1/services/appUserLoginLogService"
 	"github.com/boshangad/v1/services/appUserTokenService"
 	"go.uber.org/zap"
 )
@@ -35,12 +37,10 @@ type Login struct {
 
 // 登录
 // @param appUserLoginLog *ent.AppUserLoginLog  用户登录日志
-func (that Login) Login(appUserLoginLog *ent.AppUserLoginLog) (accessToken *appUserTokenService.AccessToken, err error) {
+func (that Login) Login(c *controller.Context) (accessToken *appUserTokenService.AccessToken, err error) {
 	var (
 		// 进程上下文
 		ctx context.Context = context.Background()
-		// 更新代理日志
-		appUserLoginLogUpdate = appUserLoginLog.Update()
 		// 查询对象
 		query = global.Db.User.Query().
 			Where(euser.DeleteTimeEQ(0)).
@@ -51,7 +51,16 @@ func (that Login) Login(appUserLoginLog *ent.AppUserLoginLog) (accessToken *appU
 		// 检测是否要求有验证码
 	} else {
 		// 提取验证码逻辑器
+		// global.Config.Captcha
 	}
+	// 记录用户登录日志
+	appUserLoginLog, err := appUserLoginLogService.CheckAndCreateLoginLogByConfirm(c)
+	if err != nil {
+		c.JsonOutError(err)
+		return
+	}
+	// 更新代理日志
+	appUserLoginLogUpdate := appUserLoginLog.Update()
 	// 用户名不为空
 	if that.Mobile != "" {
 		appUserLoginLogUpdate.SetLoginTypeID(appuserloginlog.LoginTypeMobile)

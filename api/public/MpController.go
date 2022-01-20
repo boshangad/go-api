@@ -2,7 +2,7 @@ package public
 
 import (
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
+	"github.com/boshangad/v1/global"
 
 	"github.com/boshangad/v1/services/appUserService"
 )
@@ -25,12 +25,12 @@ func (that MpController) Login(c *controller.Context) {
 }
 
 // 绑定用户
-func (that MpController) BindUser() {
+func (that MpController) BindUser(c *controller.Context) {
 
 }
 
 // 绑定微信手机号
-func (that MpController) BindMpMobile() {
+func (that MpController) BindMpMobile(c *controller.Context) {
 
 }
 

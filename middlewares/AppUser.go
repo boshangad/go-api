@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/ent"
+	"github.com/boshangad/v1/app/log"
 	"github.com/boshangad/v1/services/appUserTokenService"
 	"go.uber.org/zap"
 )
@@ -32,7 +32,7 @@ func AppUserMiddleware(c *controller.Context) {
 	accessToken.AccessToken = authorization
 	appUserToken, err = accessToken.Login()
 	if err != nil {
-		global.Log.Info("token invalid", zap.String("token", authorization))
+		log.Logger.Info("token invalid", zap.String("token", authorization))
 		return
 	}
 	c.SetAppUserToken(appUserToken)

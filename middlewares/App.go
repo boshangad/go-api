@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
 	"github.com/boshangad/v1/app/helpers"
 	"github.com/boshangad/v1/ent"
+	"github.com/boshangad/v1/global"
 	"github.com/google/uuid"
 )
 

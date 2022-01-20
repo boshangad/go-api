@@ -2,13 +2,9 @@ package server
 
 import (
 	"context"
-	"path/filepath"
 	"time"
 
-	"github.com/boshangad/v1/app/controller"
-	"github.com/boshangad/v1/app/global"
-	"github.com/boshangad/v1/app/middlewares"
-	"github.com/boshangad/v1/routers"
+	"github.com/boshangad/v1/app/log"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -23,7 +19,7 @@ type Server interface {
 // 路由存在，但方法不被允许报错
 func pageMethodNotAllow() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		global.Log.Info(
+		log.Logger.Info(
 			"The page is denied access, the method is not allowed",
 			zap.String("path", c.Request.RequestURI),
 			zap.String("method", c.Request.Method),
@@ -34,7 +30,7 @@ func pageMethodNotAllow() gin.HandlerFunc {
 // 路由未定义
 func pageNotFound() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		global.Log.Debug(
+		log.Logger.Debug(
 			"page not found.",
 			zap.String("path", c.Request.RequestURI),
 		)
@@ -42,45 +38,22 @@ func pageNotFound() gin.HandlerFunc {
 }
 
 // 实例化一个服务
-func NewServer(addr string) Server {
-	e := gin.New()
+func NewServer(listen string, initEnginefun func(*gin.Engine)) Server {
+	var (
+		e      = gin.New()
+		server Server
+	)
 	// 注册pprof工具
 	pprof.Register(e)
 	// 定义未配置路由的错误
 	e.NoRoute(pageNotFound())
 	e.NoMethod(pageMethodNotAllow())
-
-	// 为用户头像和文件提供静态地址
-	e.StaticFS(filepath.Join("static"), gin.Dir(filepath.Join(global.Config.App.RootPath, "static"), false))
-	// 打开就能玩https了
-	// e.Use(middleware.LoadTls())
-
-	// 注册根组件
-	rootGroup := e.Group("")
-	{
-		rootGroup.Use(
-			// 记录日志
-			Logger(),
-			// 异常恢复
-			Recovery(true),
-		)
-		// 跨域,如需跨域可以打开
-		rootGroup.Use(
-			middlewares.Cors(),
-			controller.BindingFunc(middlewares.AppUserMiddleware),
-			controller.BindingFunc(middlewares.AppMiddleware),
-		)
-
-		//e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-		// 获取路由组实例
-		publicGroup := rootGroup.Group("")
-		{
-			routers.V1.Init(publicGroup)
-		}
+	e.Use(Logger(), Recovery(true))
+	if initEnginefun != nil {
+		initEnginefun(e)
 	}
-
-	s := InitServer(addr, e)
-	return s
+	server = InitServer(listen, e)
+	return server
 }
 
 // 启动服务
@@ -95,7 +68,7 @@ func Reload() error {
 
 // 停止关闭服务
 func Close(s Server) error {
-	global.Log.Info("shutting down gracefully, press Ctrl+C again to force")
+	log.Logger.Info("shutting down gracefully, press Ctrl+C again to force")
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	serverCtx, serverCancel := context.WithTimeout(context.Background(), 5*time.Second)

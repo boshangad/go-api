@@ -30,7 +30,7 @@ type Config struct {
 	// 邮件网关
 	Email map[string]interface{} `json:"email,omitempty" yaml:"email"`
 	// 验证码配置
-	Captcha map[string]Captcha `json:"captcha,omitempty" yaml:"captcha"`
+	Captcha Captcha `json:"captcha,omitempty" yaml:"captcha"`
 }
 
 // 添加观察者
@@ -45,7 +45,6 @@ func (that *Config) Reload(v *Viper) {
 	that.Cache = make(map[string]interface{})
 	that.Redis = make(map[string]interface{})
 	that.Email = make(map[string]interface{})
-	that.Captcha = make(map[string]Captcha)
 	err := v.viper.Unmarshal(&that)
 	if err != nil {
 		v.logger.Error("config file not found", zap.Error(err))
